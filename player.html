@@ -1,0 +1,1531 @@
+<!DOCTYPE html>
+<html lang="en" class="dark" data-theme="tellyx_red">
+<head>
+    <script>
+console.log('%c                                                                      \n                          WELCOME TO MY WORLD!                        \n                                                                      \n                             /+ossyyysso/                             \n                         +ydNMMMMMMMMMMMMMmhs/                        \n                      +yNMMMMMMMMMMMMMMMMMMMMMms/                     \n                    +dMMMMMMMMMMMMMMMMMMMMMMMMMMMh/                   \n                  /hMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMNs                  \n                 +mMMMMMMMMMMMMMNmhdhmMMMMMMMMMMMMMMh                 \n                /NMMMMMMMMMMMMNy/ +m/ /hMMMMMMMMMMMMMh                \n                dMMMMMMMMMMMMMyshhNMmhhodMMMMMMMMMMMMMs               \n               oMMMMMMMMMMMMMMo /mMMMy/ hMMMMMMMMMMMMMN               \n               yMMMMMMMMMMMMMMm++ms+hd/sNMMMMMMMMMMMMMM+              \n               dMMMMMMMMMMMMMMMMmyoooyNMMMMMMMMMMMMMMMMo              \n               dMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMs              \n              +MMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMm/             \n            /yNMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMms/           \n         yhmNNNNNMMMNMMMMMNMMMMMNNNNNNNMMMMNNMMMMNNMMMNNNNmdhs        \n                oMMh/NMNs/  omMMo     yMMh+  /yMMh NMm                \n                oMMhoMMy     oMMh     NMN/     mMM/NMm                \n                +MMh/NMNs/  omMM+     yMMh+  /yMMh NMm                \n                /NMm /hMMMNMMMd+       sNMMNNMMNy +MMd                \n                 hMMo  /osyso/     /     +syys+   hMMo                \n                 /NMN/       /ohmNNNNNdy+        sMMd                 \n                  +NMN+     yNMNMNo/yMMNMmo     sMMm/                 \n                   +mMMh/ /mMN+ sMdymN/ sMMy  +mMMh                   \n                     sNMMhdMMNmdNMMMMMNdNNMMydMMmo                    \n                      /smMMMy /NMMMMMMMd  mMMMdo                      \n                         /dMMdmNMMMMMMMNmmMMy/                        \n                          /NMM+ sMNdNN/ sMMd                          \n                           /dMNmNN+ sMNmNNy                           \n                             +ymNMMNMMNds/                            \n                                 /+++/                                \n                                                      _pr.nizar_      \n                                                                      ', 'background: #f9ae3d; color: #000');
+    </script>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TellyX - High-Performance IPTV Web App</title>
+    <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#e11d48">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="TellyX">
+    <link rel="apple-touch-icon" href="icon.svg">
+    <link rel="icon" type="image/svg+xml" href="icon.svg">
+    <link rel="stylesheet" href="src/css/styles.css">
+<!--
+                          WELCOME TO MY WORLD!
+
+                             /+ossyyysso/
+                         +ydNMMMMMMMMMMMMMmhs/
+                      +yNMMMMMMMMMMMMMMMMMMMMMms/
+                    +dMMMMMMMMMMMMMMMMMMMMMMMMMMMh/
+                  /hMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMNs
+                 +mMMMMMMMMMMMMMNmhdhmMMMMMMMMMMMMMMh
+                /NMMMMMMMMMMMMNy/ +m/ /hMMMMMMMMMMMMMh
+                dMMMMMMMMMMMMMyshhNMmhhodMMMMMMMMMMMMMs
+               oMMMMMMMMMMMMMMo /mMMMy/ hMMMMMMMMMMMMMN
+               yMMMMMMMMMMMMMMm++ms+hd/sNMMMMMMMMMMMMMM+
+               dMMMMMMMMMMMMMMMMmyoooyNMMMMMMMMMMMMMMMMo
+               dMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMs
+              +MMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMm/
+            /yNMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMms/
+         yhmNNNNNMMMNMMMMMNMMMMMNNNNNNNMMMMNNMMMMNNMMMNNNNmdhs
+                oMMh/NMNs/  omMMo     yMMh+  /yMMh NMm
+                oMMhoMMy     oMMh     NMN/     mMM/NMm
+                +MMh/NMNs/  omMM+     yMMh+  /yMMh NMm
+                /NMm /hMMMNMMMd+       sNMMNNMMNy +MMd
+                 hMMo  /osyso/     /     +syys+   hMMo
+                 /NMN/       /ohmNNNNNdy+        sMMd
+                  +NMN+     yNMNMNo/yMMNMmo     sMMm/
+                   +mMMh/ /mMN+ sMdymN/ sMMy  +mMMh
+                     sNMMhdMMNmdNMMMMMNdNNMMydMMmo
+                      /smMMMy /NMMMMMMMd  mMMMdo
+                         /dMMdmNMMMMMMMNmmMMy/
+                          /NMM+ sMNdNN/ sMMd
+                           /dMNmNN+ sMNmNNy
+                             +ymNMMNMMNds/
+                                 /+++/
+                                                      _pr.nizar_
+
+-->
+</head>
+<body class="bg-slate-950 text-slate-100 min-h-screen flex flex-col selection:bg-rose-600 selection:text-white relative">
+
+    <!-- STARTUP SPLASH SCREEN OVERLAY -->
+    <div id="startupSplashScreen" class="fixed inset-0 z-[100] bg-rose-600 flex flex-col items-center justify-center text-black selection:bg-black selection:text-rose-600 transition-all duration-700 ease-in-out overflow-y-auto p-4">
+        <div id="splashContent" class="flex flex-col items-center text-center space-y-3 px-2 sm:px-4 transform transition-all duration-700 ease-out scale-100 opacity-100 max-w-xl w-full my-auto">
+            <!-- App Logo in Black -->
+            <div class="w-16 h-16 sm:w-20 sm:h-20 rounded-2xl bg-black/10 border-2 border-black flex items-center justify-center shadow-2xl relative mb-1 animate-pulse shrink-0">
+                <svg class="w-10 h-10 sm:w-12 sm:h-12 text-black" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M8 3l4 4 4-4" class="stroke-black" stroke-width="2.5" />
+                    <rect x="2" y="7" width="20" height="14" rx="3" ry="3" class="stroke-black fill-black" stroke-width="2" />
+                    <polygon points="10,11 16,14 10,17" class="fill-rose-600 stroke-rose-600" />
+                </svg>
+            </div>
+            <!-- Title -->
+            <h1 class="text-3xl sm:text-4xl font-black tracking-widest text-black uppercase drop-shadow-sm">TellyX</h1>
+            <!-- Tagline -->
+            <p class="text-sm sm:text-base font-bold tracking-wide text-black/90">Your TV, unleashed.</p>
+
+            <!-- LEGAL DISCLAIMER BOX (shown on first run) -->
+            <div id="splashLegalDisclaimer" class="hidden mt-3 p-4 sm:p-5 bg-black/10 border-2 border-black/20 rounded-2xl text-left text-xs sm:text-sm text-black space-y-2.5 shadow-2xl backdrop-blur-sm max-w-lg w-full">
+                <p class="font-extrabold text-sm sm:text-base leading-snug text-black">TellyX is a generic media player that does not provide any content.</p>
+                <p class="text-black/90 font-medium leading-relaxed">It requires you to supply your own licensed IPTV servers, M3U playlists, or streaming URLs.</p>
+                <p class="text-black/90 font-medium leading-relaxed">The app does <strong class="font-black underline">not</strong> contain, promote, or endorse any copyrighted material, illegal streams, or pirated content.</p>
+                <p class="text-black/90 font-medium leading-relaxed">You are solely responsible for ensuring that you have the necessary rights to access the content you stream.</p>
+                <p class="text-black/90 font-medium leading-relaxed italic text-[11px] sm:text-xs">The developer disclaims any liability for the misuse of this software.</p>
+
+                <!-- BUTTONS -->
+                <div class="pt-2 flex items-center space-x-3 w-full">
+                    <button id="btnAgreeLegal" class="flex-1 py-2.5 px-4 rounded-xl bg-black text-rose-500 hover:bg-black/90 font-black text-xs sm:text-sm tracking-wider uppercase shadow-xl transition-all cursor-pointer transform active:scale-95 flex items-center justify-center space-x-2">
+                        <span>Agree</span>
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7"></path></svg>
+                    </button>
+                    <button id="btnDisagreeLegal" class="py-2.5 px-4 rounded-xl bg-black/20 hover:bg-black/30 border border-black/40 text-black font-bold text-xs sm:text-sm transition-all cursor-pointer active:scale-95">
+                        Disagree
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- TOP NAVIGATION BAR -->
+    <header class="sticky top-0 z-40 bg-slate-950/95 backdrop-blur-xl border-b border-rose-950/80 shadow-2xl">
+        <!-- TOP BRAND & CONTROLS ROW -->
+        <div class="px-4 lg:px-8 py-2.5 flex items-center justify-between">
+            <!-- LOGO & STATUS -->
+            <div class="flex items-center space-x-3">
+                <!-- TELLYX LOGO -->
+                <div class="w-10 h-10 rounded-xl bg-slate-950 border border-rose-500/40 flex items-center justify-center shadow-lg shadow-rose-600/30 relative">
+                    <svg class="w-6 h-6 text-rose-500" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M8 3l4 4 4-4" class="stroke-rose-500" stroke-width="2.2" />
+                        <rect x="2" y="7" width="20" height="14" rx="3" ry="3" class="stroke-rose-500 fill-rose-950/60" stroke-width="2" />
+                        <polygon points="10,11 16,14 10,17" class="fill-rose-500 stroke-rose-500" />
+                    </svg>
+                </div>
+                <div>
+                    <div class="flex items-center space-x-2">
+                        <h1 class="text-lg font-black tracking-wider bg-gradient-to-r from-white via-rose-100 to-rose-500 bg-clip-text text-transparent">TELLYX</h1>
+                        <span id="wasmStatusBadge" class="px-2 py-0.5 rounded text-[10px] font-bold bg-emerald-500/20 text-emerald-400 border border-emerald-500/30">WASM READY</span>
+                    </div>
+                    <div class="flex items-center space-x-2 text-[11px] text-rose-300/80 font-medium">
+                        <span id="totalChannelsBadge">0 Channels</span>
+                        <span>•</span>
+                        <span id="activeTypeBadge" class="text-rose-400 font-semibold">Live TV Mode</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ACTION BUTTONS -->
+            <div class="flex items-center space-x-2">
+                <button id="btnInstallPwa" class="p-2 rounded-xl bg-rose-600/20 hover:bg-rose-600 border border-rose-500/40 text-rose-400 hover:text-white transition-all cursor-pointer flex items-center space-x-1.5" title="Install TellyX App (Native vs Web PWA)">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"></path></svg>
+                    <span class="text-xs font-bold hidden md:inline">Install App</span>
+                </button>
+                <button id="btnParentalModal" class="p-2 rounded-xl bg-slate-900 hover:bg-slate-800 border border-slate-800 text-slate-300 hover:text-white transition-all cursor-pointer" title="Parental Control (Locked)">
+                    <svg class="w-4 h-4 text-rose-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"></path></svg>
+                </button>
+                <button id="btnOpenSettings" class="p-2 rounded-xl bg-slate-900 hover:bg-slate-800 border border-slate-800 text-slate-300 hover:text-white transition-all cursor-pointer" title="Settings, Themes & WASM">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path></svg>
+                </button>
+                <button id="btnOpenHelp" class="p-2 rounded-xl bg-slate-900 hover:bg-slate-800 border border-slate-800 text-slate-300 hover:text-white transition-all cursor-pointer" title="User Guide & Help">
+                    <svg class="w-4 h-4 text-rose-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8.228 9c.549-1.165 2.03-2 3.772-2 2.21 0 4 1.343 4 3 0 1.4-1.278 2.575-3.006 2.907-.542.104-.994.54-.994 1.093m0 3h.01M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0z"></path></svg>
+                </button>
+            </div>
+        </div>
+
+        <!-- SUB-HEADER BAR: CONTENT TABS ("Live TV", "Movies", "Series") & EPG + TV REMOTE BUTTONS -->
+        <div class="bg-slate-900/90 border-t border-rose-950/60 px-2 sm:px-4 lg:px-8 py-2 flex items-center justify-between gap-2">
+            <!-- CONTENT TYPE SWITCHER TABS -->
+            <div id="contentTypeTabs" class="flex items-center space-x-1 sm:space-x-1.5 bg-slate-950/90 p-1 rounded-xl border border-slate-800 flex-shrink-0">
+                <button id="typeLiveTv" class="px-2.5 sm:px-3 py-1.5 text-xs font-semibold rounded-lg bg-rose-600 text-white cursor-pointer transition-all flex items-center sm:space-x-1.5" title="Live TV">
+                    <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z"></path></svg>
+                    <span class="hidden sm:inline">Live TV</span>
+                </button>
+                <button id="typeMovies" class="px-2.5 sm:px-3 py-1.5 text-xs font-semibold rounded-lg text-slate-400 hover:text-white cursor-pointer transition-all flex items-center sm:space-x-1.5" title="Movies">
+                    <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 4v16M17 4v16M3 8h4m10 0h4M3 12h18M3 16h4m10 0h4M4 20h16a1 1 0 001-1V5a1 1 0 00-1-1H4a1 1 0 00-1 1v14a1 1 0 001 1z"></path></svg>
+                    <span class="hidden sm:inline">Movies</span>
+                </button>
+                <button id="typeSeries" class="px-2.5 sm:px-3 py-1.5 text-xs font-semibold rounded-lg text-slate-400 hover:text-white cursor-pointer transition-all flex items-center sm:space-x-1.5" title="Series">
+                    <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"></path></svg>
+                    <span class="hidden sm:inline">Series</span>
+                </button>
+            </div>
+
+            <!-- EPG MATRIX & TV REMOTE BUTTONS -->
+            <div class="flex items-center space-x-2 flex-shrink-0">
+                <button id="btnOpenEPG" class="px-2.5 sm:px-3.5 py-1.5 rounded-xl bg-slate-950/90 hover:bg-slate-800 border border-slate-800 text-xs font-semibold text-rose-400 hover:text-white flex items-center sm:space-x-2 transition-all cursor-pointer flex-shrink-0" title="TV Guide (EPG)">
+                    <svg class="w-4 h-4 text-rose-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg>
+                    <span class="hidden sm:inline">TV Guide (EPG)</span>
+                </button>
+                <button id="btnToggleTvRemote" class="px-2.5 sm:px-3.5 py-1.5 rounded-xl bg-slate-950/90 hover:bg-slate-800 border border-slate-800 text-xs font-semibold text-amber-400 hover:text-white flex items-center sm:space-x-2 transition-all cursor-pointer flex-shrink-0" title="TV Remote D-Pad (Shortcut: R)">
+                    <svg class="w-4 h-4 text-amber-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 18h.01M8 21h8a2 2 0 002-2V5a2 2 0 00-2-2H8a2 2 0 00-2 2v14a2 2 0 002 2z"></path></svg>
+                    <span class="hidden sm:inline">TV Remote</span>
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <!-- BROWSER CORS & NATIVE APP NOTICE BANNER (Only displayed when running in standard Web Browser, hidden in Tauri) -->
+    <div id="browserCorsNoticeBox" class="bg-slate-900/95 border-b border-amber-500/30 px-4 lg:px-8 py-3 text-xs text-slate-300 backdrop-blur-md hidden shrink-0">
+        <div class="max-w-7xl mx-auto flex flex-col md:flex-row items-start md:items-center justify-between gap-3">
+            <div class="flex items-start space-x-3">
+                <div class="p-2 rounded-lg bg-amber-500/10 text-amber-400 border border-amber-500/20 shrink-0 mt-0.5 md:mt-0">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0z"></path>
+                    </svg>
+                </div>
+                <div class="space-y-0.5">
+                    <div class="font-bold text-white flex items-center gap-2">
+                        <span>Web Browser CORS Stream Notice</span>
+                        <span class="text-[10px] font-semibold px-2 py-0.5 rounded bg-amber-500/20 text-amber-300 border border-amber-500/30">Browser Environment</span>
+                    </div>
+                    <p class="text-slate-300 text-[11px] leading-relaxed">
+                        Standard web browsers enforce CORS security rules when streaming HTTP/HTTPS content. Enable 
+                        <button id="btnCorsNoticeOpenSettings" class="text-rose-400 font-bold underline hover:text-rose-300 cursor-pointer">CORS Proxy Bypass in Settings ⚙️</button>, 
+                        or download the official pre-built native TellyX desktop & mobile app by <span class="font-semibold text-white">Armature.TN</span> for <span class="text-rose-400 font-semibold">Windows, Linux, macOS & Android</span> with zero CORS limitations.
+                    </p>
+                </div>
+            </div>
+
+            <div class="flex items-center space-x-2 shrink-0 self-end md:self-auto">
+                <a href="index.html#downloads" class="px-3.5 py-1.5 rounded-xl bg-gradient-to-r from-rose-600 to-rose-700 hover:from-rose-500 hover:to-rose-600 text-white font-bold text-[11px] shadow-lg shadow-rose-900/30 flex items-center space-x-1.5 transition-all cursor-pointer">
+                    <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"></path>
+                    </svg>
+                    <span>Download Native App</span>
+                </a>
+                <button id="btnDismissCorsNotice" class="p-1.5 rounded-lg text-slate-400 hover:text-white hover:bg-slate-800 transition-colors cursor-pointer" title="Dismiss Notice">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                    </svg>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- MAIN STUDIO LAYOUT GRID -->
+    <main class="flex-1 max-w-7xl w-full mx-auto p-4 lg:p-6 grid grid-cols-1 lg:grid-cols-12 gap-6">
+
+        <!-- LEFT COLUMN: CINEMA VIDEO PLAYER / MULTI-VIEW & METADATA -->
+        <section class="lg:col-span-7 flex flex-col space-y-4">
+
+            <!-- SINGLE PLAYER CONTAINER -->
+            <div id="singlePlayerContainer" class="player-container relative w-full aspect-video bg-black rounded-2xl overflow-hidden border border-slate-800 shadow-2xl group">
+                
+                <!-- HTML5 VIDEO ELEMENT -->
+                <video id="videoPlayer" class="w-full h-full object-contain cursor-pointer" crossorigin="anonymous" playsinline autoplay autopictureinpicture></video>
+
+                <!-- AUDIO VISUALIZER CANVAS OVERLAY -->
+                <canvas id="audioCanvas" class="absolute inset-0 w-full h-full pointer-events-none z-10 hidden"></canvas>
+
+                <!-- UNMUTE FLOATING BANNER (Shown when video is muted or autoplay restricted) -->
+                <button id="btnUnmuteBanner" class="absolute top-4 left-1/2 -translate-x-1/2 z-30 px-4 py-2 bg-rose-600/90 hover:bg-rose-500 text-white font-bold text-xs rounded-full shadow-lg shadow-rose-600/40 backdrop-blur-md flex items-center space-x-2 transition-all transform hover:scale-105 cursor-pointer animate-pulse hidden">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5.586 15H4a1 1 0 01-1-1v-4a1 1 0 011-1h1.586l4.707-4.707C10.923 3.663 12 4.109 12 5v14c0 .891-1.077 1.337-1.707.707L5.586 15z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2"></path></svg>
+                    <span>TAP TO UNMUTE AUDIO</span>
+                </button>
+
+                <!-- TOP RIGHT FLOATING CONTROLS (Screen Cast & REC Badge) -->
+                <div class="player-top-controls absolute top-4 right-4 z-30 flex items-center space-x-2 transition-opacity duration-300">
+                    <!-- SCREEN CASTING BUTTON -->
+                    <button id="btnCastStream" class="p-2 sm:p-2.5 rounded-xl bg-slate-900/80 hover:bg-rose-600 border border-slate-700/80 text-white shadow-xl backdrop-blur-md transition-all cursor-pointer hidden group/cast" title="Screen Cast / AirPlay Stream" aria-label="Screen Cast Stream to External Screen">
+                        <svg class="w-4 h-4 sm:w-4.5 sm:h-4.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2 16.1A5 5 0 0 1 5.9 20M2 12.05A9 9 0 0 1 9.95 20M2 8V6a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2h-6M2 20h.01"></path></svg>
+                    </button>
+
+                    <!-- RECORDING INDICATOR BADGE -->
+                    <div id="recBadge" class="hidden flex items-center space-x-2 bg-rose-950/90 border border-rose-500/50 px-3 py-1 rounded-full backdrop-blur-md">
+                        <span class="w-2.5 h-2.5 rounded-full bg-rose-500 animate-rec-dot"></span>
+                        <span id="recTimer" class="text-xs font-mono font-bold text-rose-300">REC 00:00</span>
+                    </div>
+                </div>
+
+                <!-- STATS OVERLAY ("Stats for Nerds") -->
+                <div id="statsOverlay" class="absolute top-4 left-4 z-30 hidden pointer-events-none max-w-xs"></div>
+
+                <!-- FLOATING PLAYER CONTROLS OVERLAY -->
+                <div class="player-controls absolute inset-x-0 bottom-0 z-20 bg-gradient-to-t from-slate-950/95 via-slate-950/70 to-transparent p-2.5 sm:p-3.5 lg:p-4 flex flex-col space-y-2 transition-opacity duration-300">
+                    
+                    <!-- TIMELINE / SEEK BAR & TIME DISPLAY -->
+                    <div class="flex items-center space-x-2 sm:space-x-3 w-full">
+                        <span id="currentTimeDisplay" class="text-[10px] sm:text-[11px] font-mono text-slate-300 w-9 sm:w-10 text-right">00:00</span>
+                        <div class="flex-1 relative flex items-center">
+                            <input type="range" id="seekBar" min="0" max="100" value="0" class="w-full h-1.5 bg-slate-800 rounded-lg appearance-none cursor-pointer accent-rose-500 focus:outline-none">
+                        </div>
+                        <span id="durationDisplay" class="text-[10px] sm:text-[11px] font-mono font-semibold text-rose-400 w-10 sm:w-12 text-left">LIVE</span>
+                    </div>
+
+                    <!-- RESPONSIVE CONTROL BUTTONS BAR (NO CAROUSEL) -->
+                    <div class="w-full flex items-center justify-between gap-1.5 sm:gap-2 flex-wrap">
+                        <!-- Left Controls: Play/Pause, Mute/Unmute, Aspect Ratio -->
+                        <div class="flex items-center space-x-1.5 sm:space-x-2">
+                            <!-- Play/Pause Button -->
+                            <button id="btnPlayPause" class="p-1.5 sm:p-2 rounded-lg sm:rounded-xl bg-slate-900/90 hover:bg-rose-600 border border-slate-700/80 text-white transition-all cursor-pointer shrink-0" title="Play / Pause (Space)">
+                                <svg id="iconPlay" class="w-3.5 h-3.5 sm:w-4 sm:h-4 md:w-4.5 md:h-4.5 hidden" fill="currentColor" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
+                                <svg id="iconPause" class="w-3.5 h-3.5 sm:w-4 sm:h-4 md:w-4.5 md:h-4.5" fill="currentColor" viewBox="0 0 24 24"><path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z"/></svg>
+                            </button>
+
+                            <!-- Vertical Volume Control Container (Speaker Icon Button) -->
+                            <div class="relative flex items-center shrink-0">
+                                <button id="btnToggleMute" class="p-1.5 sm:p-2 rounded-lg sm:rounded-xl bg-slate-900/90 hover:bg-slate-800 border border-slate-700/80 text-rose-400 hover:text-white transition-all cursor-pointer" title="Volume Control & Mute">
+                                    <svg id="iconMute" class="w-3.5 h-3.5 sm:w-4 sm:h-4 md:w-4.5 md:h-4.5 hidden" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5.586 15H4a1 1 0 01-1-1v-4a1 1 0 011-1h1.586l4.707-4.707C10.923 3.663 12 4.109 12 5v14c0 .891-1.077 1.337-1.707.707L5.586 15z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2"></path></svg>
+                                    <svg id="iconVolume" class="w-3.5 h-3.5 sm:w-4 sm:h-4 md:w-4.5 md:h-4.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.536 8.464a5 5 0 010 7.072m2.828-9.9a9 9 0 010 12.728M5.586 15H4a1 1 0 01-1-1v-4a1 1 0 011-1h1.586l4.707-4.707C10.923 3.663 12 4.109 12 5v14c0 .891-1.077 1.337-1.707.707L5.586 15z"></path></svg>
+                                </button>
+                            </div>
+
+                            <!-- Aspect Ratio Selector -->
+                            <select id="aspectRatioSelect" class="bg-slate-900/90 border border-slate-700 text-[10px] sm:text-[11px] text-slate-200 rounded-lg sm:rounded-xl px-1.5 sm:px-2 py-1 sm:py-1.5 focus:outline-none cursor-pointer shrink-0" title="Screen Aspect Ratio">
+                                <option value="16:9">16:9 Widescreen</option>
+                                <option value="4:3">4:3 TV</option>
+                                <option value="21:9">21:9 Cinema</option>
+                                <option value="fill">Fill Screen</option>
+                                <option value="cover">Center Cover</option>
+                            </select>
+                        </div>
+
+                        <!-- Right Controls: Visualizer, DVR, Quad, PiP, Fullscreen -->
+                        <div class="flex items-center space-x-1 sm:space-x-1.5 shrink-0">
+                            <!-- Audio Spectrum Visualizer Button -->
+                            <button id="btnToggleVisualizer" class="p-1.5 sm:p-2 rounded-lg sm:rounded-xl bg-slate-900/90 border border-slate-700/80 text-rose-400 hover:bg-rose-950/60 hover:text-rose-300 transition-all cursor-pointer shrink-0" title="Audio Spectrum Visualizer (V)" aria-label="Toggle Audio Spectrum Visualizer">
+                                <svg class="w-3.5 h-3.5 sm:w-4 sm:h-4 md:w-4.5 md:h-4.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19V6l12-3v13M9 19c0 1.105-1.343 2-3 2s-3-.895-3-2 1.343-2 3-2 3 .895 3 2zm12-3c0 1.105-1.343 2-3 2s-3-.895-3-2 1.343-2 3-2 3 .895 3 2zM9 10l12-3"></path></svg>
+                            </button>
+
+                            <button id="btnRecordStream" class="p-1.5 sm:p-2 rounded-lg sm:rounded-xl bg-slate-900/90 hover:bg-rose-950/60 border border-slate-700/80 text-rose-400 hover:text-rose-300 transition-all cursor-pointer shrink-0" title="Record Live Stream (DVR)">
+                                <svg class="w-3.5 h-3.5 sm:w-4 sm:h-4 md:w-4.5 md:h-4.5 text-rose-500 fill-rose-500" viewBox="0 0 24 24"><circle cx="12" cy="12" r="8"></circle></svg>
+                            </button>
+
+                            <!-- Pin Active Channel to Multi-Screen Slot -->
+                            <div class="relative shrink-0">
+                                <button id="btnPinToMulti" class="p-1.5 sm:p-2 rounded-lg sm:rounded-xl bg-slate-900/90 border border-slate-700/80 text-amber-400 hover:bg-amber-950/60 hover:text-amber-300 cursor-pointer transition-all" title="Pin Active Channel to Multi-Screen Slot">
+                                    <svg class="w-3.5 h-3.5 sm:w-4 sm:h-4 md:w-4.5 md:h-4.5 text-amber-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 17v5m-3.5-9.5L7 11V6l2-2h6l2 2v5l-1.5 1.5M7 11h10"></path></svg>
+                                </button>
+                                <!-- Dropdown Menu for Slot Pinning -->
+                                <div id="pinSlotMenu" class="absolute bottom-full right-0 mb-2 w-60 bg-slate-900/95 backdrop-blur-md border border-slate-700/80 rounded-xl shadow-2xl p-2 hidden z-50 space-y-1">
+                                    <div id="pinSlotMenuHeader" class="text-[10px] font-bold text-slate-400 uppercase tracking-wider px-2 py-1 border-b border-slate-800">Pin Channel To Slot</div>
+                                    <button data-pin-slot="0" class="btn-pin-slot w-full text-left px-2.5 py-1.5 rounded-lg text-xs font-medium text-slate-200 hover:bg-rose-600 hover:text-white flex items-center justify-between cursor-pointer">
+                                        <span>Screen 1 (Main)</span>
+                                        <span class="text-[9px] text-amber-400 font-mono">Slot 1</span>
+                                    </button>
+                                    <button data-pin-slot="1" class="btn-pin-slot w-full text-left px-2.5 py-1.5 rounded-lg text-xs font-medium text-slate-200 hover:bg-rose-600 hover:text-white flex items-center justify-between cursor-pointer">
+                                        <span>Screen 2</span>
+                                        <span class="text-[9px] text-amber-400 font-mono">Slot 2</span>
+                                    </button>
+                                    <button data-pin-slot="2" class="btn-pin-slot w-full text-left px-2.5 py-1.5 rounded-lg text-xs font-medium text-slate-200 hover:bg-rose-600 hover:text-white flex items-center justify-between cursor-pointer">
+                                        <span>Screen 3</span>
+                                        <span class="text-[9px] text-amber-400 font-mono">Slot 3</span>
+                                    </button>
+                                    <button data-pin-slot="3" class="btn-pin-slot w-full text-left px-2.5 py-1.5 rounded-lg text-xs font-medium text-slate-200 hover:bg-rose-600 hover:text-white flex items-center justify-between cursor-pointer">
+                                        <span>Screen 4</span>
+                                        <span class="text-[9px] text-amber-400 font-mono">Slot 4</span>
+                                    </button>
+                                </div>
+                            </div>
+
+                            <button id="btnToggleMultiView" class="p-1.5 sm:p-2 rounded-lg sm:rounded-xl bg-slate-900/90 border border-slate-700/80 text-rose-400 hover:bg-rose-950/60 hover:text-rose-300 cursor-pointer transition-all shrink-0" title="Multi-Screen View">
+                                <svg class="w-3.5 h-3.5 sm:w-4 sm:h-4 md:w-4.5 md:h-4.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z"></path></svg>
+                            </button>
+
+                            <!-- EPG Matrix Schedule Guide Button -->
+                            <button id="btnPlayerEPG" class="p-1.5 sm:p-2 rounded-lg sm:rounded-xl bg-slate-900/90 border border-slate-700/80 text-cyan-400 hover:bg-cyan-950/60 hover:text-cyan-300 cursor-pointer transition-all shrink-0" title="EPG TV Guide Matrix (G)">
+                                <svg class="w-3.5 h-3.5 sm:w-4 sm:h-4 md:w-4.5 md:h-4.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg>
+                            </button>
+
+                            <button id="btnTogglePip" class="p-1.5 sm:p-2 rounded-lg sm:rounded-xl bg-slate-900/90 hover:bg-slate-800 border border-slate-700/80 text-slate-300 hover:text-white transition-all cursor-pointer shrink-0" title="Picture-in-Picture">
+                                <svg class="w-3.5 h-3.5 sm:w-4 sm:h-4 md:w-4.5 md:h-4.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"></path></svg>
+                            </button>
+
+                            <!-- Fullscreen Toggle Button -->
+                            <button id="btnToggleFullscreen" class="p-1.5 sm:p-2 rounded-lg sm:rounded-xl bg-slate-900/90 border border-slate-700/80 text-slate-300 hover:bg-slate-800 hover:text-white transition-all cursor-pointer shrink-0" title="Fullscreen Mode (F)">
+                                <svg class="w-3.5 h-3.5 sm:w-4 sm:h-4 md:w-4.5 md:h-4.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 8V4m0 0h4M4 4l5 5m11-1V4m0 0h-4m4 4l-5 5M4 16v4m0 0h4m-4 0l5-5m11 5l-5-5m5 5v-4m0 4h-4"></path></svg>
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Floating Vertical Volume Slider Popup -->
+                    <div id="volumePopup" class="absolute hidden z-50 p-3 bg-slate-900/95 backdrop-blur-md border border-slate-700/80 rounded-xl shadow-2xl flex flex-col items-center space-y-2.5 w-16 transition-all">
+                        <span id="volumePercent" class="text-[11px] font-mono font-bold text-rose-400">100%</span>
+                        <div class="h-28 flex items-center justify-center py-1">
+                            <input type="range" id="volumeSlider" min="0" max="1" step="0.01" value="1" orient="vertical" class="accent-rose-500 cursor-pointer h-24 w-2" style="writing-mode: vertical-lr; direction: rtl;" title="Volume">
+                        </div>
+                        <button id="btnPopupMute" class="p-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 border border-slate-700 text-slate-300 hover:text-white transition-all cursor-pointer w-full flex items-center justify-center" title="Mute/Unmute Audio" aria-label="Mute or Unmute Audio">
+                            <svg id="popupIconMute" class="w-4 h-4 text-rose-400 hidden" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5.586 15H4a1 1 0 01-1-1v-4a1 1 0 011-1h1.586l4.707-4.707C10.923 3.663 12 4.109 12 5v14c0 .891-1.077 1.337-1.707.707L5.586 15z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2"></path></svg>
+                            <svg id="popupIconVolume" class="w-4 h-4 text-slate-300" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.536 8.464a5 5 0 010 7.072m2.828-9.9a9 9 0 010 12.728M5.586 15H4a1 1 0 01-1-1v-4a1 1 0 011-1h1.586l4.707-4.707C10.923 3.663 12 4.109 12 5v14c0 .891-1.077 1.337-1.707.707L5.586 15z"></path></svg>
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- MULTI-SCREEN QUAD VIEW CONTAINER (Hidden by default) -->
+            <div id="multiViewContainer" class="relative w-full aspect-video bg-slate-950 rounded-2xl overflow-hidden border border-slate-800 shadow-2xl flex flex-col hidden">
+                <!-- MULTI-VIEW TOP TOOLBAR -->
+                <div class="shrink-0 z-30 bg-slate-900/95 backdrop-blur-md px-4 py-2 border-b border-slate-800 flex items-center justify-between">
+                    <div class="flex items-center space-x-2">
+                        <span class="w-2.5 h-2.5 rounded-full bg-rose-500 animate-pulse"></span>
+                        <span id="multiViewHeaderTitle" class="text-xs font-bold text-white tracking-wide uppercase">Multi-Screen</span>
+                        <span id="activeSlotIndicator" class="text-[10px] font-mono text-rose-400 bg-rose-500/10 px-2 py-0.5 rounded border border-rose-500/20">Target: Screen 1</span>
+                    </div>
+                    <div class="flex items-center space-x-2">
+                        <span class="text-[10px] text-slate-400 hidden sm:inline">Click slot to select target | Double-click to expand</span>
+                        <button id="btnExitMultiView" class="px-3 py-1 bg-rose-600 hover:bg-rose-500 text-white rounded-lg text-xs font-bold transition-all shadow-lg shadow-rose-600/30 flex items-center space-x-1 cursor-pointer">
+                            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path></svg>
+                            <span>Return to Single View</span>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- DYNAMIC MULTI-SCREEN GRID -->
+                <div id="multiViewGrid" class="flex-1 min-h-0 h-full w-full grid grid-cols-2 grid-rows-2 gap-1.5 p-1.5 bg-slate-950 overflow-hidden">
+                    <!-- SLOT 1 -->
+                    <div data-slot-index="0" class="quad-slot-box relative h-full w-full min-h-0 min-w-0 bg-black rounded-xl overflow-hidden border-2 border-rose-500 shadow-md group cursor-pointer transition-all">
+                        <div class="absolute top-2 left-2 z-20 flex items-center space-x-1">
+                            <span class="px-2 py-0.5 rounded text-[10px] font-bold bg-rose-600 text-white shadow">Screen 1</span>
+                            <span id="slotTitle0" class="px-2 py-0.5 rounded text-[10px] font-medium bg-slate-900/80 text-slate-200 backdrop-blur-sm truncate max-w-[110px]">Main Stream</span>
+                        </div>
+                        <div class="absolute top-2 right-2 z-20 flex items-center space-x-1 opacity-0 group-hover:opacity-100 transition-opacity">
+                            <button data-expand-slot="0" class="btn-expand-slot p-1 bg-slate-900/90 hover:bg-rose-600 text-white rounded-md text-[10px] transition-colors cursor-pointer" title="Expand to Single View">
+                                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 8V4m0 0h4M4 4l5 5m11-1V4m0 0h-4m4 4l-5 5M4 16v4m0 0h4m-4 0l5-5m11 5l-5-5m5 5v-4m0 4h-4"></path></svg>
+                            </button>
+                            <button data-audio-slot="0" class="btn-audio-slot p-1 bg-slate-900/90 hover:bg-emerald-600 text-white rounded-md text-[10px] transition-colors cursor-pointer" title="Enable Audio for Slot 1">
+                                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.536 8.464a5 5 0 010 7.072m2.828-9.9a9 9 0 010 12.728M5.586 15H4a1 1 0 01-1-1v-4a1 1 0 011-1h1.586l4.707-4.707C10.923 3.663 12 4.109 12 5v14c0 .891-1.077 1.337-1.707.707L5.586 15z"></path></svg>
+                            </button>
+                        </div>
+                        <video id="multiVideo1" class="absolute inset-0 w-full h-full object-contain pointer-events-none" crossorigin="anonymous" playsinline autoplay muted autopictureinpicture></video>
+                    </div>
+
+                    <!-- SLOT 2 -->
+                    <div data-slot-index="1" class="quad-slot-box relative h-full w-full min-h-0 min-w-0 bg-black rounded-xl overflow-hidden border border-slate-800 hover:border-slate-600 group cursor-pointer transition-all">
+                        <div class="absolute top-2 left-2 z-20 flex items-center space-x-1">
+                            <span class="px-2 py-0.5 rounded text-[10px] font-bold bg-slate-800 text-slate-300">Screen 2</span>
+                            <span id="slotTitle1" class="px-2 py-0.5 rounded text-[10px] font-medium bg-slate-900/80 text-slate-200 backdrop-blur-sm truncate max-w-[110px]">Empty</span>
+                        </div>
+                        <div class="absolute top-2 right-2 z-20 flex items-center space-x-1 opacity-0 group-hover:opacity-100 transition-opacity">
+                            <button data-expand-slot="1" class="btn-expand-slot p-1 bg-slate-900/90 hover:bg-rose-600 text-white rounded-md text-[10px] transition-colors cursor-pointer" title="Expand to Single View">
+                                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 8V4m0 0h4M4 4l5 5m11-1V4m0 0h-4m4 4l-5 5M4 16v4m0 0h4m-4 0l5-5m11 5l-5-5m5 5v-4m0 4h-4"></path></svg>
+                            </button>
+                            <button data-audio-slot="1" class="btn-audio-slot p-1 bg-slate-900/90 hover:bg-emerald-600 text-white rounded-md text-[10px] transition-colors cursor-pointer" title="Enable Audio for Slot 2">
+                                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.536 8.464a5 5 0 010 7.072m2.828-9.9a9 9 0 010 12.728M5.586 15H4a1 1 0 01-1-1v-4a1 1 0 011-1h1.586l4.707-4.707C10.923 3.663 12 4.109 12 5v14c0 .891-1.077 1.337-1.707.707L5.586 15z"></path></svg>
+                            </button>
+                        </div>
+                        <video id="multiVideo2" class="absolute inset-0 w-full h-full object-contain pointer-events-none" crossorigin="anonymous" playsinline autoplay muted autopictureinpicture></video>
+                    </div>
+
+                    <!-- SLOT 3 -->
+                    <div data-slot-index="2" class="quad-slot-box relative h-full w-full min-h-0 min-w-0 bg-black rounded-xl overflow-hidden border border-slate-800 hover:border-slate-600 group cursor-pointer transition-all">
+                        <div class="absolute top-2 left-2 z-20 flex items-center space-x-1">
+                            <span class="px-2 py-0.5 rounded text-[10px] font-bold bg-slate-800 text-slate-300">Screen 3</span>
+                            <span id="slotTitle2" class="px-2 py-0.5 rounded text-[10px] font-medium bg-slate-900/80 text-slate-200 backdrop-blur-sm truncate max-w-[110px]">Empty</span>
+                        </div>
+                        <div class="absolute top-2 right-2 z-20 flex items-center space-x-1 opacity-0 group-hover:opacity-100 transition-opacity">
+                            <button data-expand-slot="2" class="btn-expand-slot p-1 bg-slate-900/90 hover:bg-rose-600 text-white rounded-md text-[10px] transition-colors cursor-pointer" title="Expand to Single View">
+                                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 8V4m0 0h4M4 4l5 5m11-1V4m0 0h-4m4 4l-5 5M4 16v4m0 0h4m-4 0l5-5m11 5l-5-5m5 5v-4m0 4h-4"></path></svg>
+                            </button>
+                            <button data-audio-slot="2" class="btn-audio-slot p-1 bg-slate-900/90 hover:bg-emerald-600 text-white rounded-md text-[10px] transition-colors cursor-pointer" title="Enable Audio for Slot 3">
+                                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.536 8.464a5 5 0 010 7.072m2.828-9.9a9 9 0 010 12.728M5.586 15H4a1 1 0 01-1-1v-4a1 1 0 011-1h1.586l4.707-4.707C10.923 3.663 12 4.109 12 5v14c0 .891-1.077 1.337-1.707.707L5.586 15z"></path></svg>
+                            </button>
+                        </div>
+                        <video id="multiVideo3" class="absolute inset-0 w-full h-full object-contain pointer-events-none" crossorigin="anonymous" playsinline autoplay muted autopictureinpicture></video>
+                    </div>
+
+                    <!-- SLOT 4 -->
+                    <div data-slot-index="3" class="quad-slot-box relative h-full w-full min-h-0 min-w-0 bg-black rounded-xl overflow-hidden border border-slate-800 hover:border-slate-600 group cursor-pointer transition-all">
+                        <div class="absolute top-2 left-2 z-20 flex items-center space-x-1">
+                            <span class="px-2 py-0.5 rounded text-[10px] font-bold bg-slate-800 text-slate-300">Screen 4</span>
+                            <span id="slotTitle3" class="px-2 py-0.5 rounded text-[10px] font-medium bg-slate-900/80 text-slate-200 backdrop-blur-sm truncate max-w-[110px]">Empty</span>
+                        </div>
+                        <div class="absolute top-2 right-2 z-20 flex items-center space-x-1 opacity-0 group-hover:opacity-100 transition-opacity">
+                            <button data-expand-slot="3" class="btn-expand-slot p-1 bg-slate-900/90 hover:bg-rose-600 text-white rounded-md text-[10px] transition-colors cursor-pointer" title="Expand to Single View">
+                                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 8V4m0 0h4M4 4l5 5m11-1V4m0 0h-4m4 4l-5 5M4 16v4m0 0h4m-4 0l5-5m11 5l-5-5m5 5v-4m0 4h-4"></path></svg>
+                            </button>
+                            <button data-audio-slot="3" class="btn-audio-slot p-1 bg-slate-900/90 hover:bg-emerald-600 text-white rounded-md text-[10px] transition-colors cursor-pointer" title="Enable Audio for Slot 4">
+                                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.536 8.464a5 5 0 010 7.072m2.828-9.9a9 9 0 010 12.728M5.586 15H4a1 1 0 01-1-1v-4a1 1 0 011-1h1.586l4.707-4.707C10.923 3.663 12 4.109 12 5v14c0 .891-1.077 1.337-1.707.707L5.586 15z"></path></svg>
+                            </button>
+                        </div>
+                        <video id="multiVideo4" class="absolute inset-0 w-full h-full object-contain pointer-events-none" crossorigin="anonymous" playsinline autoplay muted autopictureinpicture></video>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ACTIVE STREAM METADATA BANNER (NOW PLAYING BOX) -->
+            <div id="nowPlayingBox" class="glass-panel p-4 rounded-2xl flex items-center justify-between shadow-xl relative border border-slate-800/80 transition-all bg-slate-900/80 backdrop-blur-md">
+                <div class="flex items-center space-x-4 min-w-0 pr-24 flex-1">
+                    <div id="nowPlayingLogoWrapper" class="relative flex-shrink-0">
+                        <img id="nowPlayingLogo" src="" alt="Channel Logo" class="w-12 h-12 rounded-xl bg-slate-950 border border-slate-800 p-1 object-contain hidden" onError="this.classList.add('hidden'); const fb=document.getElementById('nowPlayingLogoFallback'); if(fb) fb.classList.remove('hidden');">
+                        <div id="nowPlayingLogoFallback" class="w-12 h-12 rounded-xl bg-rose-500/10 border border-rose-500/20 flex items-center justify-center text-rose-400 font-bold text-lg">
+                            <svg class="w-6 h-6 text-rose-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z"></path></svg>
+                        </div>
+                    </div>
+                    <div class="min-w-0 flex-1">
+                        <div class="flex items-center space-x-2">
+                            <span id="nowPlayingGroup" class="text-[10px] font-bold text-rose-400 bg-rose-500/10 px-2 py-0.5 rounded border border-rose-500/20">General</span>
+                            <span id="nowPlayingLiveBadge" class="inline-flex items-center text-[10px] text-emerald-400 font-semibold"><span class="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-ping mr-1"></span> LIVE</span>
+                        </div>
+                        <h2 id="nowPlayingTitle" class="text-base font-bold text-white truncate mt-0.5">Select a channel to play</h2>
+                        <div class="flex items-center space-x-2 mt-0.5">
+                            <p id="nowPlayingShow" class="text-xs text-slate-400 truncate">EPG schedule details will appear here</p>
+                            <span id="nowPlayingTime" class="text-[10px] text-slate-500 flex-shrink-0 font-mono"></span>
+                        </div>
+                        <!-- EPG SHOW PROGRESS BAR -->
+                        <div class="w-full bg-slate-800/80 rounded-full h-1.5 mt-2 overflow-hidden border border-slate-800/80">
+                            <div id="nowPlayingProgress" class="bg-gradient-to-r from-rose-500 to-amber-500 h-full rounded-full transition-all duration-300" style="width: 0%;"></div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- TOP RIGHT ACTION BUTTONS: EPG & FAVORITES -->
+                <div class="flex items-center space-x-2 absolute top-3.5 right-3.5">
+                    <!-- EPG PROGRAM SCHEDULE BUTTON (Left of Favorites) -->
+                    <button id="btnNowPlayingEpg" class="p-2 rounded-xl bg-slate-800/90 hover:bg-slate-700 border border-slate-700/80 text-slate-300 hover:text-rose-400 transition-all cursor-pointer flex-shrink-0" title="View Channel EPG Program Schedule" aria-label="View Channel EPG Program Schedule">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg>
+                    </button>
+
+                    <!-- FAVORITES TOGGLE BUTTON -->
+                    <button id="btnNowPlayingFav" class="p-2 rounded-xl bg-slate-800/90 hover:bg-slate-700 border border-slate-700/80 text-slate-300 hover:text-amber-400 transition-all cursor-pointer flex-shrink-0" title="Add to Favorites" aria-label="Add to Favorites">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11.049 2.927c.3-.921 1.603-.921 1.902 0l1.519 4.674a1 1 0 00.95.69h4.915c.969 0 1.371 1.24.588 1.81l-3.976 2.888a1 1 0 00-.363 1.118l1.518 4.674c.3.922-.755 1.688-1.538 1.118l-3.976-2.888a1 1 0 00-1.176 0l-3.976 2.888c-.783.57-1.838-.197-1.538-1.118l1.518-4.674a1 1 0 00-.363-1.118l-3.976-2.888c-.784-.57-.38-1.81.588-1.81h4.914a1 1 0 00.951-.69l1.519-4.674z"></path></svg>
+                    </button>
+                </div>
+            </div>
+
+            <!-- KEYBOARD SHORTCUTS & TV REMOTE QUICK GUIDE -->
+            <div class="p-3.5 rounded-xl bg-slate-900/40 border border-slate-800/60 text-[11px] text-slate-400 grid grid-cols-2 sm:grid-cols-4 gap-2">
+                <div><span class="font-bold text-slate-200">Space</span> : Play / Pause</div>
+                <div><span class="font-bold text-slate-200">F</span> : Fullscreen</div>
+                <div><span class="font-bold text-slate-200">M</span> : Mute Sound</div>
+                <div><span class="font-bold text-slate-200">G</span> : EPG Matrix</div>
+            </div>
+
+        </section>
+
+        <!-- RIGHT COLUMN: SEARCH, CATEGORY FILTERS, SORTING & CHANNEL CARDS GRID -->
+        <section class="lg:col-span-5 flex flex-col space-y-3">
+            
+            <!-- SEARCH BAR (ON TOP OF SORT) -->
+            <div class="relative w-full">
+                <svg class="w-4 h-4 text-rose-400/70 absolute left-3.5 top-1/2 -translate-y-1/2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg>
+                <input type="text" id="searchInput" placeholder="Search channels or categories..." class="w-full bg-slate-900/90 border border-rose-900/40 rounded-xl pl-10 pr-8 py-2 text-xs text-slate-200 placeholder-rose-300/40 focus:outline-none focus:border-rose-500 focus:ring-1 focus:ring-rose-500 transition-all shadow-inner" autocomplete="off">
+                <button id="btnClearSearch" class="hidden absolute right-2.5 top-1/2 -translate-y-1/2 text-slate-400 hover:text-white p-1 rounded-full cursor-pointer" title="Clear Search">
+                    <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+                </button>
+
+                <!-- Instant Search Results Dropdown -->
+                <div id="searchResultsDropdown" class="hidden absolute left-0 right-0 top-full mt-2 bg-slate-900/95 backdrop-blur-md border border-slate-700/80 rounded-xl shadow-2xl overflow-hidden z-50 divide-y divide-slate-800/80">
+                    <!-- Categories Section -->
+                    <div id="searchDropdownCategories" class="p-2 space-y-1">
+                        <div class="text-[10px] font-bold text-rose-400 uppercase tracking-wider px-2 py-1 flex items-center justify-between">
+                            <span>Matching Categories</span>
+                            <span id="categoryMatchCount" class="text-[9px] text-slate-400 font-mono"></span>
+                        </div>
+                        <div id="categoryMatchList" class="space-y-1"></div>
+                    </div>
+                    <!-- Channels Section -->
+                    <div id="searchDropdownChannels" class="p-2 space-y-1">
+                        <div class="text-[10px] font-bold text-amber-400 uppercase tracking-wider px-2 py-1 flex items-center justify-between">
+                            <span>Matching Channels</span>
+                            <span id="channelMatchCount" class="text-[9px] text-slate-400 font-mono"></span>
+                        </div>
+                        <div id="channelMatchList" class="space-y-1 max-h-48 overflow-y-auto"></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- SORTING & GROUP CONTROLS BAR -->
+            <div class="flex items-center justify-between space-x-2">
+                <select id="sortChannelsSelect" class="bg-slate-900/90 border border-slate-800 rounded-xl px-3 py-1.5 text-xs text-slate-300 focus:outline-none focus:border-rose-500 cursor-pointer w-full">
+                    <option value="default">Sort: Default Order</option>
+                    <option value="name">Sort: Name (A-Z)</option>
+                    <option value="group">Sort: Group Title</option>
+                    <option value="favorites">Sort: Favorites First</option>
+                </select>
+            </div>
+
+            <!-- CATEGORY CAROUSEL UNDER SORT SELECT -->
+            <div class="relative flex items-center group/cat-carousel my-0.5">
+                <!-- Scroll Left Control Button -->
+                <button id="btnCatScrollLeft" class="absolute left-0 z-10 p-1.5 rounded-l-xl bg-slate-900/95 hover:bg-slate-800 border border-slate-700/80 text-rose-400 hover:text-white transition-all shadow-xl cursor-pointer opacity-90 hover:opacity-100 flex items-center justify-center shrink-0 -translate-x-1" title="Scroll Left (Categories)">
+                    <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M15 19l-7-7 7-7"></path></svg>
+                </button>
+
+                <!-- Scrollable Category Track Carousel -->
+                <div id="categoryList" class="flex items-center space-x-2 overflow-x-auto py-1 px-7 scrollbar-none no-scrollbar scroll-smooth w-full select-none">
+                    <!-- Dynamically populated categories -->
+                </div>
+
+                <!-- Scroll Right Control Button -->
+                <button id="btnCatScrollRight" class="absolute right-0 z-10 p-1.5 rounded-r-xl bg-slate-900/95 hover:bg-slate-800 border border-slate-700/80 text-rose-400 hover:text-white transition-all shadow-xl cursor-pointer opacity-90 hover:opacity-100 flex items-center justify-center shrink-0 translate-x-1" title="Scroll Right (Categories)">
+                    <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M9 5l7 7-7 7"></path></svg>
+                </button>
+            </div>
+
+            <!-- CHANNEL CARDS GRID CONTAINER -->
+            <div id="channelGrid" class="grid grid-cols-1 sm:grid-cols-2 gap-3 content-start auto-rows-max min-h-[220px] max-h-[620px] overflow-y-auto pr-1">
+                <!-- Dynamically populated channel cards -->
+            </div>
+
+        </section>
+
+    </main>
+
+    <!-- MODAL: PLAYLIST MANAGER & CONNECTION DIALOG (M3U & XTREAM CODES API) -->
+    <div id="playlistModal" class="fixed inset-0 z-50 bg-slate-950/90 backdrop-blur-md flex items-center justify-center p-3 sm:p-4 overflow-y-auto hidden">
+        <div class="bg-slate-900 border border-rose-900/60 rounded-2xl max-w-lg w-full p-5 sm:p-6 shadow-2xl relative space-y-5 my-auto max-h-[85vh] overflow-y-auto">
+            <div class="flex items-center justify-between border-b border-rose-950/80 pb-3">
+                <div class="flex items-center space-x-3">
+                    <div class="w-8 h-8 rounded-lg bg-rose-950 border border-rose-500/40 flex items-center justify-center">
+                        <svg class="w-5 h-5 text-rose-500" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M8 3l4 4 4-4"/><rect x="2" y="7" width="20" height="14" rx="3"/><polygon points="10,11 16,14 10,17" fill="currentColor"/></svg>
+                    </div>
+                    <div>
+                        <h3 class="text-base font-extrabold text-white">TellyX Connection Setup</h3>
+                        <p class="text-[11px] text-rose-300/70">Connect your IPTV service or load playlist to start watching</p>
+                    </div>
+                </div>
+                <button id="btnClosePlaylist" class="text-slate-400 hover:text-white cursor-pointer text-2xl leading-none">&times;</button>
+            </div>
+
+            <!-- TAB HEADERS: M3U URL vs XTREAM CODES vs FILE -->
+            <div class="flex bg-slate-950 p-1 rounded-xl border border-rose-950">
+                <button id="tabM3u" class="flex-1 py-1.5 text-xs font-semibold text-white bg-rose-600 rounded-lg cursor-pointer transition-all">M3U Playlist</button>
+                <button id="tabXtream" class="flex-1 py-1.5 text-xs font-semibold text-slate-400 hover:text-white rounded-lg cursor-pointer transition-all">Xtream Codes API</button>
+                <button id="tabFile" class="flex-1 py-1.5 text-xs font-semibold text-slate-400 hover:text-white rounded-lg cursor-pointer transition-all">Local File</button>
+            </div>
+
+            <!-- TAB 1: M3U URL -->
+            <div id="paneM3u" class="space-y-3">
+                <form id="formM3uUrl" class="space-y-3">
+                    <label class="text-xs font-semibold text-slate-300">Import M3U / M3U8 Playlist URL</label>
+                    <div class="flex space-x-2">
+                        <input type="url" id="inputM3uUrl" placeholder="https://provider.com/playlist.m3u8" class="flex-1 bg-slate-950 border border-rose-950 rounded-xl px-3 py-2 text-xs text-white focus:outline-none focus:border-rose-500">
+                        <button type="submit" class="px-4 py-2 bg-rose-600 hover:bg-rose-500 text-white rounded-xl text-xs font-semibold transition-colors cursor-pointer">Load Playlist</button>
+                    </div>
+                </form>
+            </div>
+
+            <!-- TAB 2: XTREAM CODES API -->
+            <div id="paneXtream" class="space-y-3 hidden">
+                <form id="formXtream" class="space-y-3 text-xs">
+                    <div>
+                        <label class="block font-semibold text-slate-300 mb-1">Xtream Server URL</label>
+                        <input type="url" id="xtreamServer" placeholder="http://my-iptv-server.com:8080" class="w-full bg-slate-950 border border-rose-950 rounded-xl px-3 py-2 text-white focus:outline-none focus:border-rose-500">
+                    </div>
+                    <div class="grid grid-cols-2 gap-3">
+                        <div>
+                            <label class="block font-semibold text-slate-300 mb-1">Username</label>
+                            <input type="text" id="xtreamUser" placeholder="Username" class="w-full bg-slate-950 border border-rose-950 rounded-xl px-3 py-2 text-white focus:outline-none focus:border-rose-500">
+                        </div>
+                        <div>
+                            <label class="block font-semibold text-slate-300 mb-1">Password</label>
+                            <input type="password" id="xtreamPass" placeholder="••••••••" class="w-full bg-slate-950 border border-rose-950 rounded-xl px-3 py-2 text-white focus:outline-none focus:border-rose-500">
+                        </div>
+                    </div>
+                    <button type="submit" class="w-full py-2.5 bg-gradient-to-r from-rose-600 to-red-700 hover:from-rose-500 hover:to-red-600 text-white rounded-xl font-bold transition-all cursor-pointer shadow-lg shadow-rose-600/30">Connect Xtream Account</button>
+                </form>
+            </div>
+
+            <!-- TAB 3: LOCAL FILE -->
+            <div id="paneFile" class="space-y-3 hidden">
+                <label class="block text-xs font-semibold text-slate-300 mb-1">Select Local M3U File</label>
+                <input type="file" id="inputM3uFile" accept=".m3u,.m3u8,.txt" class="block w-full text-xs text-slate-400 file:mr-3 file:py-2 file:px-4 file:rounded-xl file:border-0 file:text-xs file:font-semibold file:bg-rose-950 file:text-rose-300 hover:file:bg-rose-900 cursor-pointer">
+            </div>
+
+            <div class="border-t border-slate-800/80 pt-3 flex justify-end items-center">
+                <button id="btnResetDefaults" class="text-xs font-medium text-slate-400 hover:text-rose-400 cursor-pointer flex items-center space-x-1 transition-colors">
+                    <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
+                    <span>Clear Loaded Channels</span>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL: EPG TV GUIDE MATRIX (TIMELINE) -->
+    <div id="epgModal" class="fixed inset-0 z-50 bg-slate-950/85 backdrop-blur-md flex items-center justify-center p-3 sm:p-4 overflow-y-auto hidden">
+        <div class="bg-slate-900 border border-slate-800 rounded-2xl max-w-5xl w-full p-4 sm:p-6 shadow-2xl relative space-y-4 my-auto max-h-[88vh] flex flex-col overflow-y-auto">
+            <div class="flex items-center justify-between border-b border-slate-800 pb-3 flex-shrink-0">
+                <div class="flex items-center space-x-3">
+                    <h3 class="text-base font-bold text-white flex items-center space-x-2">
+                        <svg class="w-5 h-5 text-indigo-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg>
+                        <span>Electronic Program Guide Matrix</span>
+                    </h3>
+                </div>
+                <button id="btnCloseEPG" class="text-slate-400 hover:text-white cursor-pointer text-xl">&times;</button>
+            </div>
+
+            <!-- EPG FILTER CONTROLS BAR: SEARCH, CATEGORY & SORT -->
+            <div class="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-2.5 pb-1 flex-shrink-0">
+                <!-- Search Input -->
+                <div class="relative flex-1 min-w-[200px]">
+                    <svg class="w-4 h-4 text-rose-400/70 absolute left-3 top-1/2 -translate-y-1/2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg>
+                    <input type="text" id="epgSearchInput" placeholder="Search EPG channels..." class="w-full bg-slate-950/90 border border-rose-900/40 rounded-xl pl-9 pr-8 py-1.5 text-xs text-slate-200 placeholder-slate-500 focus:outline-none focus:border-rose-500 transition-all shadow-inner" autocomplete="off">
+                    <button id="epgBtnClearSearch" class="hidden absolute right-2.5 top-1/2 -translate-y-1/2 text-slate-400 hover:text-white p-0.5 rounded-full cursor-pointer" title="Clear Search">
+                        <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+                    </button>
+                </div>
+
+                <div class="flex items-center space-x-2 shrink-0">
+                    <!-- Category Select -->
+                    <select id="epgCategorySelect" class="bg-slate-950/90 border border-slate-800 rounded-xl px-3 py-1.5 text-xs text-slate-200 focus:outline-none focus:border-rose-500 cursor-pointer max-w-[180px] sm:max-w-[220px] truncate" title="Filter EPG by Category">
+                        <!-- Populated dynamically with categories -->
+                    </select>
+
+                    <!-- Sort Select -->
+                    <select id="epgSortSelect" class="bg-slate-950/90 border border-slate-800 rounded-xl px-3 py-1.5 text-xs text-slate-200 focus:outline-none focus:border-rose-500 cursor-pointer" title="Sort EPG Channels">
+                        <option value="default">Sort: Default Order</option>
+                        <option value="name">Sort: Name (A-Z)</option>
+                        <option value="group">Sort: Group Title</option>
+                        <option value="favorites">Sort: Favorites First</option>
+                    </select>
+                </div>
+            </div>
+
+            <!-- EPG TIMELINE MATRIX GRID -->
+            <div id="epgGrid" class="flex-1 overflow-auto rounded-xl border border-slate-800 bg-slate-950/90 relative min-h-[300px]">
+                <!-- Dynamically rendered horizontal matrix timeline -->
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL: CHANNEL SPECIFIC EPG PROGRAM SCHEDULE -->
+    <div id="channelEpgModal" class="fixed inset-0 z-50 bg-slate-950/85 backdrop-blur-md flex items-center justify-center p-3 sm:p-4 overflow-y-auto hidden">
+        <div class="bg-slate-900 border border-slate-800 rounded-2xl max-w-xl w-full p-5 sm:p-6 shadow-2xl relative space-y-4 my-auto max-h-[85vh] flex flex-col overflow-y-auto">
+            <div class="flex items-center justify-between border-b border-slate-800 pb-3.5 flex-shrink-0">
+                <div class="flex items-center space-x-3 min-w-0 pr-4">
+                    <img id="channelEpgLogo" src="" alt="Channel Logo" class="w-10 h-10 rounded-xl bg-slate-950 border border-slate-800 p-1 object-contain hidden" onError="this.classList.add('hidden'); const fb=document.getElementById('channelEpgLogoFallback'); if(fb) fb.classList.remove('hidden');">
+                    <div id="channelEpgLogoFallback" class="w-10 h-10 rounded-xl bg-rose-500/10 border border-rose-500/20 flex items-center justify-center text-rose-400 font-bold flex-shrink-0">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z"></path></svg>
+                    </div>
+                    <div class="min-w-0">
+                        <div class="flex items-center space-x-2">
+                            <span id="channelEpgGroup" class="text-[10px] font-bold text-rose-400 bg-rose-500/10 px-2 py-0.5 rounded border border-rose-500/20">Live TV</span>
+                            <span class="text-[10px] font-semibold text-slate-400">EPG Program Schedule</span>
+                        </div>
+                        <h3 id="channelEpgTitle" class="text-base font-bold text-white truncate mt-0.5">Channel Name</h3>
+                    </div>
+                </div>
+                <button id="btnCloseChannelEpg" class="text-slate-400 hover:text-white cursor-pointer text-2xl flex-shrink-0 p-1 leading-none">&times;</button>
+            </div>
+
+            <!-- PROGRAM SCHEDULE ITEMS LIST -->
+            <div id="channelEpgList" class="space-y-2.5 overflow-y-auto flex-1 pr-1 max-h-[55vh]">
+                <!-- Program list rendered dynamically -->
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL: PROGRAM DETAILS & REMINDERS -->
+    <div id="programModal" class="fixed inset-0 z-50 bg-slate-950/80 backdrop-blur-md flex items-center justify-center p-3 sm:p-4 overflow-y-auto hidden">
+        <div class="bg-slate-900 border border-slate-800 rounded-2xl max-w-md w-full p-5 sm:p-6 shadow-2xl relative space-y-4 my-auto max-h-[85vh] overflow-y-auto">
+            <div class="flex items-center justify-between border-b border-slate-800 pb-3">
+                <span id="progCategoryBadge" class="text-[10px] font-bold text-rose-400 bg-rose-500/10 px-2.5 py-0.5 rounded border border-rose-500/20">Category</span>
+                <button id="btnCloseProgModal" class="text-slate-400 hover:text-white cursor-pointer text-xl">&times;</button>
+            </div>
+
+            <div class="space-y-2">
+                <h3 id="progModalTitle" class="text-base font-bold text-white">Program Title</h3>
+                <p id="progModalTime" class="text-xs font-mono text-rose-400">14:00 - 16:00</p>
+                <p id="progModalDesc" class="text-xs text-slate-300 leading-relaxed pt-2">Description text goes here.</p>
+            </div>
+
+            <div class="border-t border-slate-800 pt-3 flex space-x-2">
+                <button id="btnWatchNow" class="flex-1 py-2 bg-rose-600 hover:bg-rose-500 text-white rounded-xl text-xs font-bold transition-all cursor-pointer">Watch Now</button>
+                <button id="btnSetReminder" class="flex-1 py-2 bg-slate-800 hover:bg-slate-700 text-amber-300 rounded-xl text-xs font-bold transition-all cursor-pointer">Set Reminder</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL: SETTINGS & THEMES -->
+    <div id="settingsModal" class="fixed inset-0 z-50 bg-slate-950/80 backdrop-blur-md flex items-center justify-center p-3 sm:p-4 overflow-y-auto hidden">
+        <div class="bg-slate-900 border border-slate-800 rounded-2xl max-w-lg w-full p-5 sm:p-6 shadow-2xl relative space-y-5 my-auto max-h-[85vh] overflow-y-auto">
+            <div class="flex items-center justify-between border-b border-slate-800 pb-3">
+                <h3 class="text-base font-bold text-white">System Settings & Connections</h3>
+                <button id="btnCloseSettings" class="text-slate-400 hover:text-white cursor-pointer text-xl">&times;</button>
+            </div>
+
+            <div class="space-y-4 text-xs text-slate-300">
+                <!-- IPTV CONNECTION SETUP -->
+                <div class="p-3.5 bg-slate-950 rounded-xl border border-rose-900/60 space-y-3">
+                    <div class="flex items-center justify-between">
+                        <div class="flex items-center space-x-2.5">
+                            <div class="w-7 h-7 rounded-lg bg-rose-950 border border-rose-500/40 flex items-center justify-center shrink-0">
+                                <svg class="w-4 h-4 text-rose-500" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M8 3l4 4 4-4"/><rect x="2" y="7" width="20" height="14" rx="3"/><polygon points="10,11 16,14 10,17" fill="currentColor"/></svg>
+                            </div>
+                            <div>
+                                <div class="font-bold text-white text-xs">IPTV Provider Connections</div>
+                                <div class="text-[10px] text-slate-400">Connected IPTV accounts, M3U playlists, & files</div>
+                            </div>
+                        </div>
+                        <button id="btnOpenPlaylistFromSettings" class="px-2.5 py-1.5 bg-rose-600 hover:bg-rose-500 text-white font-bold rounded-lg text-xs transition-all cursor-pointer shadow-md flex items-center space-x-1 shrink-0">
+                            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path></svg>
+                            <span>Add Provider</span>
+                        </button>
+                    </div>
+
+                    <!-- LIST OF ADDED PROVIDERS WITH RIGHT CONTROLS -->
+                    <div id="settingsProvidersList" class="space-y-2 max-h-56 overflow-y-auto pr-0.5">
+                        <!-- Dynamically populated via UIController.renderProvidersList -->
+                    </div>
+                </div>
+
+                <!-- THEME SELECTOR -->
+                <div class="p-3 bg-slate-950 rounded-xl border border-rose-950/60 space-y-2">
+                    <label class="font-semibold text-white block">TellyX Color Theme Engine</label>
+                    <select id="themeSelect" class="w-full bg-slate-900 border border-slate-800 rounded-xl px-3 py-2 text-xs text-white focus:outline-none focus:border-rose-500 cursor-pointer">
+                        <option value="tellyx_red">TellyX Crimson Cinema (Signature Dark)</option>
+                        <option value="oled_red">OLED Pitch Black & Sharp Neon (Zero-Glow)</option>
+                        <option value="obsidian">Obsidian Tech Slate (Deep Indigo & Cobalt)</option>
+                        <option value="cyberpunk">Cyberpunk 2077 HUD (Scanlines & Neon Cyan)</option>
+                        <option value="emerald">Emerald Hacker Terminal (Matrix Scanlines & Mono)</option>
+                        <option value="sunset">Sunset Vaporwave (Dusk Rose & Coral Gradient)</option>
+                        <option value="gold_luxury">Gold Executive Lounge (Onyx & Champagne Gold)</option>
+                        <option value="nordic_frost">Nordic Frost (Clean Arctic Light Mode)</option>
+                    </select>
+                </div>
+
+                <div id="corsProxySection" class="p-3 bg-slate-950 rounded-xl border border-slate-800 space-y-2">
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <div class="font-semibold text-white">CORS Proxy Bypass</div>
+                            <div class="text-[10px] text-slate-400">Routes requests through a custom self-hosted proxy</div>
+                        </div>
+                        <label class="relative inline-flex items-center cursor-pointer select-none" title="Toggle CORS Proxy Bypass">
+                            <input type="checkbox" id="corsProxyToggle" class="sr-only peer">
+                            <div class="w-11 h-6 bg-slate-800 border border-slate-700/80 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-slate-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-rose-600 shadow-inner"></div>
+                        </label>
+                    </div>
+                    <div id="customProxyContainer" class="hidden pt-2 border-t border-slate-900 space-y-2">
+                        <div>
+                            <label class="text-[10px] font-medium text-slate-400 block mb-1">Custom Proxy Endpoint URL (Optional)</label>
+                            <input type="url" id="customProxyInput" placeholder="https://my-proxy.example.com/?url=" class="w-full bg-slate-900 border border-slate-800 rounded-lg px-3 py-1.5 text-xs text-white placeholder-slate-600 focus:outline-none focus:border-rose-500">
+                        </div>
+
+                        <!-- Security Token Protection Subsection -->
+                        <div class="pt-2 border-t border-slate-900/80 space-y-2">
+                            <div class="flex items-center justify-between">
+                                <div>
+                                    <div class="text-[11px] font-semibold text-slate-300">Security Token Protection</div>
+                                    <div class="text-[10px] text-slate-400">Protect self-hosted proxy with secret API key or access token</div>
+                                </div>
+                                <label class="relative inline-flex items-center cursor-pointer select-none" title="Toggle Security Token Protection">
+                                    <input type="checkbox" id="proxyTokenToggle" class="sr-only peer">
+                                    <div class="w-11 h-6 bg-slate-800 border border-slate-700/80 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-slate-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-rose-600 shadow-inner"></div>
+                                </label>
+                            </div>
+                            <div id="proxyTokenContainer" class="hidden space-y-1">
+                                <label class="text-[10px] font-medium text-slate-400 block">Security Token / API Secret Key</label>
+                                <div class="flex items-center space-x-1.5">
+                                    <input type="password" id="proxyTokenInput" placeholder="e.g. secret_token_xyz" class="flex-1 bg-slate-900 border border-slate-800 rounded-lg px-3 py-1.5 text-xs text-white placeholder-slate-600 focus:outline-none focus:border-rose-500">
+                                    <button type="button" id="btnToggleProxyTokenVisibility" class="px-2.5 py-1.5 bg-slate-800 hover:bg-slate-700 text-slate-400 hover:text-white rounded-lg text-xs font-medium cursor-pointer transition-colors" title="Toggle Token Visibility">
+                                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/></svg>
+                                    </button>
+                                </div>
+                                <div class="text-[9px] text-slate-500">Token is automatically appended to proxy requests (<code>?token=...</code>) and sent in request headers for authenticated proxies.</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- TAURI EMBEDDED NATIVE RUNTIME NOTICE -->
+                <div id="tauriNativeNotice" class="p-3 bg-emerald-950/40 rounded-xl border border-emerald-500/30 space-y-1 hidden">
+                    <div class="flex items-center space-x-2">
+                        <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
+                        <div class="font-bold text-emerald-400 text-xs">Tauri Embedded Native Runtime</div>
+                    </div>
+                    <div class="text-[10px] text-emerald-300/80">CORS Proxy auto-disabled. Native webview permits direct HTTP/HTTPS mixed-content stream loading across Desktop (Win/Mac/Linux) & Mobile (Android).</div>
+                </div>
+
+                <!-- AUTO-UPDATER SECTION (Only visible in Tauri Native App) -->
+                <div id="autoUpdaterSection" class="p-3 bg-slate-950 rounded-xl border border-slate-800 space-y-2 hidden">
+                    <div class="flex items-center justify-between">
+                        <div class="font-semibold text-white text-xs flex items-center space-x-1.5">
+                            <svg class="w-4 h-4 text-rose-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path></svg>
+                            <span>Application Auto-Updater</span>
+                        </div>
+                        <span id="updaterStatusBadge" class="text-[10px] px-2 py-0.5 rounded-md bg-emerald-950/80 text-emerald-400 border border-emerald-500/30">v0.1.0</span>
+                    </div>
+                    <div id="updaterStatusText" class="text-[10px] text-slate-400 hidden"></div>
+                    <button id="btnCheckTellyxUpdate" class="w-full py-2 bg-rose-600/20 hover:bg-rose-600/30 text-rose-400 border border-rose-500/40 font-semibold rounded-lg text-xs transition-all cursor-pointer flex items-center justify-center space-x-2">
+                        <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path></svg>
+                        <span>Check for Updates Now</span>
+                    </button>
+                </div>
+
+                <div class="p-3 bg-slate-950 rounded-xl border border-slate-800 space-y-2">
+                    <div class="font-semibold text-white">WebAssembly Engine (WASM)</div>
+                    <div class="text-[10px] text-slate-400">128KB linear memory bytecode CRC32 checksums & string search</div>
+                    <button id="btnRunBenchmark" class="w-full py-2 bg-slate-800 hover:bg-slate-700 text-rose-400 font-semibold rounded-lg text-xs transition-colors cursor-pointer">Run WASM Benchmark Test</button>
+                </div>
+
+                <!-- DUAL LICENSE INFO -->
+                <div class="p-3 bg-slate-950 rounded-xl border border-rose-950/60 text-center space-y-1">
+                    <div class="font-bold text-white text-xs">TellyX Core Engine v0.1.0 by Armature.TN</div>
+                    <div class="text-[10px] text-rose-300/80 font-medium">Dual-Licensed: GNU AGPLv3 & Commercial License</div>
+                    <div class="text-[10px] text-slate-400">Website & Native App Downloads: <a href="https://armature.tn/tellyx" target="_blank" rel="noopener noreferrer" class="text-rose-400 underline hover:text-rose-300">armature.tn/tellyx</a></div>
+                    <div class="text-[10px] text-slate-400">Source code : <a href="https://github.com/armature-tn/tellyx" target="_blank" rel="noopener noreferrer" class="text-rose-400 underline hover:text-rose-300">github.com/armature-tn/tellyx</a></div>
+                    <div class="text-[10px] text-slate-400">Author Contact & Inquiries: <a href="mailto:contact@armature.tn" class="text-rose-400 underline hover:text-rose-300 font-semibold">contact@armature.tn</a></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL: MODIFY / EDIT PROVIDER -->
+    <div id="editProviderModal" class="fixed inset-0 z-50 bg-slate-950/80 backdrop-blur-md flex items-center justify-center p-3 sm:p-4 hidden">
+        <div class="bg-slate-900 border border-slate-800 rounded-2xl max-w-md w-full p-5 shadow-2xl relative space-y-4 my-auto">
+            <div class="flex items-center justify-between border-b border-slate-800 pb-3">
+                <div class="flex items-center space-x-2">
+                    <div class="w-7 h-7 rounded-lg bg-amber-950/80 border border-amber-500/40 flex items-center justify-center shrink-0">
+                        <svg class="w-4 h-4 text-amber-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path></svg>
+                    </div>
+                    <h3 class="text-base font-bold text-white">Modify IPTV Provider</h3>
+                </div>
+                <button id="btnCloseEditProvider" class="text-slate-400 hover:text-white cursor-pointer text-xl leading-none">&times;</button>
+            </div>
+
+            <form id="formEditProvider" class="space-y-3 text-xs">
+                <input type="hidden" id="editProviderId">
+                <div>
+                    <label class="block font-semibold text-slate-300 mb-1">Provider Display Name</label>
+                    <input type="text" id="editProviderName" required class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-white focus:outline-none focus:border-amber-500">
+                </div>
+
+                <!-- XTREAM SPECIFIC FIELDS -->
+                <div id="editXtreamFields" class="space-y-3 hidden">
+                    <div>
+                        <label class="block font-semibold text-slate-300 mb-1">Xtream Server URL</label>
+                        <input type="url" id="editXtreamServer" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-white focus:outline-none focus:border-amber-500">
+                    </div>
+                    <div class="grid grid-cols-2 gap-3">
+                        <div>
+                            <label class="block font-semibold text-slate-300 mb-1">Username</label>
+                            <input type="text" id="editXtreamUser" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-white focus:outline-none focus:border-amber-500">
+                        </div>
+                        <div>
+                            <label class="block font-semibold text-slate-300 mb-1">Password</label>
+                            <input type="password" id="editXtreamPass" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-white focus:outline-none focus:border-amber-500">
+                        </div>
+                    </div>
+                </div>
+
+                <!-- M3U URL SPECIFIC FIELDS -->
+                <div id="editM3uFields" class="space-y-3 hidden">
+                    <div>
+                        <label class="block font-semibold text-slate-300 mb-1">M3U Playlist URL</label>
+                        <input type="url" id="editM3uUrl" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-white focus:outline-none focus:border-amber-500">
+                    </div>
+                </div>
+
+                <div class="flex space-x-2 pt-2 border-t border-slate-800">
+                    <button type="button" id="btnCancelEditProvider" class="flex-1 py-2 bg-slate-800 hover:bg-slate-700 text-slate-300 rounded-xl font-semibold cursor-pointer transition-colors">Cancel</button>
+                    <button type="submit" class="flex-1 py-2 bg-amber-600 hover:bg-amber-500 text-white rounded-xl font-bold transition-all cursor-pointer shadow-lg shadow-amber-900/30">Save & Sync</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- MODAL: CONFIRMATION DIALOG -->
+    <div id="confirmModal" class="fixed inset-0 z-50 bg-slate-950/80 backdrop-blur-md flex items-center justify-center p-3 sm:p-4 hidden">
+        <div class="bg-slate-900 border border-slate-800 rounded-2xl max-w-sm w-full p-5 shadow-2xl relative space-y-4 my-auto">
+            <div class="flex items-center space-x-3">
+                <div class="w-10 h-10 rounded-xl bg-rose-950/80 border border-rose-500/40 flex items-center justify-center shrink-0">
+                    <svg class="w-5 h-5 text-rose-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path></svg>
+                </div>
+                <div>
+                    <h3 id="confirmModalTitle" class="text-sm font-bold text-white">Confirm Action</h3>
+                    <p id="confirmModalMessage" class="text-xs text-slate-400 mt-0.5">Are you sure you want to proceed?</p>
+                </div>
+            </div>
+            <div class="flex space-x-2 pt-2 border-t border-slate-800">
+                <button id="btnConfirmCancel" class="flex-1 py-2 bg-slate-800 hover:bg-slate-700 text-slate-300 rounded-xl font-semibold text-xs cursor-pointer transition-colors">Cancel</button>
+                <button id="btnConfirmOK" class="flex-1 py-2 bg-rose-600 hover:bg-rose-500 text-white rounded-xl font-bold text-xs transition-all cursor-pointer shadow-lg shadow-rose-900/30">Delete</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL: PARENTAL CONTROL DIALOG -->
+    <div id="parentalModal" class="fixed inset-0 z-50 bg-slate-950/80 backdrop-blur-md flex items-center justify-center p-3 sm:p-4 overflow-y-auto hidden">
+        <div class="glass-panel p-5 sm:p-6 rounded-2xl w-full max-w-md border border-slate-800 shadow-2xl space-y-5 relative my-auto">
+            <!-- Header -->
+            <div class="flex items-center justify-between border-b border-slate-800 pb-3">
+                <div class="flex items-center space-x-2.5">
+                    <div class="p-2 rounded-xl bg-rose-500/10 border border-rose-500/20 text-rose-400">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"></path></svg>
+                    </div>
+                    <div>
+                        <h2 class="text-base font-bold text-white">Parental Controls</h2>
+                        <p class="text-[11px] text-slate-400">Manage 18+/Adult content visibility and security PIN</p>
+                    </div>
+                </div>
+                <button id="btnCloseParental" class="p-1.5 rounded-lg text-slate-400 hover:text-white hover:bg-slate-800 transition-colors cursor-pointer" title="Close Modal">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+                </button>
+            </div>
+
+            <!-- Current Status Badge -->
+            <div class="flex items-center justify-between bg-slate-900/80 p-3 rounded-xl border border-slate-800">
+                <span class="text-xs font-medium text-slate-300">Protection Status:</span>
+                <span id="parentalStatusBadge" class="px-2.5 py-1 rounded-full text-[11px] font-bold bg-rose-500/20 text-rose-400 border border-rose-500/30">
+                    LOCKED (Adult/XXX Content Hidden)
+                </span>
+            </div>
+
+            <!-- PIN Unlock Form -->
+            <form id="formParentalUnlock" class="space-y-3">
+                <label for="parentalPinInput" class="block text-xs font-semibold text-slate-300">Enter Security PIN (Default: 0000)</label>
+                <div class="flex space-x-2">
+                    <input type="password" id="parentalPinInput" maxlength="8" placeholder="••••" autocomplete="off" class="flex-1 bg-slate-900 border border-slate-700 rounded-xl px-3.5 py-2 text-sm text-white placeholder-slate-500 focus:outline-none focus:border-rose-500 font-mono tracking-widest text-center">
+                    <button type="submit" id="btnSubmitParentalPin" class="px-4 py-2 bg-rose-600 hover:bg-rose-500 text-white font-bold text-xs rounded-xl shadow-lg transition-all cursor-pointer">
+                        Unlock Adult Content
+                    </button>
+                </div>
+                <p id="parentalPinError" class="text-xs text-rose-400 font-medium min-h-[1rem]"></p>
+            </form>
+
+            <!-- Change PIN Expandable Section -->
+            <div class="border-t border-slate-800/80 pt-4 space-y-3">
+                <h3 class="text-xs font-bold text-slate-200">Change Security PIN</h3>
+                <form id="formChangeParentalPin" class="space-y-2.5">
+                    <div>
+                        <label for="currentPinInput" class="block text-[11px] text-slate-400 mb-1">Current PIN</label>
+                        <input type="password" id="currentPinInput" maxlength="8" placeholder="Current PIN" autocomplete="off" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-3 py-1.5 text-xs text-white placeholder-slate-500 focus:outline-none focus:border-rose-500 font-mono">
+                    </div>
+                    <div>
+                        <label for="newPinInput" class="block text-[11px] text-slate-400 mb-1">New PIN</label>
+                        <input type="password" id="newPinInput" maxlength="8" placeholder="New PIN" autocomplete="off" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-3 py-1.5 text-xs text-white placeholder-slate-500 focus:outline-none focus:border-rose-500 font-mono">
+                    </div>
+                    <button type="submit" id="btnChangeParentalPin" class="w-full py-2 bg-slate-800 hover:bg-slate-700 border border-slate-700 text-slate-200 font-semibold text-xs rounded-xl transition-all cursor-pointer">
+                        Update Security PIN
+                    </button>
+                    <p id="changePinMsg" class="text-xs font-medium min-h-[1rem]"></p>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL: EXHAUSTIVE USER GUIDE & HELP -->
+    <div id="helpModal" class="fixed inset-0 z-50 bg-slate-950/80 backdrop-blur-md flex items-center justify-center p-3 sm:p-4 overflow-y-auto hidden">
+        <div class="bg-slate-900 border border-slate-800 rounded-2xl max-w-2xl w-full p-5 sm:p-6 shadow-2xl relative space-y-5 my-auto max-h-[85vh] overflow-y-auto">
+            <div class="flex items-center justify-between border-b border-slate-800 pb-3 sticky top-0 bg-slate-900 z-10 pt-1">
+                <div class="flex items-center space-x-2.5">
+                    <div class="w-8 h-8 rounded-xl bg-rose-950 border border-rose-500/40 flex items-center justify-center">
+                        <svg class="w-4 h-4 text-rose-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8.228 9c.549-1.165 2.03-2 3.772-2 2.21 0 4 1.343 4 3 0 1.4-1.278 2.575-3.006 2.907-.542.104-.994.54-.994 1.093m0 3h.01M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0z"></path></svg>
+                    </div>
+                    <div>
+                        <h3 class="text-base font-bold text-white">TellyX User Guide & Help Center</h3>
+                        <p class="text-[11px] text-slate-400">Complete manual for IPTV playback, Timeshift, EPG & Shortcuts</p>
+                    </div>
+                </div>
+                <button id="btnCloseHelp" class="text-slate-400 hover:text-white cursor-pointer text-2xl leading-none">&times;</button>
+            </div>
+
+            <div class="space-y-4 text-xs text-slate-300 leading-relaxed">
+                <!-- SECTION 1: PLAYLIST CONNECTION -->
+                <div class="p-3.5 bg-slate-950 rounded-xl border border-slate-800 space-y-2">
+                    <div class="font-bold text-rose-400 text-sm flex items-center gap-2">
+                        <span>📡 1. IPTV Playlist Connection</span>
+                    </div>
+                    <ul class="list-disc list-inside space-y-1.5 text-slate-300 text-[11px]">
+                        <li><strong class="text-white">M3U Playlist URL:</strong> Enter your provider's M3U / M3U8 link and click <em class="text-rose-300">Load Playlist</em>.</li>
+                        <li><strong class="text-white">Xtream Codes API:</strong> Input Server URL (e.g. <code class="bg-slate-900 px-1 py-0.5 rounded text-rose-300 border border-slate-800">http://server:8080</code>), Username, and Password for automated live stream and VOD channel fetching.</li>
+                        <li><strong class="text-white">Local M3U File:</strong> Choose a local <code class="bg-slate-900 px-1 py-0.5 rounded text-rose-300 border border-slate-800">.m3u</code> or <code class="bg-slate-900 px-1 py-0.5 rounded text-rose-300 border border-slate-800">.m3u8</code> file from your disk.</li>
+                    </ul>
+                </div>
+
+                <!-- SECTION 2: LIVE TV & TIMESHIFT -->
+                <div class="p-3.5 bg-slate-950 rounded-xl border border-slate-800 space-y-2">
+                    <div class="font-bold text-rose-400 text-sm flex items-center gap-2">
+                        <span>⏪ 2. Live TV & Timeshift Playback</span>
+                    </div>
+                    <ul class="list-disc list-inside space-y-1.5 text-slate-300 text-[11px]">
+                        <li><strong class="text-white">Live Edge Sync:</strong> Live TV streams display a live badge. Click <span class="text-rose-400 font-bold bg-rose-500/10 px-1.5 py-0.5 rounded border border-rose-500/30">LIVE</span> to sync directly with real-time broadcast.</li>
+                        <li><strong class="text-white">Timeshift Rewind & Seek:</strong> Drag the player seek slider or press <kbd class="bg-slate-900 border border-slate-700 px-1.5 py-0.5 rounded text-amber-300 font-mono">ArrowLeft</kbd> / <kbd class="bg-slate-900 border border-slate-700 px-1.5 py-0.5 rounded text-amber-300 font-mono">ArrowRight</kbd> to rewind up to 10 minutes in the buffer.</li>
+                        <li><strong class="text-white">Return to Live Broadcast:</strong> When in Timeshift mode, click the <span class="text-amber-400 font-bold bg-amber-500/20 px-1.5 py-0.5 rounded border border-amber-500/40">GO LIVE ▶</span> badge on player controls to jump back to live transmission.</li>
+                    </ul>
+                </div>
+
+                <!-- SECTION 3: EPG MATRIX & SCHEDULES -->
+                <div class="p-3.5 bg-slate-950 rounded-xl border border-slate-800 space-y-2">
+                    <div class="font-bold text-rose-400 text-sm flex items-center gap-2">
+                        <span>📅 3. TV Guide (EPG Matrix)</span>
+                    </div>
+                    <ul class="list-disc list-inside space-y-1.5 text-slate-300 text-[11px]">
+                        <li>Click <strong class="text-white">TV Guide (EPG)</strong> in the header or press <kbd class="bg-slate-900 border border-slate-700 px-1.5 py-0.5 rounded text-rose-300 font-mono">G</kbd> to open the interactive timeline matrix guide.</li>
+                        <li>Click any program card in the schedule matrix to view show summaries and set program reminders.</li>
+                    </ul>
+                </div>
+
+                <!-- SECTION 4: KEYBOARD SHORTCUTS -->
+                <div class="p-3.5 bg-slate-950 rounded-xl border border-slate-800 space-y-2">
+                    <div class="font-bold text-rose-400 text-sm flex items-center gap-2">
+                        <span>⌨️ 4. Keyboard Shortcuts Reference</span>
+                    </div>
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-2 text-[11px]">
+                        <div class="flex justify-between items-center bg-slate-900 px-2.5 py-1.5 rounded-lg border border-slate-800">
+                            <span class="text-slate-400">Play / Pause</span>
+                            <kbd class="bg-slate-950 border border-slate-800 px-1.5 py-0.5 rounded text-white font-mono">Space</kbd>
+                        </div>
+                        <div class="flex justify-between items-center bg-slate-900 px-2.5 py-1.5 rounded-lg border border-slate-800">
+                            <span class="text-slate-400">Mute Audio</span>
+                            <kbd class="bg-slate-950 border border-slate-800 px-1.5 py-0.5 rounded text-white font-mono">M</kbd>
+                        </div>
+                        <div class="flex justify-between items-center bg-slate-900 px-2.5 py-1.5 rounded-lg border border-slate-800">
+                            <span class="text-slate-400">Fullscreen Toggle</span>
+                            <kbd class="bg-slate-950 border border-slate-800 px-1.5 py-0.5 rounded text-white font-mono">F</kbd>
+                        </div>
+                        <div class="flex justify-between items-center bg-slate-900 px-2.5 py-1.5 rounded-lg border border-slate-800">
+                            <span class="text-slate-400">Picture-in-Picture</span>
+                            <kbd class="bg-slate-950 border border-slate-800 px-1.5 py-0.5 rounded text-white font-mono">P</kbd>
+                        </div>
+                        <div class="flex justify-between items-center bg-slate-900 px-2.5 py-1.5 rounded-lg border border-slate-800">
+                            <span class="text-slate-400">Toggle EPG Guide</span>
+                            <kbd class="bg-slate-950 border border-slate-800 px-1.5 py-0.5 rounded text-white font-mono">G</kbd>
+                        </div>
+                        <div class="flex justify-between items-center bg-slate-900 px-2.5 py-1.5 rounded-lg border border-slate-800">
+                            <span class="text-slate-400">Stream Diagnostics</span>
+                            <kbd class="bg-slate-950 border border-slate-800 px-1.5 py-0.5 rounded text-white font-mono">S</kbd>
+                        </div>
+                        <div class="flex justify-between items-center bg-slate-900 px-2.5 py-1.5 rounded-lg border border-slate-800">
+                            <span class="text-slate-400">Next / Prev Channel</span>
+                            <kbd class="bg-slate-950 border border-slate-800 px-1.5 py-0.5 rounded text-white font-mono">↑ / ↓</kbd>
+                        </div>
+                        <div class="flex justify-between items-center bg-slate-900 px-2.5 py-1.5 rounded-lg border border-slate-800">
+                            <span class="text-slate-400">Seek 10s (Timeshift)</span>
+                            <kbd class="bg-slate-950 border border-slate-800 px-1.5 py-0.5 rounded text-white font-mono">← / →</kbd>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- SECTION 5: THEMES & CORS PROXY -->
+                <div class="p-3.5 bg-slate-950 rounded-xl border border-slate-800 space-y-2">
+                    <div class="font-bold text-rose-400 text-sm flex items-center gap-2">
+                        <span>🎨 5. Themes & CORS Settings</span>
+                    </div>
+                    <p class="text-[11px] text-slate-300 leading-relaxed">
+                        Open <strong class="text-white">Settings ⚙️</strong> to customize your color themes (Crimson Cinema, OLED Pitch Black, Cyberpunk, Emerald, etc.) or toggle the CORS Proxy Bypass if your IPTV stream is restricted by browser security policies.
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL: SCREEN CASTING & TV RECEIVER SETUP -->
+    <div id="castModal" class="fixed inset-0 z-50 bg-slate-950/85 backdrop-blur-md flex items-center justify-center p-3 sm:p-4 overflow-y-auto hidden">
+        <div class="glass-panel p-5 sm:p-6 rounded-2xl w-full max-w-lg border border-slate-800 shadow-2xl space-y-5 relative my-auto bg-slate-900/95">
+            <!-- Header -->
+            <div class="flex items-center justify-between border-b border-slate-800/80 pb-3">
+                <div class="flex items-center space-x-3">
+                    <div class="p-2.5 rounded-xl bg-rose-500/10 border border-rose-500/20 text-rose-400">
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2 16.1A5 5 0 0 1 5.9 20M2 12.05A9 9 0 0 1 9.95 20M2 8V6a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2h-6M2 20h.01"></path></svg>
+                    </div>
+                    <div>
+                        <h2 class="text-base font-bold text-white">Screen Cast & TV Receiver</h2>
+                        <p class="text-[11px] text-slate-400">Cast stream to Chromecast, AirPlay, Smart TV or External Players</p>
+                    </div>
+                </div>
+                <button id="btnCloseCast" class="p-1.5 rounded-lg text-slate-400 hover:text-white hover:bg-slate-800 transition-colors cursor-pointer" title="Close Modal">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+                </button>
+            </div>
+
+            <!-- Active Channel Badge -->
+            <div id="castChannelBadge" class="p-3 bg-slate-950/60 border border-slate-800/80 rounded-xl flex items-center justify-between">
+                <div class="flex items-center space-x-3 overflow-hidden">
+                    <div class="w-8 h-8 rounded-lg bg-rose-950/80 border border-rose-500/30 flex items-center justify-center shrink-0 text-rose-400 font-bold text-xs" id="castChannelIcon">
+                        TV
+                    </div>
+                    <div class="truncate">
+                        <h4 id="castChannelTitle" class="text-xs font-bold text-slate-200 truncate">Select a channel to cast</h4>
+                        <p id="castChannelGroup" class="text-[10px] text-slate-400 truncate">Live Stream</p>
+                    </div>
+                </div>
+                <span class="px-2 py-0.5 text-[9px] font-bold uppercase rounded bg-rose-500/20 text-rose-400 border border-rose-500/30">LIVE</span>
+            </div>
+
+            <!-- CASTING METHODS GRID -->
+            <div class="grid grid-cols-2 gap-2.5">
+                <!-- AirPlay -->
+                <button id="btnCastModalAirPlay" class="p-3 rounded-xl bg-slate-950/80 hover:bg-slate-800 border border-slate-800 hover:border-slate-700 transition-all cursor-pointer flex flex-col items-center justify-center space-y-1.5 text-center group">
+                    <div class="p-2 rounded-lg bg-slate-800 group-hover:bg-rose-600/20 text-slate-300 group-hover:text-rose-400 transition-colors">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 10l7-7 7 7M12 3v12M4 19h16"></path></svg>
+                    </div>
+                    <span class="text-xs font-bold text-white">AirPlay / Apple TV</span>
+                    <span class="text-[10px] text-slate-400">iOS & Safari Wireless</span>
+                </button>
+
+                <!-- Google Cast -->
+                <button id="btnCastModalGoogle" class="p-3 rounded-xl bg-slate-950/80 hover:bg-slate-800 border border-slate-800 hover:border-slate-700 transition-all cursor-pointer flex flex-col items-center justify-center space-y-1.5 text-center group">
+                    <div class="p-2 rounded-lg bg-slate-800 group-hover:bg-rose-600/20 text-slate-300 group-hover:text-rose-400 transition-colors">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2 16.1A5 5 0 0 1 5.9 20M2 12.05A9 9 0 0 1 9.95 20M2 8V6a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2h-6M2 20h.01"></path></svg>
+                    </div>
+                    <span class="text-xs font-bold text-white">Chromecast / Google</span>
+                    <span class="text-[10px] text-slate-400">Chrome & Android TV</span>
+                </button>
+
+                <!-- Screen Mirror -->
+                <button id="btnCastModalScreen" class="p-3 rounded-xl bg-slate-950/80 hover:bg-slate-800 border border-slate-800 hover:border-slate-700 transition-all cursor-pointer flex flex-col items-center justify-center space-y-1.5 text-center group">
+                    <div class="p-2 rounded-lg bg-slate-800 group-hover:bg-rose-600/20 text-slate-300 group-hover:text-rose-400 transition-colors">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.75 17L9 20l-1 1h8l-1-1-.75-3M3 13h18M5 17h14a2 2 0 002-2V5a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"></path></svg>
+                    </div>
+                    <span class="text-xs font-bold text-white">Screen Share</span>
+                    <span class="text-[10px] text-slate-400">Mirror Tab or Monitor</span>
+                </button>
+
+                <!-- Standalone Tab -->
+                <button id="btnCastModalNewTab" class="p-3 rounded-xl bg-slate-950/80 hover:bg-slate-800 border border-slate-800 hover:border-slate-700 transition-all cursor-pointer flex flex-col items-center justify-center space-y-1.5 text-center group">
+                    <div class="p-2 rounded-lg bg-slate-800 group-hover:bg-rose-600/20 text-slate-300 group-hover:text-rose-400 transition-colors">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"></path></svg>
+                    </div>
+                    <span class="text-xs font-bold text-white">Open in New Tab</span>
+                    <span class="text-[10px] text-slate-400">Escape Iframe Restriction</span>
+                </button>
+            </div>
+
+            <!-- NETWORK STREAM LINK & QR CODE SECTION -->
+            <div class="p-4 bg-slate-950/80 border border-slate-800/80 rounded-xl space-y-3">
+                <div class="flex items-center justify-between">
+                    <label class="text-xs font-bold text-slate-300 flex items-center space-x-1.5">
+                        <svg class="w-4 h-4 text-rose-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1"></path></svg>
+                        <span>Direct Stream URL for Smart TV & External Players</span>
+                    </label>
+                </div>
+
+                <div class="flex space-x-2">
+                    <input type="text" id="inputCastStreamUrl" readonly class="flex-1 bg-slate-900 border border-slate-700/80 rounded-xl px-3 py-2 text-xs text-slate-300 font-mono focus:outline-none select-all truncate">
+                    <button id="btnCopyCastUrl" class="px-3 py-2 bg-slate-800 hover:bg-slate-700 text-white rounded-xl text-xs font-semibold cursor-pointer transition-colors shrink-0 flex items-center space-x-1">
+                        <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 5H6a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2v-1M8 5a2 2 0 002 2h2a2 2 0 002-2M8 5a2 2 0 012-2h2a2 2 0 012 2m0 0h2a2 2 0 012 2v3m2 4H10m0 0l3-3m-3 3l3 3"></path></svg>
+                        <span>Copy</span>
+                    </button>
+                </div>
+
+                <!-- QR Code & Quick External Launchers -->
+                <div class="flex items-center space-x-4 pt-1">
+                    <div class="w-24 h-24 bg-white p-1.5 rounded-xl border border-slate-700 shrink-0 flex items-center justify-center shadow-lg">
+                        <img id="castQrImg" alt="Stream QR Code" class="w-full h-full object-contain">
+                    </div>
+                    <div class="flex-1 space-y-2 text-xs">
+                        <p class="text-slate-400 text-[11px] leading-relaxed">
+                            Scan with your phone camera or Smart TV to open this live stream directly on Samsung Tizen, LG WebOS, Fire TV, Apple TV, Kodi, or VLC.
+                        </p>
+                        <div class="flex space-x-2 pt-1">
+                            <button id="btnLaunchVlc" class="px-3 py-1.5 bg-amber-600 hover:bg-amber-500 text-white rounded-lg text-[11px] font-bold cursor-pointer transition-colors flex items-center space-x-1 shadow-md">
+                                <span>Open in VLC Player</span>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL: INSTALL APP (Native Desktop/Mobile vs Web PWA with CORS notice) -->
+    <div id="installModal" class="fixed inset-0 z-50 bg-slate-950/85 backdrop-blur-md flex items-center justify-center p-3 sm:p-4 overflow-y-auto hidden">
+        <div class="bg-slate-900 border border-slate-800 rounded-2xl w-full max-w-2xl overflow-hidden shadow-2xl relative my-auto animate-fade-in">
+            <!-- Header -->
+            <div class="p-4 sm:p-5 border-b border-slate-800/80 flex items-center justify-between bg-slate-950/60">
+                <div class="flex items-center space-x-3">
+                    <div class="w-10 h-10 rounded-xl bg-rose-600/20 border border-rose-500/40 text-rose-400 flex items-center justify-center shrink-0">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"></path></svg>
+                    </div>
+                    <div>
+                        <h3 class="text-base sm:text-lg font-bold text-white">Install TellyX Player</h3>
+                        <div id="pwaDetectedPlatform" class="text-xs text-rose-400 font-semibold flex items-center space-x-1.5 mt-0.5">
+                            <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
+                            <span id="pwaPlatformName">Detected OS: Windows (x64)</span>
+                        </div>
+                    </div>
+                </div>
+                <button id="btnCloseInstallModal" class="p-1.5 rounded-lg text-slate-400 hover:text-white hover:bg-slate-800 transition-colors cursor-pointer text-xl leading-none" title="Close Modal">&times;</button>
+            </div>
+
+            <div class="p-4 sm:p-6 space-y-5">
+
+                <!-- CORS & PERFORMANCE WARNING BANNER -->
+                <div class="p-3.5 rounded-xl bg-amber-950/40 border border-amber-500/30 text-amber-200 text-xs leading-relaxed space-y-1">
+                    <div class="font-bold flex items-center space-x-2 text-amber-300">
+                        <svg class="w-4 h-4 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path></svg>
+                        <span>Browser CORS Notice & Native Advantage</span>
+                    </div>
+                    <p class="text-slate-300 text-[11.5px] leading-relaxed">
+                        Web browsers strictly enforce <strong>CORS (Cross-Origin Resource Sharing)</strong> security rules, which can block live IPTV streams from provider servers lacking web CORS headers.
+                        <strong>Native Desktop & Mobile Apps</strong> bypass CORS restrictions entirely, offer direct GPU decoding, and deliver seamless stream stability.
+                    </p>
+                </div>
+
+                <!-- CHOICES GRID -->
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+
+                    <!-- OPTION 1: NATIVE APP (RECOMMENDED) -->
+                    <div class="p-4 rounded-xl bg-slate-950/80 border-2 border-rose-500/60 hover:border-rose-500 transition-all flex flex-col justify-between space-y-4 shadow-xl relative group">
+                        <div class="absolute -top-2.5 right-3 px-2 py-0.5 rounded-full bg-rose-600 text-white font-extrabold text-[9px] uppercase tracking-wider shadow">
+                            Recommended
+                        </div>
+                        
+                        <div class="space-y-3">
+                            <div class="flex items-center space-x-2.5">
+                                <div id="pwaNativeIcon" class="w-9 h-9 rounded-lg bg-rose-500/20 border border-rose-500/40 text-rose-400 flex items-center justify-center shrink-0">
+                                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.75 17L9 20l-1 1h8l-1-1-.75-3M3 13h18M5 17h14a2 2 0 002-2V5a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"></path></svg>
+                                </div>
+                                <div>
+                                    <h4 class="text-sm font-extrabold text-white">Native Application</h4>
+                                    <span class="text-[10px] text-emerald-400 font-semibold block">Zero CORS Stream Limits</span>
+                                </div>
+                            </div>
+
+                            <ul class="text-[11px] text-slate-300 space-y-1.5 pt-1">
+                                <li class="flex items-center space-x-1.5">
+                                    <svg class="w-3.5 h-3.5 text-emerald-400 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7"></path></svg>
+                                    <span>Direct stream connection (No CORS proxy needed)</span>
+                                </li>
+                                <li class="flex items-center space-x-1.5">
+                                    <svg class="w-3.5 h-3.5 text-emerald-400 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7"></path></svg>
+                                    <span>Hardware-accelerated GPU decoding</span>
+                                </li>
+                                <li class="flex items-center space-x-1.5">
+                                    <svg class="w-3.5 h-3.5 text-emerald-400 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7"></path></svg>
+                                    <span>System tray, media keys & native multi-view</span>
+                                </li>
+                            </ul>
+                        </div>
+
+                        <a id="btnDownloadNativeFromPwa" href="https://github.com/armature-tn/tellyx/releases/latest" target="_blank" rel="noopener noreferrer" class="w-full py-2.5 px-3 rounded-xl bg-rose-600 hover:bg-rose-500 text-white font-extrabold text-xs transition-all flex items-center justify-center space-x-2 shadow-lg shadow-rose-600/30 cursor-pointer active:scale-95">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"></path></svg>
+                            <span id="btnNativeText">Download Native Windows App</span>
+                        </a>
+                    </div>
+
+                    <!-- OPTION 2: WEB PWA -->
+                    <div class="p-4 rounded-xl bg-slate-950/80 border border-slate-800 hover:border-slate-700 transition-all flex flex-col justify-between space-y-4 shadow-xl">
+                        <div class="space-y-3">
+                            <div class="flex items-center space-x-2.5">
+                                <div class="w-9 h-9 rounded-lg bg-sky-500/20 border border-sky-500/40 text-sky-400 flex items-center justify-center shrink-0">
+                                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 12a9 9 0 01-9 9m9-9a9 9 0 00-9-9m9 9H3m9 9a9 9 0 01-9-9m9 9c1.657 0 3-4.03 3-9s-1.343-9-3-9m0 18c-1.657 0-3-4.03-3-9s1.343-9 3-9m-9 9a9 9 0 019-9"></path></svg>
+                                </div>
+                                <div>
+                                    <h4 class="text-sm font-bold text-white">Web App (PWA)</h4>
+                                    <span class="text-[10px] text-amber-400 font-semibold block">Subject to Browser CORS</span>
+                                </div>
+                            </div>
+
+                            <ul class="text-[11px] text-slate-300 space-y-1.5 pt-1">
+                                <li class="flex items-center space-x-1.5">
+                                    <svg class="w-3.5 h-3.5 text-sky-400 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7"></path></svg>
+                                    <span>Instant installation without download</span>
+                                </li>
+                                <li class="flex items-center space-x-1.5 text-amber-300">
+                                    <svg class="w-3.5 h-3.5 text-amber-400 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path></svg>
+                                    <span>May require CORS Proxy enabled in Settings</span>
+                                </li>
+                                <li class="flex items-center space-x-1.5">
+                                    <svg class="w-3.5 h-3.5 text-sky-400 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7"></path></svg>
+                                    <span>Full offline local storage & settings</span>
+                                </li>
+                            </ul>
+                        </div>
+
+                        <button id="btnProceedPwaInstall" class="w-full py-2.5 px-3 rounded-xl bg-slate-800 hover:bg-slate-700 text-white font-extrabold text-xs transition-all flex items-center justify-center space-x-2 border border-slate-700 cursor-pointer active:scale-95">
+                            <svg class="w-4 h-4 text-sky-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path></svg>
+                            <span>Proceed with Web PWA</span>
+                        </button>
+                    </div>
+
+                </div>
+
+                <!-- ALL PLATFORMS LINK -->
+                <div class="text-center pt-2 border-t border-slate-800/80">
+                    <a href="index.html#downloads" class="text-xs text-rose-400 hover:text-rose-300 font-semibold inline-flex items-center space-x-1 transition-colors">
+                        <span>View all platform downloads (Windows, macOS, Linux, Android)</span>
+                        <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"></path></svg>
+                    </a>
+                </div>
+
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL: TV SERIES SEASONS & EPISODES SELECTOR -->
+    <div id="seriesModal" class="fixed inset-0 z-50 bg-slate-950/85 backdrop-blur-md flex items-center justify-center p-3 sm:p-4 overflow-y-auto hidden">
+        <div class="bg-slate-900 border border-slate-800 rounded-2xl w-full max-w-4xl max-h-[90vh] flex flex-col shadow-2xl overflow-hidden my-auto animate-fade-in">
+            <!-- Modal Header -->
+            <div class="p-4 sm:p-5 border-b border-slate-800/80 flex items-center justify-between bg-slate-950/80 shrink-0">
+                <div class="flex items-center space-x-3 min-w-0">
+                    <div class="w-9 h-9 rounded-xl bg-rose-500/10 border border-rose-500/20 text-rose-400 flex items-center justify-center shrink-0">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 4v16M17 4v16M3 8h18M3 16h18"></path></svg>
+                    </div>
+                    <div class="min-w-0">
+                        <h3 id="seriesModalTitle" class="text-base sm:text-lg font-bold text-white truncate">TV Series Title</h3>
+                        <span id="seriesModalCategory" class="inline-block text-[10px] font-semibold text-slate-400 bg-slate-800 px-2 py-0.5 rounded-md border border-slate-700/50">Category</span>
+                    </div>
+                </div>
+                <button id="btnCloseSeriesModal" class="p-2 rounded-xl text-slate-400 hover:text-white hover:bg-slate-800 transition-colors cursor-pointer" title="Close">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+                </button>
+            </div>
+
+            <!-- Modal Content Body -->
+            <div class="p-4 sm:p-6 overflow-y-auto space-y-6 flex-1 custom-scrollbar">
+                <!-- Loading State -->
+                <div id="seriesModalLoading" class="py-12 flex flex-col items-center justify-center space-y-3">
+                    <div class="w-10 h-10 border-4 border-rose-500/30 border-t-rose-500 rounded-full animate-spin"></div>
+                    <p class="text-xs text-slate-400 font-medium">Fetching Seasons & Episodes from Xtream Server...</p>
+                </div>
+
+                <!-- Error State -->
+                <div id="seriesModalError" class="p-4 rounded-xl bg-rose-500/10 border border-rose-500/30 text-rose-300 text-xs hidden flex items-center justify-between">
+                    <span id="seriesModalErrorMsg">Failed to load series episodes.</span>
+                    <button id="btnSeriesPlayFallback" class="px-3 py-1.5 bg-rose-600 hover:bg-rose-500 text-white font-bold rounded-lg text-xs transition-colors cursor-pointer">Play Direct Stream</button>
+                </div>
+
+                <!-- Main Series Details (Poster + Info) -->
+                <div id="seriesModalContent" class="hidden space-y-6">
+                    <div class="flex flex-col sm:flex-row gap-4 sm:gap-6 items-start">
+                        <img id="seriesModalPoster" src="" alt="Series Cover" class="w-28 sm:w-36 h-40 sm:h-52 object-cover rounded-xl border border-slate-700/60 bg-slate-800 shrink-0 shadow-lg shadow-slate-950/50">
+                        <div class="space-y-2 flex-1 min-w-0">
+                            <h4 id="seriesModalHeaderTitle" class="text-lg sm:text-xl font-bold text-white leading-tight">Series Title</h4>
+                            <div class="flex flex-wrap items-center gap-2 text-xs text-slate-400">
+                                <span id="seriesModalYear" class="bg-slate-800 px-2 py-0.5 rounded border border-slate-700/50 text-slate-300">2024</span>
+                                <span id="seriesModalGenre" class="bg-slate-800 px-2 py-0.5 rounded border border-slate-700/50 text-slate-300">Drama</span>
+                                <span id="seriesModalRating" class="bg-amber-500/10 border border-amber-500/30 text-amber-400 px-2 py-0.5 rounded font-bold">★ 8.5</span>
+                            </div>
+                            <p id="seriesModalPlot" class="text-xs text-slate-300 leading-relaxed pt-1 line-clamp-4">Series plot summary...</p>
+                        </div>
+                    </div>
+
+                    <!-- Season Selector Tabs -->
+                    <div class="space-y-2">
+                        <label class="text-xs font-bold text-slate-300 uppercase tracking-wider flex items-center space-x-1">
+                            <span>Select Season</span>
+                        </label>
+                        <div id="seriesSeasonsContainer" class="flex items-center space-x-2 overflow-x-auto pb-2 scrollbar-none">
+                            <!-- Season pills rendered dynamically -->
+                        </div>
+                    </div>
+
+                    <!-- Episode Grid -->
+                    <div class="space-y-3">
+                        <div class="flex items-center justify-between">
+                            <h5 id="seriesEpisodesHeader" class="text-xs font-bold text-slate-300 uppercase tracking-wider">Episodes</h5>
+                            <span id="seriesEpisodesCount" class="text-xs text-slate-400 font-mono">0 Episodes</span>
+                        </div>
+                        <div id="seriesEpisodesContainer" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
+                            <!-- Episode cards rendered dynamically -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL: VOD MOVIE DETAILS & STREAM PLAYING -->
+    <div id="movieModal" class="fixed inset-0 z-50 bg-slate-950/85 backdrop-blur-md flex items-center justify-center p-3 sm:p-4 overflow-y-auto hidden">
+        <div class="bg-slate-900 border border-slate-800 rounded-2xl w-full max-w-2xl shadow-2xl overflow-hidden my-auto animate-fade-in">
+            <!-- Modal Header -->
+            <div class="p-4 sm:p-5 border-b border-slate-800/80 flex items-center justify-between bg-slate-950/80 shrink-0">
+                <div class="flex items-center space-x-3 min-w-0">
+                    <div class="w-9 h-9 rounded-xl bg-rose-500/10 border border-rose-500/20 text-rose-400 flex items-center justify-center shrink-0">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z"></path></svg>
+                    </div>
+                    <div class="min-w-0">
+                        <h3 id="movieModalTitle" class="text-base sm:text-lg font-bold text-white truncate">Movie Details</h3>
+                        <span id="movieModalCategory" class="inline-block text-[10px] font-semibold text-slate-400 bg-slate-800 px-2 py-0.5 rounded-md border border-slate-700/50">Category</span>
+                    </div>
+                </div>
+                <button id="btnCloseMovieModal" class="p-2 rounded-xl text-slate-400 hover:text-white hover:bg-slate-800 transition-colors cursor-pointer" title="Close">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+                </button>
+            </div>
+
+            <!-- Modal Content Body -->
+            <div class="p-4 sm:p-6 overflow-y-auto space-y-5 custom-scrollbar">
+                <!-- Loading State -->
+                <div id="movieModalLoading" class="py-10 flex flex-col items-center justify-center space-y-3">
+                    <div class="w-10 h-10 border-4 border-rose-500/30 border-t-rose-500 rounded-full animate-spin"></div>
+                    <p class="text-xs text-slate-400 font-medium">Loading Movie Metadata from Xtream Server...</p>
+                </div>
+
+                <!-- Main Content -->
+                <div id="movieModalContent" class="hidden space-y-5">
+                    <div class="flex flex-col sm:flex-row gap-4 sm:gap-6 items-start">
+                        <img id="movieModalPoster" src="" alt="Movie Poster" class="w-32 sm:w-40 h-48 sm:h-60 object-cover rounded-xl border border-slate-700/60 bg-slate-800 shrink-0 shadow-lg shadow-slate-950/50">
+                        <div class="space-y-2.5 flex-1 min-w-0">
+                            <h4 id="movieModalHeaderTitle" class="text-lg sm:text-xl font-bold text-white leading-tight">Movie Title</h4>
+                            
+                            <div class="flex flex-wrap items-center gap-2 text-xs text-slate-400">
+                                <span id="movieModalYear" class="bg-slate-800 px-2 py-0.5 rounded border border-slate-700/50 text-slate-300">2024</span>
+                                <span id="movieModalGenre" class="bg-slate-800 px-2 py-0.5 rounded border border-slate-700/50 text-slate-300">Action</span>
+                                <span id="movieModalRating" class="bg-amber-500/10 border border-amber-500/30 text-amber-400 px-2 py-0.5 rounded font-bold">★ 7.8</span>
+                                <span id="movieModalDuration" class="bg-slate-800 px-2 py-0.5 rounded border border-slate-700/50 text-slate-300 font-mono">120m</span>
+                            </div>
+
+                            <div class="text-xs space-y-1 text-slate-300 pt-1">
+                                <div id="movieModalDirectorContainer"><span class="text-slate-500 font-semibold">Director:</span> <span id="movieModalDirector" class="text-slate-300">N/A</span></div>
+                                <div id="movieModalCastContainer"><span class="text-slate-500 font-semibold">Cast:</span> <span id="movieModalCast" class="text-slate-300">N/A</span></div>
+                            </div>
+
+                            <p id="movieModalPlot" class="text-xs text-slate-300 leading-relaxed pt-1 line-clamp-5">Movie summary plot...</p>
+                        </div>
+                    </div>
+
+                    <!-- Action Buttons -->
+                    <div class="pt-3 border-t border-slate-800 flex items-center justify-end space-x-3">
+                        <button id="btnPlayMovieNow" class="w-full sm:w-auto px-6 py-3 bg-gradient-to-r from-rose-600 to-rose-500 hover:from-rose-500 hover:to-rose-400 text-white font-bold rounded-xl text-sm transition-all shadow-lg shadow-rose-950/50 flex items-center justify-center space-x-2 cursor-pointer">
+                            <svg class="w-4 h-4 fill-current" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
+                            <span>Play Movie Now</span>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL: DVR SAVE RECORDING -->
+    <div id="saveRecordingModal" class="fixed inset-0 z-50 bg-slate-950/85 backdrop-blur-md flex items-center justify-center p-3 sm:p-4 overflow-y-auto hidden">
+        <div class="bg-slate-900 border border-slate-800 rounded-2xl w-full max-w-lg shadow-2xl overflow-hidden my-auto animate-fade-in">
+            <!-- Modal Header -->
+            <div class="p-4 sm:p-5 border-b border-slate-800/80 flex items-center justify-between bg-slate-950/80 shrink-0">
+                <div class="flex items-center space-x-3 min-w-0">
+                    <div class="w-9 h-9 rounded-xl bg-rose-500/10 border border-rose-500/20 text-rose-400 flex items-center justify-center shrink-0">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7H5a2 2 0 00-2 2v9a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-3m-1 4l-3 3m0 0l-3-3m3 3V4"/></svg>
+                    </div>
+                    <div class="min-w-0">
+                        <h3 class="text-base sm:text-lg font-bold text-white truncate">Save DVR Stream Recording</h3>
+                        <span id="recordingDurationBadge" class="inline-block text-[10px] font-semibold text-emerald-400 bg-emerald-500/10 px-2 py-0.5 rounded-md border border-emerald-500/20 font-mono">0s recorded</span>
+                    </div>
+                </div>
+                <button id="btnCloseRecordingModal" class="p-2 rounded-xl text-slate-400 hover:text-white hover:bg-slate-800 transition-colors cursor-pointer" title="Close">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+                </button>
+            </div>
+
+            <!-- Modal Content Body -->
+            <div class="p-4 sm:p-6 space-y-4">
+                <div class="bg-black rounded-xl overflow-hidden border border-slate-800 aspect-video relative flex items-center justify-center">
+                    <video id="recordingPreviewPlayer" class="w-full h-full object-contain" controls playsinline></video>
+                </div>
+
+                <div class="space-y-1.5">
+                    <label class="text-xs font-semibold text-slate-300 block">Save File Name & Location</label>
+                    <div class="flex items-center space-x-2">
+                        <input type="text" id="recordingFileNameInput" class="flex-1 bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-xs text-white placeholder-slate-500 focus:outline-none focus:border-rose-500 font-mono" placeholder="Recording_Name">
+                        <span class="text-xs text-slate-400 font-mono font-semibold px-2">.webm</span>
+                    </div>
+                    <p class="text-[11px] text-slate-400 pt-1">
+                        Clicking <strong class="text-slate-200">Save & Choose Folder</strong> will open your Android or system file manager to select where to save the video file.
+                    </p>
+                </div>
+
+                <div class="pt-2 flex items-center justify-end space-x-3">
+                    <button id="btnCancelSaveRecording" class="px-4 py-2.5 bg-slate-800 hover:bg-slate-700 text-slate-300 font-medium rounded-xl text-xs transition-colors cursor-pointer">Discard</button>
+                    <button id="btnConfirmSaveRecording" class="px-5 py-2.5 bg-rose-600 hover:bg-rose-500 text-white font-bold rounded-xl text-xs transition-all shadow-lg shadow-rose-950/50 flex items-center space-x-2 cursor-pointer">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7H5a2 2 0 00-2 2v9a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-3m-1 4l-3 3m0 0l-3-3m3 3V4"/></svg>
+                        <span>Save & Choose Folder</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- TOAST NOTIFICATIONS CONTAINER -->
+    <div id="toastContainer" class="fixed bottom-6 right-6 z-50 flex flex-col space-y-2 pointer-events-none"></div>
+
+    <!-- SCRIPT ENTRY POINT -->
+    <script type="module" src="src/js/app.js"></script>
+</body>
+</html>
+

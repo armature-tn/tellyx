@@ -1,0 +1,6 @@
+{
+  "name": "TellyX",
+  "description": "TellyX is a high-performance IPTV player with custom themes, M3U/Xtream Codes provider connections, EPG matrix, DVR recording, multi-screen quad view, and WASM acceleration. Dual-licensed under AGPL-3.0 and Commercial License.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}

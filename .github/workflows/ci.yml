@@ -1,0 +1,278 @@
+name: CI/CD Pipeline
+
+on:
+  push:
+    branches: [ main, master, develop ]
+    tags:
+      - 'v*'
+  pull_request:
+    branches: [ main, master, develop ]
+
+permissions:
+  contents: write
+  pages: write
+  id-token: write
+
+jobs:
+  lint-and-build:
+    name: Lint & Build Web Application
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: 'npm'
+
+      - name: Install Dependencies
+        run: npm ci --include=optional || npm install --include=optional
+
+      - name: Run Linter & Type Check
+        run: npm run lint
+
+      - name: Build Web Application
+        run: npm run build
+
+      - name: Upload Build Artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: web-dist
+          path: dist/
+          retention-days: 7
+
+  deploy-github-pages:
+    name: Deploy to GitHub Pages
+    needs: lint-and-build
+    if: startsWith(github.ref, 'refs/tags/v')
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Download Build Artifacts
+        uses: actions/download-artifact@v4
+        with:
+          name: web-dist
+          path: dist/
+
+      - name: Generate Fresh Update Manifests for Pages
+        run: node scripts/generate-update-manifest.js
+
+      - name: Setup Pages
+        uses: actions/configure-pages@v4
+
+      - name: Upload Pages Artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: 'dist/'
+
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4
+
+  tauri-build:
+    name: Build Desktop App (${{ matrix.platform }})
+    needs: lint-and-build
+    runs-on: ${{ matrix.platform }}
+
+    strategy:
+      fail-fast: false
+      matrix:
+        platform: [ubuntu-latest, windows-latest, macos-latest]
+
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: 'npm'
+
+      - name: Install Rust Stable
+        uses: dtolnay/rust-toolchain@stable
+
+      - name: Rust Cache
+        uses: swatinem/rust-cache@v2
+        with:
+          workspaces: './src-tauri -> target'
+
+      - name: Install Dependencies (Linux GTK & WebKit)
+        if: matrix.platform == 'ubuntu-latest'
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y libwebkit2gtk-4.1-dev build-essential curl wget file libssl-dev libayatana-appindicator3-dev librsvg2-dev
+
+      - name: Install Frontend Dependencies
+        run: npm ci --include=optional || npm install --include=optional
+
+      - name: Generate App Icons
+        run: npm run generate:icons
+
+      - name: Build Tauri Application
+        uses: tauri-apps/tauri-action@v0
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          tagName: ${{ startsWith(github.ref, 'refs/tags/v') && 'v__VERSION__' || '' }}
+          releaseName: 'TellyX Desktop v__VERSION__'
+          releaseBody: 'TellyX Desktop Release binaries for Windows, macOS, and Linux.'
+          releaseDraft: false
+          prerelease: false
+
+      - name: Upload Desktop Artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: tellyx-desktop-${{ matrix.platform }}
+          path: |
+            src-tauri/target/release/bundle/*
+            src-tauri/target/release/TellyX*
+            src-tauri/target/release/*.exe
+            src-tauri/target/release/*.app
+            src-tauri/target/release/*.deb
+            src-tauri/target/release/*.AppImage
+          if-no-files-found: ignore
+          retention-days: 14
+
+  tauri-android-build:
+    name: Build Android App (.apk)
+    needs: lint-and-build
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Setup Java JDK
+        uses: actions/setup-java@v4
+        with:
+          distribution: 'zulu'
+          java-version: '17'
+
+      - name: Setup Android SDK & NDK
+        id: setup-android
+        uses: android-actions/setup-android@v3
+        with:
+          packages: 'ndk;26.1.10909125 build-tools;34.0.0 build-tools;29.0.3'
+
+      - name: Set NDK Environment Variables
+        run: |
+          echo "NDK_HOME=$ANDROID_HOME/ndk/26.1.10909125" >> $GITHUB_ENV
+          echo "ANDROID_NDK_ROOT=$ANDROID_HOME/ndk/26.1.10909125" >> $GITHUB_ENV
+          echo "BUILD_TOOLS_VERSION=34.0.0" >> $GITHUB_ENV
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: 'npm'
+
+      - name: Install Rust & Android Targets
+        uses: dtolnay/rust-toolchain@stable
+        with:
+          targets: aarch64-linux-android, armv7-linux-androideabi, i686-linux-android, x86_64-linux-android
+
+      - name: Rust Cache
+        uses: swatinem/rust-cache@v2
+        with:
+          workspaces: './src-tauri -> target'
+
+      - name: Install Frontend Dependencies
+        run: npm ci --include=optional || npm install --include=optional
+
+      - name: Generate App Icons
+        run: npm run generate:icons
+
+      - name: Build Web Frontend
+        run: npm run build
+
+      - name: Initialize Android Project
+        run: npx @tauri-apps/cli android init --ci --skip-targets-install
+
+      - name: Setup Android Release Keystore
+        env:
+          ANDROID_KEYSTORE_BASE64: ${{ secrets.ANDROID_KEYSTORE_BASE64 }}
+          ANDROID_KEYSTORE_PASSWORD: ${{ secrets.ANDROID_KEYSTORE_PASSWORD }}
+          ANDROID_KEY_ALIAS: ${{ secrets.ANDROID_KEY_ALIAS }}
+          ANDROID_KEY_PASSWORD: ${{ secrets.ANDROID_KEY_PASSWORD }}
+        run: node scripts/setup-android-keystore.js
+
+      - name: Build Tauri Android Package
+        run: npx @tauri-apps/cli android build --apk --ci
+
+      - name: Prepare Android Release Artifacts
+        run: |
+          mkdir -p ./dist-android
+          APK_FILE=$(find src-tauri/gen/android/app/build/outputs/apk -name "*.apk" | head -n 1)
+          if [ -n "$APK_FILE" ]; then
+            echo "Found APK at $APK_FILE, copying to ./dist-android/app-universal-release.apk..."
+            cp "$APK_FILE" ./dist-android/app-universal-release.apk
+          else
+            echo "::error::No Android APK file found after build!"
+            exit 1
+          fi
+
+      - name: Upload Android APK Artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: tellyx-android-apk
+          path: ./dist-android/app-universal-release.apk
+          if-no-files-found: error
+          retention-days: 14
+
+      - name: Publish Signed Android APK to GitHub Release
+        if: startsWith(github.ref, 'refs/tags/v')
+        uses: softprops/action-gh-release@v2
+        with:
+          draft: false
+          files: ./dist-android/app-universal-release.apk
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+  release-update-manifest:
+    name: Publish Auto-Update Manifests
+    needs: [lint-and-build, tauri-build, tauri-android-build]
+    if: startsWith(github.ref, 'refs/tags/v')
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: 'npm'
+
+      - name: Generate Auto-Update Manifests
+        run: node scripts/generate-update-manifest.js
+
+      - name: Upload Manifest Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: tellyx-update-manifests
+          path: |
+            update.json
+            public/update.json
+          retention-days: 14
+
+      - name: Publish Manifest to GitHub Release
+        if: startsWith(github.ref, 'refs/tags/v')
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          TAG_NAME=${GITHUB_REF#refs/tags/}
+          echo "Uploading update.json and latest.json to release ${TAG_NAME}..."
+          gh release upload "${TAG_NAME}" update.json public/update.json --clobber || echo "Release upload skipped or tag not yet published."
+
+
+

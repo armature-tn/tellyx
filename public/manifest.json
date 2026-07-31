@@ -1,0 +1,20 @@
+{
+  "name": "TellyX IPTV Player",
+  "short_name": "TellyX",
+  "description": "High-Performance Web App IPTV Player for Live TV, Movies, Series, and EPG Guides",
+  "start_url": "./player.html",
+  "display": "standalone",
+  "background_color": "#020617",
+  "theme_color": "#e11d48",
+  "orientation": "any",
+  "scope": "./",
+  "categories": ["entertainment", "utilities", "video"],
+  "icons": [
+    {
+      "src": "icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ]
+}

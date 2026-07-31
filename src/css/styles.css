@@ -1,0 +1,810 @@
+/**
+ * @file styles.css
+ * @description Master Full-Experience CSS Design System & Theme Engine for IPTV Player.
+ * Dynamic themes (TellyX Crimson, OLED Pitch Black, Obsidian Cobalt, Cyberpunk Neon,
+ * Emerald Synth, Sunset Coral, Gold Luxury, Nordic Frost) that comprehensively alter 
+ * background atmospheres, navigation bars, glass panels, cards, inputs, modals, and accents.
+ */
+
+@import "tailwindcss";
+
+/* ==========================================================================
+   THEME PALETTE DEFINITIONS & COMPREHENSIVE EXPERIENCES
+   ========================================================================== */
+
+/* THEME 1: TellyX Crimson Cinema (Signature Dark) */
+:root, [data-theme="tellyx_red"] {
+    --bg-main: #0a0405;
+    --bg-header: rgba(18, 7, 10, 0.95);
+    --bg-card: rgba(30, 10, 15, 0.75);
+    --bg-card-hover: rgba(50, 14, 22, 0.85);
+    --bg-card-active: linear-gradient(135deg, rgba(120, 20, 45, 0.9), rgba(20, 5, 10, 0.95));
+    --bg-input: rgba(20, 7, 12, 0.9);
+    --border-card: rgba(225, 29, 72, 0.35);
+    --border-card-hover: rgba(244, 63, 94, 0.65);
+    --accent-color: #e11d48;
+    --accent-hover: #f43f5e;
+    --accent-glow: rgba(225, 29, 72, 0.45);
+    --accent-text: #fb7185;
+    --accent-subtle: rgba(225, 29, 72, 0.18);
+    --text-primary: #ffffff;
+    --text-muted: #fda4af;
+    --modal-bg: #12070b;
+    --font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    --card-radius: 0.85rem;
+    --ui-radius: 0.75rem;
+    --card-shadow: 0 10px 25px -5px rgba(225, 29, 72, 0.3);
+    --bg-ambient: radial-gradient(circle at 50% 0%, rgba(225, 29, 72, 0.45) 0%, transparent 70%);
+}
+
+/* THEME 2: OLED Pitch Black & Sharp Neon (Zero-Glow Minimalist) */
+[data-theme="oled_red"] {
+    --bg-main: #000000;
+    --bg-header: #000000;
+    --bg-card: #080808;
+    --bg-card-hover: #171717;
+    --bg-card-active: linear-gradient(135deg, #2e050a, #0d0002);
+    --bg-input: #0d0d0d;
+    --border-card: #2a2a2a;
+    --border-card-hover: #ef4444;
+    --accent-color: #ef4444;
+    --accent-hover: #dc2626;
+    --accent-glow: rgba(239, 68, 68, 0.2);
+    --accent-text: #fca5a5;
+    --accent-subtle: rgba(239, 68, 68, 0.2);
+    --text-primary: #ffffff;
+    --text-muted: #a3a3a3;
+    --modal-bg: #000000;
+    --font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+    --card-radius: 2px;
+    --ui-radius: 2px;
+    --card-shadow: 0 0 0 1px #2a2a2a;
+    --bg-ambient: none;
+}
+
+/* THEME 3: Obsidian Tech Slate (Deep Indigo & Cobalt) */
+[data-theme="obsidian"] {
+    --bg-main: #050b18;
+    --bg-header: rgba(10, 20, 42, 0.95);
+    --bg-card: rgba(15, 28, 56, 0.8);
+    --bg-card-hover: rgba(26, 44, 84, 0.9);
+    --bg-card-active: linear-gradient(135deg, rgba(37, 99, 235, 0.85), rgba(15, 28, 56, 0.95));
+    --bg-input: rgba(12, 23, 46, 0.9);
+    --border-card: rgba(37, 99, 235, 0.35);
+    --border-card-hover: rgba(96, 165, 250, 0.7);
+    --accent-color: #2563eb;
+    --accent-hover: #3b82f6;
+    --accent-glow: rgba(37, 99, 235, 0.45);
+    --accent-text: #60a5fa;
+    --accent-subtle: rgba(37, 99, 235, 0.18);
+    --text-primary: #ffffff;
+    --text-muted: #93c5fd;
+    --modal-bg: #081023;
+    --font-family: system-ui, -apple-system, sans-serif;
+    --card-radius: 0.75rem;
+    --ui-radius: 0.6rem;
+    --card-shadow: 0 10px 25px -5px rgba(37, 99, 235, 0.3);
+    --bg-ambient: radial-gradient(circle at 50% 0%, rgba(37, 99, 235, 0.4) 0%, transparent 70%);
+}
+
+/* THEME 4: Cyberpunk 2077 HUD (Scanlines & Neon Cyan) */
+[data-theme="cyberpunk"] {
+    --bg-main: #090314;
+    --bg-header: rgba(20, 5, 40, 0.95);
+    --bg-card: rgba(32, 10, 60, 0.85);
+    --bg-card-hover: rgba(55, 18, 98, 0.9);
+    --bg-card-active: linear-gradient(135deg, rgba(147, 51, 234, 0.9), rgba(6, 182, 212, 0.8));
+    --bg-input: rgba(22, 6, 42, 0.95);
+    --border-card: rgba(0, 240, 255, 0.5);
+    --border-card-hover: #f000ff;
+    --accent-color: #06b6d4;
+    --accent-hover: #22d3ee;
+    --accent-glow: rgba(0, 240, 255, 0.6);
+    --accent-text: #38bdf8;
+    --accent-subtle: rgba(6, 182, 212, 0.25);
+    --text-primary: #fdf4ff;
+    --text-muted: #c084fc;
+    --modal-bg: #110426;
+    --font-family: 'Courier New', Courier, monospace;
+    --card-radius: 0px;
+    --ui-radius: 0px;
+    --card-shadow: 0 0 15px rgba(0, 240, 255, 0.35);
+    --bg-ambient: radial-gradient(circle at 50% 0%, rgba(240, 0, 255, 0.5) 0%, transparent 70%);
+}
+
+/* THEME 5: Emerald Hacker Terminal (Matrix Scanlines & Mono) */
+[data-theme="emerald"] {
+    --bg-main: #010f06;
+    --bg-header: rgba(4, 28, 14, 0.96);
+    --bg-card: rgba(8, 42, 22, 0.85);
+    --bg-card-hover: rgba(16, 68, 36, 0.9);
+    --bg-card-active: linear-gradient(135deg, rgba(22, 101, 52, 0.9), rgba(4, 28, 14, 0.95));
+    --bg-input: rgba(5, 30, 16, 0.95);
+    --border-card: rgba(34, 197, 94, 0.4);
+    --border-card-hover: #4ade80;
+    --accent-color: #22c55e;
+    --accent-hover: #16a34a;
+    --accent-glow: rgba(34, 197, 94, 0.5);
+    --accent-text: #86efac;
+    --accent-subtle: rgba(34, 197, 94, 0.2);
+    --text-primary: #4ade80;
+    --text-muted: #86efac;
+    --modal-bg: #03170a;
+    --font-family: ui-monospace, SFMono-Regular, Consolas, 'Liberation Mono', Menlo, monospace;
+    --card-radius: 3px;
+    --ui-radius: 3px;
+    --card-shadow: 0 0 12px rgba(34, 197, 94, 0.3);
+    --bg-ambient: radial-gradient(circle at 50% 0%, rgba(34, 197, 94, 0.4) 0%, transparent 70%);
+}
+
+/* THEME 6: Sunset Vaporwave (Dusk Rose & Coral Gradient) */
+[data-theme="sunset"] {
+    --bg-main: #1a091d;
+    --bg-header: rgba(38, 12, 42, 0.95);
+    --bg-card: rgba(54, 18, 58, 0.8);
+    --bg-card-hover: rgba(82, 26, 88, 0.85);
+    --bg-card-active: linear-gradient(135deg, rgba(244, 63, 94, 0.85), rgba(249, 115, 22, 0.85));
+    --bg-input: rgba(40, 12, 44, 0.9);
+    --border-card: rgba(244, 63, 94, 0.4);
+    --border-card-hover: #f97316;
+    --accent-color: #f43f5e;
+    --accent-hover: #f97316;
+    --accent-glow: rgba(244, 63, 94, 0.5);
+    --accent-text: #fda4af;
+    --accent-subtle: rgba(244, 63, 94, 0.22);
+    --text-primary: #fff1f2;
+    --text-muted: #f472b6;
+    --modal-bg: #240b28;
+    --font-family: system-ui, -apple-system, sans-serif;
+    --card-radius: 1.5rem;
+    --ui-radius: 1.25rem;
+    --card-shadow: 0 10px 30px -5px rgba(244, 63, 94, 0.35);
+    --bg-ambient: radial-gradient(circle at 50% 0%, rgba(249, 115, 22, 0.45) 0%, transparent 70%);
+}
+
+/* THEME 7: Gold Executive Lounge (Onyx & Champagne Gold) */
+[data-theme="gold_luxury"] {
+    --bg-main: #0a0906;
+    --bg-header: rgba(24, 20, 12, 0.96);
+    --bg-card: rgba(38, 32, 18, 0.85);
+    --bg-card-hover: rgba(58, 48, 26, 0.9);
+    --bg-card-active: linear-gradient(135deg, rgba(217, 119, 6, 0.9), rgba(24, 20, 12, 0.95));
+    --bg-input: rgba(22, 18, 10, 0.95);
+    --border-card: rgba(217, 119, 6, 0.4);
+    --border-card-hover: #f59e0b;
+    --accent-color: #d97706;
+    --accent-hover: #f59e0b;
+    --accent-glow: rgba(217, 119, 6, 0.5);
+    --accent-text: #fde047;
+    --accent-subtle: rgba(217, 119, 6, 0.2);
+    --text-primary: #fefce8;
+    --text-muted: #fef08a;
+    --modal-bg: #161208;
+    --font-family: Georgia, Cambria, 'Times New Roman', Times, serif;
+    --card-radius: 1rem;
+    --ui-radius: 0.85rem;
+    --card-shadow: 0 10px 25px -5px rgba(217, 119, 6, 0.35);
+    --bg-ambient: radial-gradient(circle at 50% 0%, rgba(217, 119, 6, 0.45) 0%, transparent 70%);
+}
+
+/* THEME 8: Nordic Frost (Clean Arctic Light Mode) */
+[data-theme="nordic_frost"] {
+    --bg-main: #f1f5f9;
+    --bg-header: rgba(255, 255, 255, 0.95);
+    --bg-card: rgba(255, 255, 255, 0.92);
+    --bg-card-hover: #ffffff;
+    --bg-card-active: linear-gradient(135deg, rgba(224, 242, 254, 0.95), rgba(255, 255, 255, 0.98));
+    --bg-input: #ffffff;
+    --border-card: rgba(14, 165, 233, 0.35);
+    --border-card-hover: #0284c7;
+    --accent-color: #0284c7;
+    --accent-hover: #0369a1;
+    --accent-glow: rgba(2, 132, 199, 0.3);
+    --accent-text: #0369a1;
+    --accent-subtle: rgba(14, 165, 233, 0.15);
+    --text-primary: #0f172a;
+    --text-muted: #475569;
+    --modal-bg: #ffffff;
+    --font-family: system-ui, -apple-system, sans-serif;
+    --card-radius: 1rem;
+    --ui-radius: 0.85rem;
+    --card-shadow: 0 10px 25px -5px rgba(2, 132, 199, 0.15);
+    --bg-ambient: radial-gradient(circle at 50% 0%, rgba(56, 189, 248, 0.35) 0%, transparent 70%);
+}
+
+/* ==========================================================================
+   GLOBAL STRUCTURE & AMBIENT ATMOSPHERE
+   ========================================================================== */
+
+body {
+    background-color: var(--bg-main) !important;
+    color: var(--text-primary) !important;
+    font-family: var(--font-family) !important;
+    overflow-x: hidden;
+    transition: background-color 0.4s ease, color 0.4s ease, font-family 0.3s ease;
+    position: relative;
+}
+
+/* Atmospheric Radial Theme Glow on Page Ceiling */
+body::before {
+    content: '';
+    position: fixed;
+    top: -100px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 100vw;
+    height: 550px;
+    background: var(--bg-ambient) !important;
+    pointer-events: none;
+    z-index: 0;
+    opacity: 0.75;
+    transition: background 0.5s ease;
+}
+
+/* Scanline / Texture Overlay for Cyberpunk & Terminal Themes */
+[data-theme="cyberpunk"]::after {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background: repeating-linear-gradient(0deg, rgba(0,0,0,0.12), rgba(0,0,0,0.12) 1px, transparent 1px, transparent 3px);
+    pointer-events: none;
+    z-index: 999;
+    opacity: 0.4;
+}
+
+[data-theme="emerald"]::after {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background: repeating-linear-gradient(0deg, rgba(0,255,0,0.03), rgba(0,255,0,0.03) 1px, transparent 1px, transparent 2px);
+    pointer-events: none;
+    z-index: 999;
+    opacity: 0.5;
+}
+
+/* Nordic Frost Light Mode Overrides for High Contrast Legibility & Pristine Surface Separation */
+[data-theme="nordic_frost"] .bg-slate-900,
+[data-theme="nordic_frost"] .bg-slate-950,
+[data-theme="nordic_frost"] .bg-slate-900\/90,
+[data-theme="nordic_frost"] .bg-slate-950\/90,
+[data-theme="nordic_frost"] .bg-slate-900\/80,
+[data-theme="nordic_frost"] .bg-slate-950\/80,
+[data-theme="nordic_frost"] .bg-slate-900\/95 {
+    background-color: #ffffff !important;
+    border-color: rgba(14, 165, 233, 0.25) !important;
+    color: #0f172a !important;
+}
+
+[data-theme="nordic_frost"] .bg-slate-800,
+[data-theme="nordic_frost"] .bg-slate-800\/80,
+[data-theme="nordic_frost"] .bg-slate-800\/90 {
+    background-color: #f1f5f9 !important;
+    border-color: rgba(14, 165, 233, 0.25) !important;
+    color: #0f172a !important;
+}
+
+[data-theme="nordic_frost"] .bg-slate-700 {
+    background-color: #e2e8f0 !important;
+    border-color: rgba(14, 165, 233, 0.3) !important;
+    color: #0f172a !important;
+}
+
+[data-theme="nordic_frost"] .hover\:bg-slate-800:hover {
+    background-color: #e2e8f0 !important;
+    color: #0f172a !important;
+}
+
+[data-theme="nordic_frost"] .hover\:bg-slate-700:hover {
+    background-color: #cbd5e1 !important;
+    color: #0f172a !important;
+}
+
+[data-theme="nordic_frost"] .text-slate-400,
+[data-theme="nordic_frost"] .text-slate-300,
+[data-theme="nordic_frost"] .text-slate-200 {
+    color: #334155 !important;
+}
+
+[data-theme="nordic_frost"] .text-slate-100,
+[data-theme="nordic_frost"] .text-white {
+    color: #0f172a !important;
+}
+
+[data-theme="nordic_frost"] header .text-white {
+    color: #0f172a !important;
+}
+
+[data-theme="nordic_frost"] header h1.bg-gradient-to-r {
+    background-image: linear-gradient(to right, #0284c7, #0369a1, #0f172a) !important;
+}
+
+[data-theme="nordic_frost"] input::placeholder,
+[data-theme="nordic_frost"] textarea::placeholder {
+    color: #64748b !important;
+}
+
+[data-theme="nordic_frost"] input,
+[data-theme="nordic_frost"] select,
+[data-theme="nordic_frost"] textarea {
+    background-color: #ffffff !important;
+    border-color: rgba(14, 165, 233, 0.35) !important;
+    color: #0f172a !important;
+}
+
+/* Solid Accent Buttons & Badges - Protect White Text */
+[data-theme="nordic_frost"] .bg-rose-600,
+[data-theme="nordic_frost"] .bg-rose-500,
+[data-theme="nordic_frost"] .bg-accent,
+[data-theme="nordic_frost"] .bg-emerald-600,
+[data-theme="nordic_frost"] #btnSubmitParentalPin,
+[data-theme="nordic_frost"] #btnLoadMoreChannels,
+[data-theme="nordic_frost"] #btnResetDefaults,
+[data-theme="nordic_frost"] #btnSavePlaylist,
+[data-theme="nordic_frost"] #typeLiveTv.bg-rose-600,
+[data-theme="nordic_frost"] #categoryList button.bg-rose-600,
+[data-theme="nordic_frost"] .btn-audio-slot.bg-emerald-600 {
+    background-color: var(--accent-color, #0284c7) !important;
+    color: #ffffff !important;
+}
+
+[data-theme="nordic_frost"] .bg-rose-600 *,
+[data-theme="nordic_frost"] .bg-rose-500 *,
+[data-theme="nordic_frost"] .bg-accent *,
+[data-theme="nordic_frost"] .bg-emerald-600 *,
+[data-theme="nordic_frost"] #btnSubmitParentalPin *,
+[data-theme="nordic_frost"] #btnLoadMoreChannels *,
+[data-theme="nordic_frost"] #btnResetDefaults *,
+[data-theme="nordic_frost"] #btnSavePlaylist *,
+[data-theme="nordic_frost"] .btn-audio-slot.bg-emerald-600 * {
+    color: #ffffff !important;
+}
+
+[data-theme="nordic_frost"] .hover\:bg-rose-600:hover {
+    background-color: var(--accent-hover, #0369a1) !important;
+    color: #ffffff !important;
+}
+
+[data-theme="nordic_frost"] .hover\:bg-rose-600:hover * {
+    color: #ffffff !important;
+}
+
+/* Emerald / Green Status Badges Contrast in Light Mode */
+[data-theme="nordic_frost"] .text-emerald-400,
+[data-theme="nordic_frost"] .text-emerald-500 {
+    color: #047857 !important;
+}
+
+[data-theme="nordic_frost"] .bg-emerald-500\/20,
+[data-theme="nordic_frost"] .bg-emerald-600\/20 {
+    background-color: rgba(16, 185, 129, 0.15) !important;
+    border-color: rgba(5, 150, 105, 0.3) !important;
+}
+
+/* Protect Video Player, Cinema Overlay, and Quad Multi-View Controls */
+[data-theme="nordic_frost"] #singlePlayerContainer,
+[data-theme="nordic_frost"] #multiViewContainer,
+[data-theme="nordic_frost"] .quad-slot-box {
+    background-color: #000000 !important;
+    border-color: rgba(14, 165, 233, 0.3) !important;
+}
+
+[data-theme="nordic_frost"] #singlePlayerContainer .player-controls,
+[data-theme="nordic_frost"] #singlePlayerContainer .bg-slate-900\/90,
+[data-theme="nordic_frost"] #singlePlayerContainer .bg-slate-950\/80,
+[data-theme="nordic_frost"] #singlePlayerContainer .bg-slate-950\/90,
+[data-theme="nordic_frost"] #singlePlayerContainer .bg-slate-900\/95,
+[data-theme="nordic_frost"] #singlePlayerContainer #pinSlotMenu,
+[data-theme="nordic_frost"] #multiViewContainer .bg-slate-900\/90,
+[data-theme="nordic_frost"] #multiViewContainer .bg-slate-950\/90,
+[data-theme="nordic_frost"] #multiViewContainer .bg-slate-950\/80,
+[data-theme="nordic_frost"] .quad-slot-box .bg-slate-900\/90,
+[data-theme="nordic_frost"] .quad-slot-box .bg-slate-950\/90 {
+    background-color: rgba(15, 23, 42, 0.88) !important;
+    border-color: rgba(51, 65, 85, 0.8) !important;
+    color: #f8fafc !important;
+}
+
+[data-theme="nordic_frost"] #singlePlayerContainer .player-controls *,
+[data-theme="nordic_frost"] #singlePlayerContainer .text-white,
+[data-theme="nordic_frost"] #singlePlayerContainer .text-slate-300,
+[data-theme="nordic_frost"] #singlePlayerContainer .text-slate-200,
+[data-theme="nordic_frost"] #multiViewContainer .text-white,
+[data-theme="nordic_frost"] #multiViewContainer .text-slate-300,
+[data-theme="nordic_frost"] .quad-slot-box .text-white,
+[data-theme="nordic_frost"] .quad-slot-box .text-slate-300 {
+    color: #f8fafc !important;
+}
+
+[data-theme="nordic_frost"] #singlePlayerContainer .text-slate-400,
+[data-theme="nordic_frost"] #multiViewContainer .text-slate-400,
+[data-theme="nordic_frost"] .quad-slot-box .text-slate-400 {
+    color: #94a3b8 !important;
+}
+
+[data-theme="nordic_frost"] #singlePlayerContainer .text-emerald-400,
+[data-theme="nordic_frost"] #multiViewContainer .text-emerald-400 {
+    color: #34d399 !important;
+}
+
+[data-theme="nordic_frost"] #singlePlayerContainer select,
+[data-theme="nordic_frost"] #singlePlayerContainer input[type="range"] {
+    background-color: rgba(15, 23, 42, 0.9) !important;
+    color: #f8fafc !important;
+}
+
+/* Ensure main page containers sit cleanly above atmospheric glow */
+header, main, footer {
+    position: relative;
+    z-index: 10;
+}
+
+/* Header Navigation Bar */
+header {
+    background-color: var(--bg-header) !important;
+    border-bottom-color: var(--border-card) !important;
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    transition: background-color 0.4s ease, border-color 0.4s ease;
+}
+
+/* Dynamic Accent Utility Classes */
+.bg-accent { background-color: var(--accent-color) !important; }
+.text-accent { color: var(--accent-text) !important; }
+.border-accent { border-color: var(--accent-color) !important; }
+
+/* Custom Glassmorphism Containers */
+.glass-panel {
+    background: var(--bg-card) !important;
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+    border: 1px solid var(--border-card) !important;
+    border-radius: var(--ui-radius) !important;
+    transition: background-color 0.4s ease, border-color 0.4s ease, border-radius 0.3s ease;
+}
+
+/* Custom Theme Scrollbar */
+::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+}
+
+/* Scrollbar Hiding Utility for Carousels */
+.no-scrollbar::-webkit-scrollbar,
+.scrollbar-none::-webkit-scrollbar {
+    display: none !important;
+    width: 0 !important;
+    height: 0 !important;
+}
+.no-scrollbar,
+.scrollbar-none {
+    -ms-overflow-style: none !important;
+    scrollbar-width: none !important;
+}
+
+::-webkit-scrollbar-track {
+    background: var(--bg-main);
+}
+
+::-webkit-scrollbar-thumb {
+    background: var(--accent-color);
+    opacity: 0.85;
+    border-radius: 9999px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: var(--accent-hover);
+}
+
+/* ==========================================================================
+   CARDS, BUTTONS & INTERACTIVE ELEMENTS
+   ========================================================================== */
+
+/* Channel Grid Cards */
+[id^="card_"] {
+    background-color: var(--bg-card) !important;
+    border-color: var(--border-card) !important;
+    border-radius: var(--card-radius) !important;
+    box-shadow: var(--card-shadow);
+    transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1) !important;
+}
+
+[id^="card_"]:hover {
+    background-color: var(--bg-card-hover) !important;
+    border-color: var(--border-card-hover) !important;
+    transform: translateY(-2px);
+    box-shadow: 0 10px 25px -5px var(--accent-glow) !important;
+}
+
+/* Currently Playing / Active Channel Highlight */
+[id^="card_"].bg-gradient-to-br,
+[id^="card_"].ring-rose-500\/50 {
+    background: var(--bg-card-active) !important;
+    border-color: var(--accent-color) !important;
+    box-shadow: 0 0 25px 3px var(--accent-glow) !important;
+}
+
+/* Card EPG Progress Bar */
+[id^="card_"] .bg-rose-500 {
+    background-color: var(--accent-color) !important;
+}
+
+[id^="card_"] .text-rose-400 {
+    color: var(--accent-text) !important;
+}
+
+/* Inputs, Textareas, Select Dropdowns */
+input, select, textarea {
+    background-color: var(--bg-input) !important;
+    border-color: var(--border-card) !important;
+    border-radius: var(--ui-radius) !important;
+    color: var(--text-primary) !important;
+    transition: background-color 0.3s ease, border-color 0.3s ease, border-radius 0.3s ease;
+}
+
+input:focus, select:focus, textarea:focus {
+    border-color: var(--accent-color) !important;
+    box-shadow: 0 0 0 2px var(--accent-glow) !important;
+}
+
+/* Buttons and Accents */
+.bg-rose-600,
+#btnLoadMoreChannels,
+#btnResetDefaults {
+    background-color: var(--accent-color) !important;
+    border-radius: var(--ui-radius) !important;
+    color: #ffffff !important;
+    transition: background-color 0.2s ease, box-shadow 0.2s ease, border-radius 0.3s ease;
+}
+
+.bg-rose-600:hover,
+#btnLoadMoreChannels:hover,
+#btnResetDefaults:hover {
+    background-color: var(--accent-hover) !important;
+    box-shadow: 0 4px 15px var(--accent-glow) !important;
+}
+
+/* Category Filter Tabs / Pills */
+#categoryList button {
+    border-radius: var(--ui-radius) !important;
+}
+
+#categoryList button.bg-rose-600 {
+    background-color: var(--accent-color) !important;
+    color: #ffffff !important;
+    box-shadow: 0 4px 14px var(--accent-glow) !important;
+}
+
+#categoryList button:not(.bg-rose-600) {
+    background-color: var(--bg-card) !important;
+    border-color: var(--border-card) !important;
+    color: var(--text-muted) !important;
+}
+
+#categoryList button:not(.bg-rose-600):hover {
+    background-color: var(--bg-card-hover) !important;
+    color: var(--text-primary) !important;
+    border-color: var(--border-card-hover) !important;
+}
+
+/* Quick Content Type Switcher (Live TV / Movies / Series) */
+#typeLiveTv, #typeMovies, #typeSeries {
+    border-radius: var(--ui-radius) !important;
+    transition: all 0.2s ease;
+}
+
+/* Accent Badges & Highlights */
+.text-rose-400, .text-rose-500, .text-rose-300 {
+    color: var(--accent-text) !important;
+}
+
+.bg-rose-500\/10, .bg-rose-950\/90, .bg-rose-950, .bg-rose-900\/90 {
+    background-color: var(--accent-subtle) !important;
+}
+
+.border-rose-500\/20, .border-rose-500\/40, .border-rose-950, .border-rose-900\/60, .border-rose-950\/80 {
+    border-color: var(--border-card) !important;
+}
+
+/* Header Brand Logo Dynamic Theme Coloring */
+header .stroke-rose-500 { stroke: var(--accent-color) !important; }
+header .fill-rose-500 { fill: var(--accent-color) !important; }
+header .fill-rose-950\/60 { fill: var(--accent-subtle) !important; }
+
+/* Modals & Dialog Surfaces */
+#playlistModal > div,
+#epgModal > div,
+#programModal > div,
+#settingsModal > div,
+#parentalModal > div,
+#helpModal > div {
+    background-color: var(--modal-bg) !important;
+    border-color: var(--border-card) !important;
+    border-radius: var(--ui-radius) !important;
+    color: var(--text-primary) !important;
+    box-shadow: 0 25px 50px -12px var(--accent-glow) !important;
+    transition: background-color 0.4s ease, border-color 0.4s ease, border-radius 0.3s ease;
+}
+
+/* Custom Scrollbar Rules for Dialogs and Overflow Containers */
+::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+}
+::-webkit-scrollbar-track {
+    background: rgba(15, 23, 42, 0.6);
+    border-radius: 4px;
+}
+::-webkit-scrollbar-thumb {
+    background: var(--accent-color, #e11d48);
+    border-radius: 4px;
+}
+::-webkit-scrollbar-thumb:hover {
+    background: var(--accent-hover, #f43f5e);
+}
+
+/* EPG Matrix Schedule Table Theme Styling */
+.epg-timeline-header, .epg-channel-col {
+    background-color: var(--bg-main) !important;
+    border-color: var(--border-card) !important;
+}
+
+.epg-program-block {
+    background-color: var(--bg-card) !important;
+    border-color: var(--border-card) !important;
+    color: var(--text-primary) !important;
+}
+
+.epg-program-block:hover {
+    background-color: var(--bg-card-hover) !important;
+    border-color: var(--accent-color) !important;
+}
+
+.epg-program-block.active-now {
+    border-color: var(--accent-color) !important;
+    background: var(--bg-card-active) !important;
+}
+
+/* Cinema Overlay Auto-Hide & Seek Bar Accent */
+.player-container .player-controls,
+.player-container .player-top-controls {
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.3s ease-in-out;
+}
+
+.player-container:hover .player-controls,
+.player-container:focus-within .player-controls,
+.player-container:hover .player-top-controls,
+.player-container:focus-within .player-top-controls {
+    opacity: 1;
+    pointer-events: auto;
+}
+
+/* Fullscreen & Autohide Player Controls Overrides */
+.player-container.is-fullscreen {
+    position: fixed !important;
+    top: 0 !important;
+    left: 0 !important;
+    right: 0 !important;
+    bottom: 0 !important;
+    width: 100vw !important;
+    height: 100vh !important;
+    z-index: 999990 !important;
+    background-color: #000 !important;
+    border-radius: 0 !important;
+    max-width: none !important;
+    max-height: none !important;
+    margin: 0 !important;
+    padding: 0 !important;
+}
+
+.player-container.controls-hidden,
+.player-container.is-fullscreen.controls-hidden {
+    cursor: none !important;
+}
+
+.player-container.controls-hidden .player-controls,
+.player-container.controls-hidden .player-top-controls,
+.player-container.is-fullscreen.controls-hidden .player-controls,
+.player-container.is-fullscreen.controls-hidden .player-top-controls {
+    opacity: 0 !important;
+    pointer-events: none !important;
+    transition: opacity 0.4s ease-in-out !important;
+}
+
+.player-container.is-fullscreen:not(.controls-hidden) .player-controls,
+.player-container.is-fullscreen:not(.controls-hidden) .player-top-controls {
+    opacity: 1 !important;
+    pointer-events: auto !important;
+    transition: opacity 0.2s ease-in-out !important;
+}
+
+/* Range Slider Accent Color */
+input[type="range"]::-webkit-slider-thumb {
+    background: var(--accent-color) !important;
+}
+input[type="range"]::-moz-range-thumb {
+    background: var(--accent-color) !important;
+}
+.accent-rose-500 {
+    accent-color: var(--accent-color) !important;
+}
+
+/* TV Remote D-Pad Focus Glow & TiviMate Spatial Focus */
+a:focus-visible, button:focus-visible, input:focus-visible, select:focus-visible, [tabindex="0"]:focus-visible, [data-channel-id]:focus {
+    outline: none !important;
+    box-shadow: 0 0 0 3px var(--accent-hover), 0 0 25px var(--accent-glow) !important;
+    border-color: var(--accent-hover) !important;
+    transform: scale(1.03) !important;
+    z-index: 30 !important;
+    transition: transform 0.15s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.15s ease-out, border-color 0.15s ease-out !important;
+}
+
+/* Focused channel card highlights */
+.channel-card:focus, [data-channel-id]:focus {
+    background: var(--bg-card-active) !important;
+    border-color: var(--accent-hover) !important;
+}
+
+/* Audio Spectrum Canvas Overlay */
+#audioCanvas {
+    pointer-events: none;
+}
+
+/* Recording Pulse Indicator */
+@keyframes recordPulse {
+    0%, 100% { opacity: 1; transform: scale(1); }
+    50% { opacity: 0.4; transform: scale(0.9); }
+}
+
+.animate-rec-dot {
+    animation: recordPulse 1.2s infinite ease-in-out;
+}
+
+/* Splash Screen Exit Transition */
+#startupSplashScreen.splash-hide {
+    opacity: 0 !important;
+    transform: scale(1.08) !important;
+    filter: blur(10px) !important;
+    pointer-events: none !important;
+}
+
+/* Floating In-App Picture-in-Picture Mini-Player Fallback */
+.floating-pip-active {
+    position: fixed !important;
+    bottom: 24px !important;
+    right: 24px !important;
+    width: 340px !important;
+    height: 191px !important;
+    max-width: calc(100vw - 32px) !important;
+    max-height: calc(100vh - 32px) !important;
+    z-index: 99999 !important;
+    box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.95), 0 0 0 2px rgba(244, 63, 94, 0.85) !important;
+    border-radius: 1rem !important;
+    transition: width 0.3s cubic-bezier(0.16, 1, 0.3, 1), height 0.3s cubic-bezier(0.16, 1, 0.3, 1) !important;
+    animation: pipPopIn 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+    overflow: hidden !important;
+}
+
+@keyframes pipPopIn {
+    from {
+        opacity: 0;
+        transform: scale(0.85) translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: scale(1) translateY(0);
+    }
+}
+
+@media (max-width: 640px) {
+    .floating-pip-active {
+        width: 260px !important;
+        height: 146px !important;
+        bottom: 16px !important;
+        right: 16px !important;
+    }
+}
+
+
+

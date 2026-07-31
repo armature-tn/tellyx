@@ -1,0 +1,72 @@
+# Ignore everything by default
+*
+
+# Whitelist root files
+!.gitignore
+!.env.example
+!/README.md
+!/NOTICE
+!/LICENSE
+!/index.html
+!/player.html
+!/package.json
+!/package-lock.json
+!/tsconfig.json
+!/vite.config.ts
+!/metadata.json
+
+# .github
+!/.github
+/.github/*
+!/.github/workflows
+/.github/workflows/*
+!/.github/workflows/ci.yml
+
+# public
+!/public
+/public/*
+!/public/icon.svg
+!/public/manifest.json
+!/public/sw.js
+
+# scripts
+!/scripts
+/scripts/*
+!/scripts/generate-update-manifest.js
+!/scripts/setup-android-keystore.js
+
+# src
+!/src
+/src/*
+!/src/App.tsx
+!/src/index.css
+!/src/main.tsx
+!/src/vite-env.d.ts
+!/src/css
+/src/css/*
+!/src/css/styles.css
+!/src/js
+/src/js/*
+!/src/js/app.js
+!/src/js/epg-engine.js
+!/src/js/iptv-core.js
+!/src/js/security.js
+!/src/js/stream-engine.js
+!/src/js/tauri-bridge.js
+!/src/js/tv-remote.js
+!/src/js/ui-controller.js
+!/src/js/wasm-engine.js
+
+# src-tauri
+!/src-tauri
+/src-tauri/*
+!/src-tauri/Cargo.toml
+!/src-tauri/build.rs
+!/src-tauri/tauri.conf.json
+!/src-tauri/capabilities
+/src-tauri/capabilities/*
+!/src-tauri/capabilities/default.json
+!/src-tauri/src
+/src-tauri/src/*
+!/src-tauri/src/lib.rs
+!/src-tauri/src/main.rs

@@ -1,0 +1,59 @@
+{
+  "$schema": "https://raw.githubusercontent.com/tauri-apps/tauri/dev/crates/tauri-config-schema/schema.json",
+  "productName": "TellyX",
+  "version": "0.1.0",
+  "identifier": "tn.armature.tellyx",
+  "build": {
+    "beforeDevCommand": "",
+    "beforeBuildCommand": "npm run generate:icons && npm run build",
+    "devUrl": "http://localhost:3000/player.html",
+    "frontendDist": "../dist"
+  },
+  "app": {
+    "windows": [
+      {
+        "title": "TellyX IPTV Player",
+        "url": "player.html",
+        "width": 1280,
+        "height": 800,
+        "resizable": true,
+        "fullscreen": false
+      }
+    ],
+    "security": {
+      "csp": null
+    }
+  },
+  "bundle": {
+    "active": true,
+    "targets": "all",
+    "icon": [
+      "icons/32x32.png",
+      "icons/128x128.png",
+      "icons/128x128@2x.png",
+      "icons/icon.icns",
+      "icons/icon.ico"
+    ],
+    "windows": {
+      "webviewInstallMode": {
+        "type": "downloadBootstrapper"
+      },
+      "wix": {
+        "language": "en-US"
+      },
+      "nsis": {
+        "languages": ["English"]
+      }
+    }
+  },
+  "plugins": {
+    "updater": {
+      "pubkey": "dW50cnVzdGVkIGNvbW1lbnQ6IG1pbmlzaWduIHB1YmxpYyBrZXk6IDREQzBENDIxNjlENDM3RTYKUlVSRjlxY2RNSDljTGdUSlAxb25LTVM4dHhpUms4NnpkTGdrTmNzeW9ZOHlBVTFpM05LSE1xTEkK",
+      "endpoints": [
+        "https://armature.tn/tellyx/update.json",
+        "https://raw.githubusercontent.com/armature-tn/tellyx/main/update.json",
+        "https://github.com/armature-tn/tellyx/releases/latest/download/latest.json"
+      ]
+    }
+  }
+}
