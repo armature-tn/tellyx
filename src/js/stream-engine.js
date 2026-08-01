@@ -447,11 +447,8 @@ export class StreamEngine {
 
         let isVideoOnly = false;
         if (hasVideo) {
-            if (video.mozHasAudio === false) {
-                isVideoOnly = true;
-            } else if (video.audioTracks && video.audioTracks.length === 0) {
-                isVideoOnly = true;
-            } else if (this.#stats.hasAudioTrack === false) {
+            // Only flag video-only if demuxer or codec failure explicitly confirmed missing/unsupported audio track
+            if (this.#stats.hasAudioTrack === false || this.#stats.unsupportedAudioCodec === true) {
                 isVideoOnly = true;
             }
         }
@@ -593,7 +590,9 @@ export class StreamEngine {
                     isSettled = true;
                     cleanup();
                     this.#stats.protocol = 'HLS.js Adaptive Engine';
-                    this.#stats.hasAudioTrack = Boolean(data.audioTracks && data.audioTracks.length > 0);
+                    if (data.audioTracks && data.audioTracks.length > 0) {
+                        this.#stats.hasAudioTrack = true;
+                    }
                     this.#variantStreams = (data.levels || []).map(lvl => ({
                         bandwidth: lvl.bitrate,
                         resolution: `${lvl.width}x${lvl.height}`,
@@ -605,7 +604,9 @@ export class StreamEngine {
             });
 
             hls.on(Hls.Events.AUDIO_TRACKS_UPDATED, (event, data) => {
-                this.#stats.hasAudioTrack = Boolean(data.audioTracks && data.audioTracks.length > 0);
+                if (data.audioTracks && data.audioTracks.length > 0) {
+                    this.#stats.hasAudioTrack = true;
+                }
             });
 
             hls.on(Hls.Events.ERROR, (event, data) => {
@@ -702,9 +703,9 @@ export class StreamEngine {
 
                 player.on(mpegts.Events.MEDIA_INFO, (info) => {
                     if (info) {
-                        if (info.hasAudio === false || info.audioCodec === null) {
+                        if (info.hasAudio === false) {
                             this.#stats.hasAudioTrack = false;
-                        } else {
+                        } else if (info.hasAudio === true) {
                             this.#stats.hasAudioTrack = true;
                         }
                     }

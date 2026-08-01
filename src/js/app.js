@@ -333,6 +333,7 @@ class Application {
             this.activeCategory = 'All';
         }
 
+        this.hideSeriesDetail();
         this.updateTypeButtonsUI(selected);
         this.renderUI();
 
@@ -429,9 +430,9 @@ class Application {
     async playChannel(channel) {
         if (!channel) return;
 
-        // Intercept TV Series show selection to open Seasons & Episodes Modal
+        // Intercept TV Series show selection to open seamless inline Seasons & Episodes view
         if (channel.type === 'series' && (channel.seriesId || (channel.id && channel.id.startsWith('xtream_series_')))) {
-            this.openSeriesModal(channel);
+            this.openSeriesDetail(channel);
             return;
         }
 
@@ -627,7 +628,7 @@ class Application {
         this._hasNotifiedAudioOnly = false;
 
         const health = this.streamEngine ? this.streamEngine.getTrackHealthStatus() : null;
-        const isVideoOnly = health ? health.isVideoOnly : (videoEl.mozHasAudio === false);
+        const isVideoOnly = health ? health.isVideoOnly : false;
 
         if (isVideoOnly && !videoEl.muted && videoEl.volume > 0) {
             if (videoOnlyBadge) videoOnlyBadge.classList.remove('hidden');
@@ -690,29 +691,38 @@ class Application {
      * 
      * @param {Object} seriesChannel 
      */
-    async openSeriesModal(seriesChannel) {
-        const modal = document.getElementById('seriesModal');
-        if (!modal) return;
+    /**
+     * Seamlessly displays the inline Series detail view (seasons & episodes) under the playing now box.
+     * 
+     * @async
+     * @param {Object} seriesChannel 
+     */
+    async openSeriesDetail(seriesChannel) {
+        if (!seriesChannel) return;
 
-        this.uiController.toggleModal('seriesModal');
+        const detailContainer = document.getElementById('seriesDetailContainer');
+        const channelGrid = document.getElementById('channelGrid');
+        if (!detailContainer) return;
 
-        const loadingEl = document.getElementById('seriesModalLoading');
-        const errorEl = document.getElementById('seriesModalError');
-        const contentEl = document.getElementById('seriesModalContent');
-        const titleEl = document.getElementById('seriesModalTitle');
-        const catEl = document.getElementById('seriesModalCategory');
+        // Hide main channel grid and show inline series detail container
+        if (channelGrid) channelGrid.classList.add('hidden');
+        detailContainer.classList.remove('hidden');
 
-        if (titleEl) titleEl.textContent = seriesChannel.name || 'TV Series';
+        detailContainer.scrollTop = 0;
+
+        const loadingEl = document.getElementById('seriesDetailLoading');
+        const errorEl = document.getElementById('seriesDetailError');
+        const contentEl = document.getElementById('seriesDetailContent');
+        const catEl = document.getElementById('seriesDetailCategory');
+
         if (catEl) catEl.textContent = seriesChannel.group || 'TV Series';
-
         if (loadingEl) loadingEl.classList.remove('hidden');
         if (errorEl) errorEl.classList.add('hidden');
         if (contentEl) contentEl.classList.add('hidden');
 
-        const fallbackBtn = document.getElementById('btnSeriesPlayFallback');
+        const fallbackBtn = document.getElementById('btnSeriesDetailPlayFallback');
         if (fallbackBtn) {
             fallbackBtn.onclick = () => {
-                this.uiController.toggleModal('seriesModal');
                 this.playDirectStream(seriesChannel);
             };
         }
@@ -727,12 +737,12 @@ class Application {
             if (contentEl) contentEl.classList.remove('hidden');
 
             const info = seriesData.info || {};
-            const posterEl = document.getElementById('seriesModalPoster');
-            const headerTitleEl = document.getElementById('seriesModalHeaderTitle');
-            const yearEl = document.getElementById('seriesModalYear');
-            const genreEl = document.getElementById('seriesModalGenre');
-            const ratingEl = document.getElementById('seriesModalRating');
-            const plotEl = document.getElementById('seriesModalPlot');
+            const posterEl = document.getElementById('seriesDetailPoster');
+            const headerTitleEl = document.getElementById('seriesDetailHeaderTitle');
+            const yearEl = document.getElementById('seriesDetailYear');
+            const genreEl = document.getElementById('seriesDetailGenre');
+            const ratingEl = document.getElementById('seriesDetailRating');
+            const plotEl = document.getElementById('seriesDetailPlot');
 
             if (posterEl) posterEl.src = info.cover || seriesChannel.logo || 'https://images.unsplash.com/photo-1574375927938-d5a98e8ffe85?w=300&q=80';
             if (headerTitleEl) headerTitleEl.textContent = info.name || seriesChannel.name;
@@ -741,10 +751,10 @@ class Application {
             if (ratingEl) ratingEl.textContent = info.rating ? `★ ${info.rating}` : '★ N/A';
             if (plotEl) plotEl.textContent = info.plot || info.description || 'No overview available for this series.';
 
-            const seasonsContainer = document.getElementById('seriesSeasonsContainer');
-            const episodesContainer = document.getElementById('seriesEpisodesContainer');
-            const episodesHeader = document.getElementById('seriesEpisodesHeader');
-            const episodesCount = document.getElementById('seriesEpisodesCount');
+            const seasonsContainer = document.getElementById('seriesDetailSeasonsContainer');
+            const episodesContainer = document.getElementById('seriesDetailEpisodesContainer');
+            const episodesHeader = document.getElementById('seriesDetailEpisodesHeader');
+            const episodesCount = document.getElementById('seriesDetailEpisodesCount');
 
             if (seasonsContainer) seasonsContainer.innerHTML = '';
             if (episodesContainer) episodesContainer.innerHTML = '';
@@ -781,10 +791,15 @@ class Application {
                         const epExt = ep.container_extension || 'mp4';
                         const epStreamUrl = ep.direct_source || `${seriesData.server}/series/${seriesData.user}/${seriesData.pass}/${ep.id}.${epExt}`;
                         const epCover = ep.info?.movie_image || info.cover || seriesChannel.logo || '';
+                        const isCurrentlyPlaying = this.activeChannel && (this.activeChannel.id === `xtream_ep_${ep.id}` || this.activeChannel.url === epStreamUrl);
 
                         const card = document.createElement('div');
-                        card.className = 'bg-slate-800/80 hover:bg-slate-800 border border-slate-700/60 hover:border-rose-500/50 rounded-xl p-3 flex flex-col justify-between space-y-3 transition-all group cursor-pointer shadow-md';
-                        
+                        card.className = `border rounded-xl p-3 flex flex-col justify-between space-y-3 transition-all group cursor-pointer shadow-md ${
+                            isCurrentlyPlaying
+                                ? 'bg-rose-950/50 border-rose-500 ring-1 ring-rose-500/60'
+                                : 'bg-slate-800/80 hover:bg-slate-800 border-slate-700/60 hover:border-rose-500/50'
+                        }`;
+
                         card.innerHTML = `
                             <div class="flex items-start space-x-3">
                                 <div class="w-16 h-12 bg-slate-900 rounded-lg border border-slate-700/50 overflow-hidden shrink-0 relative flex items-center justify-center">
@@ -796,14 +811,14 @@ class Application {
                                     </div>
                                 </div>
                                 <div class="min-w-0 flex-1">
-                                    <div class="text-[10px] font-bold text-rose-400 uppercase tracking-wider">Episode ${epNum}</div>
+                                    <div class="text-[10px] font-bold ${isCurrentlyPlaying ? 'text-amber-400' : 'text-rose-400'} uppercase tracking-wider">Episode ${epNum}</div>
                                     <h5 class="text-xs font-semibold text-white group-hover:text-rose-300 transition-colors truncate" title="${SecurityController.escapeHTML(epTitle)}">${SecurityController.escapeHTML(epTitle)}</h5>
                                     ${ep.info?.duration ? `<div class="text-[10px] text-slate-400 font-mono mt-0.5">${SecurityController.escapeHTML(ep.info.duration)}</div>` : ''}
                                 </div>
                             </div>
-                            <button class="w-full py-1.5 bg-rose-600/20 group-hover:bg-rose-600 text-rose-300 group-hover:text-white font-bold rounded-lg text-xs transition-colors flex items-center justify-center space-x-1.5">
+                            <button type="button" class="w-full py-1.5 ${isCurrentlyPlaying ? 'bg-rose-600 text-white' : 'bg-rose-600/20 group-hover:bg-rose-600 text-rose-300 group-hover:text-white'} font-bold rounded-lg text-xs transition-colors flex items-center justify-center space-x-1.5 cursor-pointer">
                                 <svg class="w-3.5 h-3.5 fill-current" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
-                                <span>Play Episode ${epNum}</span>
+                                <span>${isCurrentlyPlaying ? 'Now Playing' : `Play Episode ${epNum}`}</span>
                             </button>
                         `;
 
@@ -816,8 +831,8 @@ class Application {
                                 group: seriesChannel.group || 'TV Series',
                                 type: 'series'
                             };
-                            this.uiController.toggleModal('seriesModal');
                             this.playDirectStream(epChannel);
+                            renderSeasonEpisodes(seasonKey);
                         };
 
                         episodesContainer.appendChild(card);
@@ -827,6 +842,7 @@ class Application {
 
             seasonKeys.forEach((sKey) => {
                 const btn = document.createElement('button');
+                btn.type = 'button';
                 btn.dataset.seasonKey = String(sKey);
                 btn.textContent = `Season ${sKey}`;
                 btn.onclick = () => renderSeasonEpisodes(sKey);
@@ -838,14 +854,33 @@ class Application {
             }
 
         } catch (err) {
-            console.error('[SeriesModal] Error fetching series info:', err);
+            console.error('[SeriesDetail] Error fetching series info:', err);
             if (loadingEl) loadingEl.classList.add('hidden');
             if (errorEl) {
                 errorEl.classList.remove('hidden');
-                const msgEl = document.getElementById('seriesModalErrorMsg');
+                const msgEl = document.getElementById('seriesDetailErrorMsg');
                 if (msgEl) msgEl.textContent = `Could not load seasons: ${err.message || 'Server error'}`;
             }
         }
+    }
+
+    /**
+     * Hides the inline series detail view and restores the channel catalog grid.
+     */
+    hideSeriesDetail() {
+        const detailContainer = document.getElementById('seriesDetailContainer');
+        const channelGrid = document.getElementById('channelGrid');
+        if (detailContainer) detailContainer.classList.add('hidden');
+        if (channelGrid) channelGrid.classList.remove('hidden');
+    }
+
+    /**
+     * Backward-compatible helper for series opening.
+     * 
+     * @param {Object} seriesChannel 
+     */
+    async openSeriesModal(seriesChannel) {
+        return this.openSeriesDetail(seriesChannel);
     }
 
     /**
@@ -1528,6 +1563,7 @@ class Application {
             } catch (e) {
                 console.warn('[App] Error saving last category:', e);
             }
+            this.hideSeriesDetail();
             this.renderUI();
         });
 
@@ -1590,7 +1626,16 @@ class Application {
         const safeFetchJson = async (action) => {
             try {
                 const targetUrl = `${cleanServer}/player_api.php?username=${encodeURIComponent(user)}&password=${encodeURIComponent(pass)}&action=${action}`;
-                const res = await SecurityController.fetchWithFallback(targetUrl, this.useCorsProxy, this.getEffectiveProxyUrl(), this.getEffectiveProxyToken());
+                const controller = new AbortController();
+                const timeoutId = setTimeout(() => controller.abort(), 15000);
+                const res = await SecurityController.fetchWithFallback(
+                    targetUrl,
+                    this.useCorsProxy,
+                    this.getEffectiveProxyUrl(),
+                    this.getEffectiveProxyToken(),
+                    { signal: controller.signal }
+                );
+                clearTimeout(timeoutId);
                 if (!res.ok) return [];
                 const data = await res.json();
                 return Array.isArray(data) ? data : [];
@@ -1784,6 +1829,7 @@ class Application {
                     const epgBtnClearSearch = document.getElementById('epgBtnClearSearch');
                     if (epgBtnClearSearch) epgBtnClearSearch.classList.toggle('hidden', !val);
                 }
+                this.hideSeriesDetail();
                 this.renderUI();
                 const epgModal = document.getElementById('epgModal');
                 if (epgModal && !epgModal.classList.contains('hidden')) {
@@ -1915,6 +1961,7 @@ class Application {
         document.getElementById('btnCloseProgModal')?.addEventListener('click', () => this.uiController.toggleModal('programModal'));
         document.getElementById('btnCloseChannelEpg')?.addEventListener('click', () => this.uiController.toggleModal('channelEpgModal'));
         document.getElementById('btnCloseSeriesModal')?.addEventListener('click', () => this.uiController.toggleModal('seriesModal'));
+        document.getElementById('btnBackToSeriesCatalog')?.addEventListener('click', () => this.hideSeriesDetail());
 
         // Parental Control Modal Trigger & Handlers
         document.getElementById('btnParentalModal')?.addEventListener('click', () => {
@@ -2943,7 +2990,10 @@ class Application {
 
         // Load Xtream Codes API Form
         document.getElementById('formXtream')?.addEventListener('submit', async (e) => {
-            e.preventDefault();
+            if (e) {
+                e.preventDefault();
+                e.stopPropagation();
+            }
             const server = document.getElementById('xtreamServer')?.value.trim();
             const user = document.getElementById('xtreamUser')?.value.trim();
             const pass = document.getElementById('xtreamPass')?.value.trim();
@@ -2997,7 +3047,10 @@ class Application {
 
         // Load M3U URL Form
         document.getElementById('formM3uUrl')?.addEventListener('submit', async (e) => {
-            e.preventDefault();
+            if (e) {
+                e.preventDefault();
+                e.stopPropagation();
+            }
             const input = document.getElementById('inputM3uUrl');
             const url = input ? input.value.trim() : '';
 
