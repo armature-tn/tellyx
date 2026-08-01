@@ -265,15 +265,16 @@ export class StreamEngine {
      * and Audio streams (.mp3, .aac, .flac, .ogg, .wav, .m4a).
      * 
      * @async
-     * @param {string} streamUrl - Target HTTP/HTTPS/HLS/MPEG-TS stream URL.
+     * @param {string} streamUrl - Target HTTP/HTTPS/HLS/MPEG-TS/MKV stream URL.
      * @param {boolean} [useCorsProxy=false] - Whether to wrap the URL in a CORS proxy.
      * @param {string} [customProxyUrl=''] - Optional self-hosted CORS proxy endpoint URL prefix.
      * @param {string} [proxyToken=''] - Optional proxy security access token.
+     * @param {Object} [options={}] - Optional metadata (e.g. { isVod: boolean, type: 'movie'|'series'|'live' }).
      * @returns {Promise<void>}
      * @throws {Error} If media load fails.
      * @security Sanitizes the input stream URL before playing.
      */
-    async loadStream(streamUrl, useCorsProxy = false, customProxyUrl = '', proxyToken = '') {
+    async loadStream(streamUrl, useCorsProxy = false, customProxyUrl = '', proxyToken = '', options = {}) {
         if (!streamUrl) throw new Error('[StreamEngine] Cannot load empty stream URL.');
 
         const effectiveProxy = useCorsProxy ? (customProxyUrl.trim() || SecurityController.DEFAULT_CORS_PROXY) : '';
@@ -296,19 +297,28 @@ export class StreamEngine {
         const urlLower = targetUrl.toLowerCase();
         const cleanUrl = urlLower.split('?')[0];
 
-        // Format Detection
+        // Format & Protocol Detection
         const isHls = cleanUrl.endsWith('.m3u8') || urlLower.includes('m3u8');
         const isTs = cleanUrl.endsWith('.ts') || cleanUrl.endsWith('.m2ts') || urlLower.includes('.ts?') || urlLower.includes('/live/') || urlLower.includes('type=ts');
         const isFlv = cleanUrl.endsWith('.flv') || urlLower.includes('flv');
         const isDash = cleanUrl.endsWith('.mpd') || urlLower.includes('mpd');
-        const isMkv = cleanUrl.endsWith('.mkv');
+        const isMkv = cleanUrl.endsWith('.mkv') || urlLower.includes('.mkv');
         const isWebm = cleanUrl.endsWith('.webm');
-        const isMp4 = cleanUrl.endsWith('.mp4') || cleanUrl.endsWith('.m4v') || cleanUrl.endsWith('.mov') || cleanUrl.endsWith('.3gp');
+        const isMp4 = cleanUrl.endsWith('.mp4') || cleanUrl.endsWith('.m4v') || cleanUrl.endsWith('.mov') || cleanUrl.endsWith('.3gp') || cleanUrl.endsWith('.avi');
         const isAudio = cleanUrl.endsWith('.mp3') || cleanUrl.endsWith('.aac') || cleanUrl.endsWith('.flac') || cleanUrl.endsWith('.ogg') || cleanUrl.endsWith('.wav') || cleanUrl.endsWith('.m4a');
 
-        // 1. HLS (.m3u8) - Hls.js MSE Engine
+        const isVod = Boolean(options.isVod || options.type === 'movie' || options.type === 'series' || cleanUrl.includes('/movie/') || cleanUrl.includes('/series/') || isMkv || isMp4 || isWebm);
+        const isLive = !isVod;
+
+        // 1. HLS (.m3u8) - Hls.js Adaptive Engine
         if (isHls && Hls.isSupported()) {
-            return this.#playHls(targetUrl, useCorsProxy, effectiveProxy, effectiveToken);
+            try {
+                await this.#playHls(targetUrl, useCorsProxy, effectiveProxy, effectiveToken);
+                return;
+            } catch (err) {
+                console.warn('[StreamEngine] HLS playback notice, cascading:', err);
+                this.#cleanupPlayers();
+            }
         }
 
         // Native HLS for Safari/iOS
@@ -319,14 +329,14 @@ export class StreamEngine {
             return;
         }
 
-        // 2. MPEG-TS & FLV Stream Engine via mpegts.js (MSE Demuxer)
-        if ((isTs || isFlv || isMkv) && mpegts && mpegts.isSupported()) {
+        // 2. MPEG-TS, HTTP-FLV & MKV Stream Engine via mpegts.js (MSE Demuxer)
+        if ((isTs || isFlv || isMkv || isVod) && mpegts && mpegts.isSupported()) {
             try {
                 const streamType = isFlv ? 'flv' : 'mse';
-                const success = await this.#playMpegTs(targetUrl, streamType, effectiveToken);
+                const success = await this.#playMpegTs(targetUrl, streamType, effectiveToken, isLive);
                 if (success) return;
             } catch (err) {
-                console.warn('[StreamEngine] mpegts.js playback notice, cascading to progressive HTML5:', err);
+                console.warn('[StreamEngine] mpegts.js playback notice, cascading to candidate fallbacks:', err);
                 this.#cleanupPlayers();
             }
         }
@@ -342,8 +352,86 @@ export class StreamEngine {
             }
         }
 
-        // 4. Progressive HTML5 Engine (MKV, WebM, MP4, Audio, Direct Streams)
+        // 4. Xtream Codes & IPTV Transmuxing Candidate Fallback for .mkv and VOD
+        // If an MKV or VOD stream is hosted on an Xtream Codes or IPTV server, the backend server
+        // dynamically streams in HLS (.m3u8), MP4 (.mp4), or TS (.ts) format if requested with those extensions.
+        if (isMkv || isVod || cleanUrl.includes('/movie/') || cleanUrl.includes('/series/')) {
+            const candidates = this.#generateXtreamFallbackCandidates(targetUrl);
+            for (const candidate of candidates) {
+                console.log(`[StreamEngine] Attempting Xtream/IPTV transmuxing candidate: ${candidate.url} (${candidate.type})`);
+                try {
+                    if (candidate.type === 'hls' && Hls.isSupported()) {
+                        await this.#playHls(candidate.url, useCorsProxy, effectiveProxy, effectiveToken);
+                        console.log(`[StreamEngine] Successfully played MKV/VOD stream via Xtream HLS transmuxing!`);
+                        return;
+                    } else if (candidate.type === 'ts' && mpegts && mpegts.isSupported()) {
+                        const success = await this.#playMpegTs(candidate.url, 'mse', effectiveToken, false);
+                        if (success) {
+                            console.log(`[StreamEngine] Successfully played MKV/VOD stream via Xtream TS transmuxing!`);
+                            return;
+                        }
+                    } else if (candidate.type === 'mp4') {
+                        await this.#playProgressiveHtml5(candidate.url, { isMp4: true });
+                        console.log(`[StreamEngine] Successfully played MKV/VOD stream via Xtream MP4 transmuxing!`);
+                        return;
+                    }
+                } catch (candErr) {
+                    console.warn(`[StreamEngine] Candidate ${candidate.type} fallback failed:`, candErr);
+                    this.#cleanupPlayers();
+                }
+            }
+        }
+
+        // 5. Progressive HTML5 Engine (Direct MKV, WebM, MP4, Audio, Direct Streams)
         return this.#playProgressiveHtml5(targetUrl, { isMkv, isWebm, isMp4, isAudio, cleanUrl });
+    }
+
+    /**
+     * Generates Xtream Codes & IPTV server format fallback candidate URLs.
+     * Replaces file extension (.mkv -> .m3u8, .mp4, .ts) for server-side transmuxing.
+     * @private
+     * @param {string} rawUrl - Source stream URL.
+     * @returns {Array<{url: string, type: 'hls'|'mp4'|'ts'}>}
+     */
+    #generateXtreamFallbackCandidates(rawUrl) {
+        const candidates = [];
+        if (!rawUrl) return candidates;
+
+        try {
+            const urlObj = new URL(rawUrl);
+            const pathname = urlObj.pathname;
+            const lastDotIdx = pathname.lastIndexOf('.');
+
+            if (lastDotIdx !== -1 && lastDotIdx > pathname.lastIndexOf('/')) {
+                const basePath = pathname.substring(0, lastDotIdx);
+                const currentExt = pathname.substring(lastDotIdx + 1).toLowerCase();
+
+                const extList = ['m3u8', 'mp4', 'ts'];
+                for (const ext of extList) {
+                    if (ext !== currentExt) {
+                        const candUrlObj = new URL(rawUrl);
+                        candUrlObj.pathname = `${basePath}.${ext}`;
+                        let type = 'mp4';
+                        if (ext === 'm3u8') type = 'hls';
+                        if (ext === 'ts') type = 'ts';
+                        candidates.push({ url: candUrlObj.toString(), type });
+                    }
+                }
+            } else {
+                ['m3u8', 'mp4', 'ts'].forEach(ext => {
+                    const candUrlObj = new URL(rawUrl);
+                    candUrlObj.pathname = `${pathname}.${ext}`;
+                    let type = 'mp4';
+                    if (ext === 'm3u8') type = 'hls';
+                    if (ext === 'ts') type = 'ts';
+                    candidates.push({ url: candUrlObj.toString(), type });
+                });
+            }
+        } catch (e) {
+            console.warn('[StreamEngine] Error generating candidate URLs:', e);
+        }
+
+        return candidates;
     }
 
     /**
@@ -351,7 +439,7 @@ export class StreamEngine {
      * @private
      */
     #playHls(targetUrl, useCorsProxy, effectiveProxy, effectiveToken) {
-        return new Promise((resolve) => {
+        return new Promise((resolve, reject) => {
             const hls = new Hls({
                 enableWorker: true,
                 lowLatencyMode: false,
@@ -403,9 +491,7 @@ export class StreamEngine {
                         default:
                             hls.destroy();
                             this.#hlsInstance = null;
-                            this.#videoElement.src = targetUrl;
-                            this.#safePlay();
-                            resolve();
+                            reject(new Error(`HLS.js fatal error: ${data.details}`));
                             break;
                     }
                 }
@@ -414,11 +500,47 @@ export class StreamEngine {
     }
 
     /**
-     * Internal mpegts.js MPEG-TS and FLV demuxer stream initializer.
+     * Internal mpegts.js MPEG-TS, FLV & MKV demuxer stream initializer.
      * @private
      */
-    #playMpegTs(targetUrl, type = 'mse', effectiveToken = '') {
+    #playMpegTs(targetUrl, type = 'mse', effectiveToken = '', isLive = true) {
         return new Promise((resolve, reject) => {
+            let isSettled = false;
+            let timeoutId = null;
+
+            const cleanup = () => {
+                if (timeoutId) clearTimeout(timeoutId);
+                if (this.#videoElement) {
+                    this.#videoElement.removeEventListener('playing', onPlaying);
+                    this.#videoElement.removeEventListener('loadeddata', onLoadedData);
+                    this.#videoElement.removeEventListener('error', onError);
+                }
+            };
+
+            const onPlaying = () => {
+                if (!isSettled) {
+                    isSettled = true;
+                    cleanup();
+                    resolve(true);
+                }
+            };
+
+            const onLoadedData = () => {
+                if (!isSettled) {
+                    isSettled = true;
+                    cleanup();
+                    resolve(true);
+                }
+            };
+
+            const onError = (e) => {
+                if (!isSettled) {
+                    isSettled = true;
+                    cleanup();
+                    reject(new Error(`Video element error during mpegts playback: ${e?.message || 'Media source error'}`));
+                }
+            };
+
             try {
                 const config = {
                     enableWorker: true,
@@ -431,8 +553,10 @@ export class StreamEngine {
 
                 const player = mpegts.createPlayer({
                     type: type,
-                    isLive: true,
-                    url: targetUrl
+                    isLive: isLive,
+                    url: targetUrl,
+                    hasAudio: true,
+                    hasVideo: true
                 }, config);
 
                 this.#mpegtsInstance = player;
@@ -441,16 +565,44 @@ export class StreamEngine {
 
                 player.on(mpegts.Events.ERROR, (errType, errDetail, errInfo) => {
                     console.warn('[mpegts.js Error]:', errType, errDetail, errInfo);
-                    if (errType === mpegts.ErrorTypes.MEDIA_ERROR || errType === mpegts.ErrorTypes.NETWORK_ERROR) {
-                        reject(new Error(`mpegts.js error: ${errType}`));
+                    if (!isSettled) {
+                        isSettled = true;
+                        cleanup();
+                        reject(new Error(`mpegts.js error: ${errType} (${errDetail})`));
                     }
                 });
 
+                if (this.#videoElement) {
+                    this.#videoElement.addEventListener('playing', onPlaying, { once: true });
+                    this.#videoElement.addEventListener('loadeddata', onLoadedData, { once: true });
+                    this.#videoElement.addEventListener('error', onError, { once: true });
+                }
+
+                timeoutId = setTimeout(() => {
+                    if (!isSettled) {
+                        if (this.#videoElement && this.#videoElement.readyState >= 2) {
+                            isSettled = true;
+                            cleanup();
+                            resolve(true);
+                        } else {
+                            isSettled = true;
+                            cleanup();
+                            reject(new Error('mpegts.js load timeout'));
+                        }
+                    }
+                }, 6000);
+
                 this.#stats.protocol = type === 'flv' ? 'HTTP-FLV MSE Engine (mpegts.js)' : 'MPEG-TS MSE Engine (mpegts.js)';
 
-                this.#safePlay().then(() => resolve(true)).catch(() => resolve(true));
+                this.#safePlay().catch((err) => {
+                    console.warn('[mpegts.js safePlay notice]:', err);
+                });
             } catch (e) {
-                reject(e);
+                if (!isSettled) {
+                    isSettled = true;
+                    cleanup();
+                    reject(e);
+                }
             }
         });
     }

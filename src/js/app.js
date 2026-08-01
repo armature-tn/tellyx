@@ -102,11 +102,39 @@ class Application {
     }
 
     /**
+     * Installs global error listeners to catch and handle unhandled runtime errors,
+     * network exceptions, and unhandled promise rejections cleanly without crashing the UI.
+     */
+    setupGlobalErrorHandlers() {
+        window.addEventListener('error', (event) => {
+            console.error('[Global Error Caught]:', event.error || event.message);
+            if (event.message && (event.message.includes('ResizeObserver') || event.message.includes('Script error'))) {
+                return;
+            }
+            if (this.uiController && typeof this.uiController.showToast === 'function') {
+                this.uiController.showToast(`Notice: ${event.message || 'System operation recovered'}`, 'warning');
+            }
+        });
+
+        window.addEventListener('unhandledrejection', (event) => {
+            console.warn('[Unhandled Promise Rejection]:', event.reason);
+            const msg = event.reason?.message || (typeof event.reason === 'string' ? event.reason : 'Background task notice');
+            if (msg.includes('ResizeObserver') || msg.includes('user gesture') || msg.includes('play() failed') || msg.includes('Interrupted by user')) {
+                return;
+            }
+            if (this.uiController && typeof this.uiController.showToast === 'function') {
+                this.uiController.showToast(`Notice: ${msg}`, 'info');
+            }
+        });
+    }
+
+    /**
      * Bootstraps the IPTV player stack.
      * @async
      */
     async init() {
         console.log('[App] Initializing IPTV Player Engine...');
+        this.setupGlobalErrorHandlers();
 
         // Restore saved theme (default to tellyx_red)
         const savedTheme = localStorage.getItem('iptv_theme_v1') || 'tellyx_red';
@@ -469,7 +497,11 @@ class Application {
         }
 
         try {
-            await this.streamEngine.loadStream(channel.url, this.useCorsProxy, this.getEffectiveProxyUrl(), this.getEffectiveProxyToken());
+            await this.streamEngine.loadStream(channel.url, this.useCorsProxy, this.getEffectiveProxyUrl(), this.getEffectiveProxyToken(), {
+                type: channel.type,
+                name: channel.name,
+                isVod: channel.type === 'movie' || channel.type === 'series'
+            });
             this.streamEngine.updateMediaSession({
                 title: channel.name,
                 group: channel.group || channel.categoryName || 'Live IPTV',
