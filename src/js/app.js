@@ -17,7 +17,7 @@ import { IPTVCore } from './iptv-core.js';
 import { EPGEngine } from './epg-engine.js';
 import { UIController } from './ui-controller.js';
 import { TVRemoteManager } from './tv-remote.js';
-import { initTauriIntegration, setupTauriWindowListeners } from './tauri-bridge.js';
+import { initTauriIntegration, setupTauriWindowListeners, isTauriEnvironment } from './tauri-bridge.js';
 
 /**
  * Main Application Coordinator Class.
@@ -496,6 +496,7 @@ class Application {
             return;
         }
 
+        let streamSafetyTimer = null;
         try {
             this.hideStreamErrorOverlay();
             this.showStreamLoadingOverlay(`Connecting: ${channel.name}`, `Loading media stream & buffering demuxer...`);
@@ -505,12 +506,19 @@ class Application {
             if (audioOnlyBadge) audioOnlyBadge.classList.add('hidden');
             if (videoOnlyBadge) videoOnlyBadge.classList.add('hidden');
 
+            streamSafetyTimer = setTimeout(() => {
+                this.hideStreamLoadingOverlay();
+                this.showStreamErrorOverlay('Stream Connection Timeout', `Connecting to "${channel.name}" timed out after 14s. The stream server may be unreachable, offline, or requiring CORS Proxy.`, channel);
+                this.uiController.showToast(`Stream Timeout: Server unresponsive`, 'warning');
+            }, 14000);
+
             await this.streamEngine.loadStream(channel.url, this.useCorsProxy, this.getEffectiveProxyUrl(), this.getEffectiveProxyToken(), {
                 type: channel.type,
                 name: channel.name,
                 isVod: channel.type === 'movie' || channel.type === 'series'
             });
 
+            if (streamSafetyTimer) clearTimeout(streamSafetyTimer);
             this.hideStreamLoadingOverlay();
 
             this.streamEngine.updateMediaSession({
@@ -525,6 +533,7 @@ class Application {
             if (!this.quadSlots[0]) this.quadSlots[0] = channel;
             this.uiController.showToast(`Playing: ${channel.name}`, 'success');
         } catch (err) {
+            if (streamSafetyTimer) clearTimeout(streamSafetyTimer);
             console.error('[App] Playback error:', err);
             this.hideStreamLoadingOverlay();
             const errDetail = err?.message || 'Stream Buffering / Connection issue';
@@ -1998,6 +2007,13 @@ class Application {
         let deferredPrompt = null;
         const btnInstallPwa = document.getElementById('btnInstallPwa');
 
+        if (isTauriEnvironment()) {
+            if (btnInstallPwa) btnInstallPwa.classList.add('hidden');
+            const installModal = document.getElementById('installModal');
+            if (installModal) installModal.classList.add('hidden');
+            return;
+        }
+
         window.addEventListener('beforeinstallprompt', (e) => {
             e.preventDefault();
             deferredPrompt = e;
@@ -2251,12 +2267,12 @@ class Application {
             }
         });
 
-        document.getElementById('btnErrorExternalPlayer')?.addEventListener('click', () => {
+        const handleBadgeExternalPlayerClick = () => {
             if (this.activeChannel && this.activeChannel.url) {
                 const url = this.activeChannel.url;
                 try {
                     navigator.clipboard.writeText(url);
-                    this.uiController.showToast('Stream URL copied to clipboard! Paste into VLC or external media player.', 'success');
+                    this.uiController.showToast('Stream URL copied! Paste into VLC or external media player.', 'success');
                 } catch (e) {
                     console.warn('[App] Clipboard error:', e);
                 }
@@ -2264,7 +2280,12 @@ class Application {
             } else {
                 this.uiController.showToast('No active stream URL available', 'warning');
             }
-        });
+        };
+
+        document.getElementById('audioOnlyBadge')?.addEventListener('click', handleBadgeExternalPlayerClick);
+        document.getElementById('videoOnlyBadge')?.addEventListener('click', handleBadgeExternalPlayerClick);
+
+        document.getElementById('btnErrorExternalPlayer')?.addEventListener('click', handleBadgeExternalPlayerClick);
 
         // Unmute Banner Floating Button Click
         unmuteBanner?.addEventListener('click', () => {

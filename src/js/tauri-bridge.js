@@ -163,9 +163,19 @@ export function initTauriIntegration(uiController = null) {
         };
     }
 
-    if (isEmbedded) {
-        console.log('[TellyX Tauri Bridge] Embedded native Tauri runtime detected. Hiding CORS Proxy settings.');
+    const btnInstallPwa = document.getElementById('btnInstallPwa');
+    const installModal = document.getElementById('installModal');
 
+    if (isEmbedded) {
+        console.log('[TellyX Tauri Bridge] Embedded native Tauri runtime detected. Hiding CORS Proxy settings and install buttons.');
+
+        // Hide Install / Download App button in top bar and modals since user is already inside the native app
+        if (btnInstallPwa) {
+            btnInstallPwa.classList.add('hidden');
+        }
+        if (installModal) {
+            installModal.classList.add('hidden');
+        }
         if (corsSection) {
             corsSection.classList.add('hidden');
         }

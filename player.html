@@ -230,15 +230,17 @@ console.log('%c                                                                 
                 </button>
 
                 <!-- AUDIO-ONLY / HEVC CODEC NOTICE BADGE -->
-                <div id="audioOnlyBadge" class="absolute top-4 left-4 z-30 hidden flex items-center space-x-2 bg-slate-900/90 border border-amber-500/50 text-amber-300 px-3 py-1.5 rounded-xl text-xs font-semibold backdrop-blur-md shadow-lg animate-pulse">
+                <div id="audioOnlyBadge" class="absolute top-4 left-4 z-30 hidden flex items-center space-x-2 bg-slate-900/90 border border-amber-500/50 text-amber-300 px-3 py-1.5 rounded-xl text-xs font-semibold backdrop-blur-md shadow-lg animate-pulse cursor-pointer hover:scale-105 transition-all" title="Click to copy stream URL & open in external player (VLC) for HEVC video playback">
                     <svg class="w-4 h-4 text-amber-400 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.536 8.464a5 5 0 010 7.072M18.364 5.636a9 9 0 010 12.728M5.586 15H4a1 1 0 01-1-1v-4a1 1 0 011-1h1.586l4.707-4.707C10.923 3.663 12 4.109 12 5v14c0 .891-1.077 1.337-1.707.707L5.586 15z"></path></svg>
                     <span id="audioOnlyBadgeText">AUDIO ONLY (VIDEO CODEC UNRENDERED - e.g. HEVC)</span>
+                    <span class="text-[10px] bg-amber-500/20 text-amber-200 px-1.5 py-0.5 rounded font-mono ml-1">PLAY IN VLC</span>
                 </div>
 
                 <!-- VIDEO-ONLY / UNSUPPORTED AUDIO CODEC NOTICE BADGE -->
-                <div id="videoOnlyBadge" class="absolute top-14 left-4 z-30 hidden flex items-center space-x-2 bg-slate-900/90 border border-sky-500/50 text-sky-300 px-3 py-1.5 rounded-xl text-xs font-semibold backdrop-blur-md shadow-lg animate-pulse">
+                <div id="videoOnlyBadge" class="absolute top-14 left-4 z-30 hidden flex items-center space-x-2 bg-slate-900/90 border border-sky-500/50 text-sky-300 px-3 py-1.5 rounded-xl text-xs font-semibold backdrop-blur-md shadow-lg animate-pulse cursor-pointer hover:scale-105 transition-all" title="Click to copy stream URL & open in external player (VLC) for AC3/DTS audio decoding">
                     <svg class="w-4 h-4 text-sky-400 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5.586 15H4a1 1 0 01-1-1v-4a1 1 0 011-1h1.586l4.707-4.707C10.923 3.663 12 4.109 12 5v14c0 .891-1.077 1.337-1.707.707L5.586 15z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2"></path></svg>
                     <span id="videoOnlyBadgeText">VIDEO ONLY (AUDIO CODEC UNSUPPORTED - e.g. AC3/DTS)</span>
+                    <span class="text-[10px] bg-sky-500/20 text-sky-200 px-1.5 py-0.5 rounded font-mono ml-1">PLAY IN VLC</span>
                 </div>
 
                 <!-- STREAM LOADING OVERLAY -->

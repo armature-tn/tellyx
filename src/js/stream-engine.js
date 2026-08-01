@@ -302,6 +302,7 @@ export class StreamEngine {
         console.log(`[StreamEngine] Loading media stream: ${targetUrl} (Proxy: ${useCorsProxy}, Token Protected: ${Boolean(effectiveToken)})`);
         this.stop();
         this.#isUserPaused = false;
+        this.#stats.hasAudioTrack = true; // reset default assumption
 
         if (this.#videoElement) {
             this.#videoElement.disablePictureInPicture = false;
@@ -372,25 +373,25 @@ export class StreamEngine {
                 }
             }
 
-            // 4. Xtream Codes & IPTV Transmuxing Candidate Fallback for .mkv, VOD & Live
-            if (isMkv || isVod || isLive || cleanUrl.includes('/movie/') || cleanUrl.includes('/series/') || cleanUrl.includes('/live/')) {
-                const candidates = this.#generateXtreamFallbackCandidates(targetUrl);
+            // 4. Xtream Codes & IPTV Transmuxing Candidate Fallback for .mkv, VOD, Movies, Series & Live
+            if (isMkv || isVod || isLive || cleanUrl.includes('/movie/') || cleanUrl.includes('/series/') || cleanUrl.includes('/live/') || !cleanUrl.includes('.')) {
+                const candidates = this.#generateXtreamFallbackCandidates(streamUrl, useCorsProxy, effectiveProxy, effectiveToken);
                 for (const candidate of candidates) {
-                    console.log(`[StreamEngine] Attempting Xtream/IPTV transmuxing candidate: ${candidate.url} (${candidate.type})`);
+                    console.log(`[StreamEngine] Attempting Xtream/IPTV candidate: ${candidate.url} (${candidate.type})`);
                     try {
                         if (candidate.type === 'hls' && Hls.isSupported()) {
                             await this.#playHls(candidate.url, useCorsProxy, effectiveProxy, effectiveToken);
-                            console.log(`[StreamEngine] Successfully played stream via Xtream HLS transmuxing!`);
+                            console.log(`[StreamEngine] Successfully played stream via candidate HLS transmuxing!`);
                             return;
                         } else if (candidate.type === 'ts' && mpegts && mpegts.isSupported()) {
                             const success = await this.#playMpegTs(candidate.url, 'mse', effectiveToken, isLive);
                             if (success) {
-                                console.log(`[StreamEngine] Successfully played stream via Xtream TS transmuxing!`);
+                                console.log(`[StreamEngine] Successfully played stream via candidate TS transmuxing!`);
                                 return;
                             }
                         } else if (candidate.type === 'mp4') {
                             await this.#playProgressiveHtml5(candidate.url, { isMp4: true });
-                            console.log(`[StreamEngine] Successfully played stream via Xtream MP4 transmuxing!`);
+                            console.log(`[StreamEngine] Successfully played stream via candidate MP4 transmuxing!`);
                             return;
                         }
                     } catch (candErr) {
@@ -404,14 +405,22 @@ export class StreamEngine {
             return this.#playProgressiveHtml5(targetUrl, { isMkv, isWebm, isMp4, isAudio, cleanUrl });
         };
 
+        // Master 12-Second Timeout Race to prevent infinite loading state
+        const masterTimeoutPromise = new Promise((_, reject) => {
+            setTimeout(() => {
+                reject(new Error('Media stream loading timeout (server unresponsive or stream blocked)'));
+            }, 12000);
+        });
+
         try {
-            await attemptLoad();
+            await Promise.race([attemptLoad(), masterTimeoutPromise]);
         } catch (primaryErr) {
             console.warn('[StreamEngine] Primary playback pipeline failed:', primaryErr?.message);
+            this.#cleanupPlayers();
             
             // Auto-rescue with CORS proxy if CORS proxy was not previously enabled
             if (!useCorsProxy) {
-                console.log('[StreamEngine] Direct playback failed. Auto-retrying stream via CORS Proxy...');
+                console.log('[StreamEngine] Direct playback failed/timed out. Auto-retrying stream via CORS Proxy...');
                 try {
                     await this.loadStream(streamUrl, true, customProxyUrl, proxyToken, options);
                     return;
@@ -442,6 +451,8 @@ export class StreamEngine {
                 isVideoOnly = true;
             } else if (video.audioTracks && video.audioTracks.length === 0) {
                 isVideoOnly = true;
+            } else if (this.#stats.hasAudioTrack === false) {
+                isVideoOnly = true;
             }
         }
 
@@ -458,17 +469,32 @@ export class StreamEngine {
 
     /**
      * Generates Xtream Codes & IPTV server format fallback candidate URLs.
-     * Replaces file extension (.mkv -> .m3u8, .mp4, .ts) for server-side transmuxing.
+     * Extracts clean original stream URL (unwrapping proxy params) and applies CORS proxy if requested.
      * @private
      * @param {string} rawUrl - Source stream URL.
+     * @param {boolean} [useCorsProxy=false]
+     * @param {string} [effectiveProxy='']
+     * @param {string} [effectiveToken='']
      * @returns {Array<{url: string, type: 'hls'|'mp4'|'ts'}>}
      */
-    #generateXtreamFallbackCandidates(rawUrl) {
+    #generateXtreamFallbackCandidates(rawUrl, useCorsProxy = false, effectiveProxy = '', effectiveToken = '') {
         const candidates = [];
         if (!rawUrl) return candidates;
 
+        let cleanRaw = rawUrl;
         try {
-            const urlObj = new URL(rawUrl);
+            // Unwrap if rawUrl is already a proxy wrapper
+            if (rawUrl.includes('url=')) {
+                const urlMatch = rawUrl.match(/url=([^&]+)/);
+                if (urlMatch && urlMatch[1]) {
+                    cleanRaw = decodeURIComponent(urlMatch[1]);
+                }
+            }
+        } catch (e) {}
+
+        const rawCandidates = [];
+        try {
+            const urlObj = new URL(cleanRaw);
             const pathname = urlObj.pathname;
             const lastDotIdx = pathname.lastIndexOf('.');
 
@@ -479,37 +505,62 @@ export class StreamEngine {
                 const extList = ['m3u8', 'mp4', 'ts'];
                 for (const ext of extList) {
                     if (ext !== currentExt) {
-                        const candUrlObj = new URL(rawUrl);
+                        const candUrlObj = new URL(cleanRaw);
                         candUrlObj.pathname = `${basePath}.${ext}`;
                         let type = 'mp4';
                         if (ext === 'm3u8') type = 'hls';
                         if (ext === 'ts') type = 'ts';
-                        candidates.push({ url: candUrlObj.toString(), type });
+                        rawCandidates.push({ url: candUrlObj.toString(), type });
                     }
                 }
             } else {
                 ['m3u8', 'mp4', 'ts'].forEach(ext => {
-                    const candUrlObj = new URL(rawUrl);
+                    const candUrlObj = new URL(cleanRaw);
                     candUrlObj.pathname = `${pathname}.${ext}`;
                     let type = 'mp4';
                     if (ext === 'm3u8') type = 'hls';
                     if (ext === 'ts') type = 'ts';
-                    candidates.push({ url: candUrlObj.toString(), type });
+                    rawCandidates.push({ url: candUrlObj.toString(), type });
                 });
             }
         } catch (e) {
             console.warn('[StreamEngine] Error generating candidate URLs:', e);
         }
 
+        // Apply proxy wrapping if active
+        for (const cand of rawCandidates) {
+            let finalUrl = SecurityController.validateURL(cand.url);
+            if (useCorsProxy && effectiveProxy) {
+                finalUrl = SecurityController.buildProxyURL(finalUrl, effectiveProxy, effectiveToken);
+            }
+            candidates.push({ url: finalUrl, type: cand.type });
+        }
+
         return candidates;
     }
 
     /**
-     * Internal HLS.js adaptive stream initializer.
+     * Internal HLS.js adaptive stream initializer with timeout guard.
      * @private
      */
     #playHls(targetUrl, useCorsProxy, effectiveProxy, effectiveToken) {
         return new Promise((resolve, reject) => {
+            let isSettled = false;
+            let timeoutId = setTimeout(() => {
+                if (!isSettled) {
+                    isSettled = true;
+                    if (hls) {
+                        try { hls.destroy(); } catch (e) {}
+                    }
+                    this.#hlsInstance = null;
+                    reject(new Error('HLS.js manifest load timeout'));
+                }
+            }, 5500);
+
+            const cleanup = () => {
+                if (timeoutId) clearTimeout(timeoutId);
+            };
+
             const hls = new Hls({
                 enableWorker: true,
                 lowLatencyMode: false,
@@ -538,31 +589,47 @@ export class StreamEngine {
             hls.attachMedia(this.#videoElement);
 
             hls.on(Hls.Events.MANIFEST_PARSED, (event, data) => {
-                this.#stats.protocol = 'HLS.js Adaptive Engine';
-                this.#variantStreams = (data.levels || []).map(lvl => ({
-                    bandwidth: lvl.bitrate,
-                    resolution: `${lvl.width}x${lvl.height}`,
-                    url: targetUrl
-                }));
-                this.#safePlay();
-                resolve();
+                if (!isSettled) {
+                    isSettled = true;
+                    cleanup();
+                    this.#stats.protocol = 'HLS.js Adaptive Engine';
+                    this.#stats.hasAudioTrack = Boolean(data.audioTracks && data.audioTracks.length > 0);
+                    this.#variantStreams = (data.levels || []).map(lvl => ({
+                        bandwidth: lvl.bitrate,
+                        resolution: `${lvl.width}x${lvl.height}`,
+                        url: targetUrl
+                    }));
+                    this.#safePlay().catch(() => {});
+                    resolve();
+                }
+            });
+
+            hls.on(Hls.Events.AUDIO_TRACKS_UPDATED, (event, data) => {
+                this.#stats.hasAudioTrack = Boolean(data.audioTracks && data.audioTracks.length > 0);
             });
 
             hls.on(Hls.Events.ERROR, (event, data) => {
                 if (data.fatal) {
                     console.warn('[HLS.js Fatal Error]:', data.type, data.details);
-                    switch (data.type) {
-                        case Hls.ErrorTypes.NETWORK_ERROR:
-                            hls.startLoad();
-                            break;
-                        case Hls.ErrorTypes.MEDIA_ERROR:
-                            hls.recoverMediaError();
-                            break;
-                        default:
-                            hls.destroy();
-                            this.#hlsInstance = null;
-                            reject(new Error(`HLS.js fatal error: ${data.details}`));
-                            break;
+                    if (!isSettled) {
+                        isSettled = true;
+                        cleanup();
+                        try { hls.destroy(); } catch (e) {}
+                        this.#hlsInstance = null;
+                        reject(new Error(`HLS.js fatal error: ${data.details}`));
+                    } else {
+                        switch (data.type) {
+                            case Hls.ErrorTypes.NETWORK_ERROR:
+                                hls.startLoad();
+                                break;
+                            case Hls.ErrorTypes.MEDIA_ERROR:
+                                hls.recoverMediaError();
+                                break;
+                            default:
+                                try { hls.destroy(); } catch (e) {}
+                                this.#hlsInstance = null;
+                                break;
+                        }
                     }
                 }
             });
@@ -633,6 +700,16 @@ export class StreamEngine {
                 player.attachMediaElement(this.#videoElement);
                 player.load();
 
+                player.on(mpegts.Events.MEDIA_INFO, (info) => {
+                    if (info) {
+                        if (info.hasAudio === false || info.audioCodec === null) {
+                            this.#stats.hasAudioTrack = false;
+                        } else {
+                            this.#stats.hasAudioTrack = true;
+                        }
+                    }
+                });
+
                 player.on(mpegts.Events.ERROR, (errType, errDetail, errInfo) => {
                     console.warn('[mpegts.js Error]:', errType, errDetail, errInfo);
                     if (!isSettled) {
@@ -660,7 +737,7 @@ export class StreamEngine {
                             reject(new Error('mpegts.js load timeout'));
                         }
                     }
-                }, 6000);
+                }, 5500);
 
                 this.#stats.protocol = type === 'flv' ? 'HTTP-FLV MSE Engine (mpegts.js)' : 'MPEG-TS MSE Engine (mpegts.js)';
 
@@ -678,11 +755,27 @@ export class StreamEngine {
     }
 
     /**
-     * Internal dash.js MPEG-DASH stream initializer.
+     * Internal dash.js MPEG-DASH stream initializer with timeout guard.
      * @private
      */
     #playDash(targetUrl, effectiveToken = '') {
         return new Promise((resolve, reject) => {
+            let isSettled = false;
+            let timeoutId = setTimeout(() => {
+                if (!isSettled) {
+                    isSettled = true;
+                    if (this.#dashInstance) {
+                        try { this.#dashInstance.reset(); } catch (e) {}
+                        this.#dashInstance = null;
+                    }
+                    reject(new Error('Dash.js manifest load timeout'));
+                }
+            }, 5500);
+
+            const cleanup = () => {
+                if (timeoutId) clearTimeout(timeoutId);
+            };
+
             try {
                 const player = dashjs.MediaPlayer().create();
                 this.#dashInstance = player;
@@ -700,16 +793,28 @@ export class StreamEngine {
                 this.#stats.protocol = 'DASH MSE Engine (dash.js)';
 
                 player.on(dashjs.MediaPlayer.events.STREAM_INITIALIZED, () => {
-                    this.#safePlay();
-                    resolve();
+                    if (!isSettled) {
+                        isSettled = true;
+                        cleanup();
+                        this.#safePlay().catch(() => {});
+                        resolve();
+                    }
                 });
 
                 player.on(dashjs.MediaPlayer.events.ERROR, (e) => {
                     console.warn('[Dash.js Error]:', e);
-                    reject(new Error(`Dash.js error: ${e.error}`));
+                    if (!isSettled) {
+                        isSettled = true;
+                        cleanup();
+                        reject(new Error(`Dash.js error: ${e.error || 'Playback error'}`));
+                    }
                 });
             } catch (e) {
-                reject(e);
+                if (!isSettled) {
+                    isSettled = true;
+                    cleanup();
+                    reject(e);
+                }
             }
         });
     }
