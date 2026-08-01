@@ -4,8 +4,8 @@
   "version": "0.1.0",
   "identifier": "tn.armature.tellyx",
   "build": {
-    "beforeDevCommand": "",
-    "beforeBuildCommand": "npm run generate:icons && npm run build",
+    "beforeDevCommand": "npm run setup:tauri-pubkey",
+    "beforeBuildCommand": "npm run setup:tauri-pubkey && npm run generate:icons && npm run build",
     "devUrl": "http://localhost:3000/player.html",
     "frontendDist": "../dist"
   },
