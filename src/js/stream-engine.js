@@ -274,6 +274,21 @@ export class StreamEngine {
      * @throws {Error} If media load fails.
      * @security Sanitizes the input stream URL before playing.
      */
+    /**
+     * Loads and plays a video stream into the active HTML5 element.
+     * Auto-detects HLS (.m3u8), MPEG-TS (.ts), FLV (.flv), DASH (.mpd), MKV, MP4, and Progressive Audio/Video.
+     * Integrates automatic cascading fallbacks and auto CORS proxy rescue.
+     * 
+     * @async
+     * @param {string} streamUrl - Raw or proxied stream URL.
+     * @param {boolean} [useCorsProxy=false] - Whether to route requests through configured CORS proxy.
+     * @param {string} [customProxyUrl=''] - Optional self-hosted CORS proxy endpoint URL prefix.
+     * @param {string} [proxyToken=''] - Optional proxy security access token.
+     * @param {Object} [options={}] - Optional metadata (e.g. { isVod: boolean, type: 'movie'|'series'|'live' }).
+     * @returns {Promise<void>}
+     * @throws {Error} If media load fails.
+     * @security Sanitizes the input stream URL before playing.
+     */
     async loadStream(streamUrl, useCorsProxy = false, customProxyUrl = '', proxyToken = '', options = {}) {
         if (!streamUrl) throw new Error('[StreamEngine] Cannot load empty stream URL.');
 
@@ -310,80 +325,135 @@ export class StreamEngine {
         const isVod = Boolean(options.isVod || options.type === 'movie' || options.type === 'series' || cleanUrl.includes('/movie/') || cleanUrl.includes('/series/') || isMkv || isMp4 || isWebm);
         const isLive = !isVod;
 
-        // 1. HLS (.m3u8) - Hls.js Adaptive Engine
-        if (isHls && Hls.isSupported()) {
-            try {
-                await this.#playHls(targetUrl, useCorsProxy, effectiveProxy, effectiveToken);
-                return;
-            } catch (err) {
-                console.warn('[StreamEngine] HLS playback notice, cascading:', err);
-                this.#cleanupPlayers();
-            }
-        }
-
-        // Native HLS for Safari/iOS
-        if (isHls && this.#videoElement.canPlayType('application/vnd.apple.mpegurl')) {
-            this.#videoElement.src = targetUrl;
-            this.#stats.protocol = 'Native HLS (Apple Engine)';
-            await this.#safePlay();
-            return;
-        }
-
-        // 2. MPEG-TS, HTTP-FLV & MKV Stream Engine via mpegts.js (MSE Demuxer)
-        if ((isTs || isFlv || isMkv || isVod) && mpegts && mpegts.isSupported()) {
-            try {
-                const streamType = isFlv ? 'flv' : 'mse';
-                const success = await this.#playMpegTs(targetUrl, streamType, effectiveToken, isLive);
-                if (success) return;
-            } catch (err) {
-                console.warn('[StreamEngine] mpegts.js playback notice, cascading to candidate fallbacks:', err);
-                this.#cleanupPlayers();
-            }
-        }
-
-        // 3. MPEG-DASH Engine via dash.js (.mpd)
-        if (isDash && dashjs) {
-            try {
-                await this.#playDash(targetUrl, effectiveToken);
-                return;
-            } catch (err) {
-                console.warn('[StreamEngine] dashjs playback notice, cascading to progressive HTML5:', err);
-                this.#cleanupPlayers();
-            }
-        }
-
-        // 4. Xtream Codes & IPTV Transmuxing Candidate Fallback for .mkv and VOD
-        // If an MKV or VOD stream is hosted on an Xtream Codes or IPTV server, the backend server
-        // dynamically streams in HLS (.m3u8), MP4 (.mp4), or TS (.ts) format if requested with those extensions.
-        if (isMkv || isVod || cleanUrl.includes('/movie/') || cleanUrl.includes('/series/')) {
-            const candidates = this.#generateXtreamFallbackCandidates(targetUrl);
-            for (const candidate of candidates) {
-                console.log(`[StreamEngine] Attempting Xtream/IPTV transmuxing candidate: ${candidate.url} (${candidate.type})`);
+        const attemptLoad = async () => {
+            // 1. HLS (.m3u8) - Hls.js Adaptive Engine
+            if (isHls && Hls.isSupported()) {
                 try {
-                    if (candidate.type === 'hls' && Hls.isSupported()) {
-                        await this.#playHls(candidate.url, useCorsProxy, effectiveProxy, effectiveToken);
-                        console.log(`[StreamEngine] Successfully played MKV/VOD stream via Xtream HLS transmuxing!`);
-                        return;
-                    } else if (candidate.type === 'ts' && mpegts && mpegts.isSupported()) {
-                        const success = await this.#playMpegTs(candidate.url, 'mse', effectiveToken, false);
-                        if (success) {
-                            console.log(`[StreamEngine] Successfully played MKV/VOD stream via Xtream TS transmuxing!`);
-                            return;
-                        }
-                    } else if (candidate.type === 'mp4') {
-                        await this.#playProgressiveHtml5(candidate.url, { isMp4: true });
-                        console.log(`[StreamEngine] Successfully played MKV/VOD stream via Xtream MP4 transmuxing!`);
-                        return;
-                    }
-                } catch (candErr) {
-                    console.warn(`[StreamEngine] Candidate ${candidate.type} fallback failed:`, candErr);
+                    await this.#playHls(targetUrl, useCorsProxy, effectiveProxy, effectiveToken);
+                    return;
+                } catch (err) {
+                    console.warn('[StreamEngine] HLS playback notice, cascading:', err);
                     this.#cleanupPlayers();
                 }
             }
+
+            // Native HLS for Safari/iOS
+            if (isHls && this.#videoElement.canPlayType('application/vnd.apple.mpegurl')) {
+                try {
+                    this.#videoElement.src = targetUrl;
+                    this.#stats.protocol = 'Native HLS (Apple Engine)';
+                    await this.#safePlay();
+                    return;
+                } catch (err) {
+                    console.warn('[StreamEngine] Native HLS notice, cascading:', err);
+                }
+            }
+
+            // 2. MPEG-TS, HTTP-FLV & MSE Demuxer via mpegts.js
+            if ((isTs || isFlv || isMkv || isVod || isLive) && mpegts && mpegts.isSupported()) {
+                try {
+                    const streamType = isFlv ? 'flv' : 'mse';
+                    const success = await this.#playMpegTs(targetUrl, streamType, effectiveToken, isLive);
+                    if (success) return;
+                } catch (err) {
+                    console.warn('[StreamEngine] mpegts.js playback notice, cascading:', err);
+                    this.#cleanupPlayers();
+                }
+            }
+
+            // 3. MPEG-DASH Engine via dash.js (.mpd)
+            if (isDash && dashjs) {
+                try {
+                    await this.#playDash(targetUrl, effectiveToken);
+                    return;
+                } catch (err) {
+                    console.warn('[StreamEngine] dashjs playback notice, cascading:', err);
+                    this.#cleanupPlayers();
+                }
+            }
+
+            // 4. Xtream Codes & IPTV Transmuxing Candidate Fallback for .mkv, VOD & Live
+            if (isMkv || isVod || isLive || cleanUrl.includes('/movie/') || cleanUrl.includes('/series/') || cleanUrl.includes('/live/')) {
+                const candidates = this.#generateXtreamFallbackCandidates(targetUrl);
+                for (const candidate of candidates) {
+                    console.log(`[StreamEngine] Attempting Xtream/IPTV transmuxing candidate: ${candidate.url} (${candidate.type})`);
+                    try {
+                        if (candidate.type === 'hls' && Hls.isSupported()) {
+                            await this.#playHls(candidate.url, useCorsProxy, effectiveProxy, effectiveToken);
+                            console.log(`[StreamEngine] Successfully played stream via Xtream HLS transmuxing!`);
+                            return;
+                        } else if (candidate.type === 'ts' && mpegts && mpegts.isSupported()) {
+                            const success = await this.#playMpegTs(candidate.url, 'mse', effectiveToken, isLive);
+                            if (success) {
+                                console.log(`[StreamEngine] Successfully played stream via Xtream TS transmuxing!`);
+                                return;
+                            }
+                        } else if (candidate.type === 'mp4') {
+                            await this.#playProgressiveHtml5(candidate.url, { isMp4: true });
+                            console.log(`[StreamEngine] Successfully played stream via Xtream MP4 transmuxing!`);
+                            return;
+                        }
+                    } catch (candErr) {
+                        console.warn(`[StreamEngine] Candidate ${candidate.type} fallback failed:`, candErr);
+                        this.#cleanupPlayers();
+                    }
+                }
+            }
+
+            // 5. Progressive HTML5 Engine (Direct MKV, WebM, MP4, Audio, Direct Streams)
+            return this.#playProgressiveHtml5(targetUrl, { isMkv, isWebm, isMp4, isAudio, cleanUrl });
+        };
+
+        try {
+            await attemptLoad();
+        } catch (primaryErr) {
+            console.warn('[StreamEngine] Primary playback pipeline failed:', primaryErr?.message);
+            
+            // Auto-rescue with CORS proxy if CORS proxy was not previously enabled
+            if (!useCorsProxy) {
+                console.log('[StreamEngine] Direct playback failed. Auto-retrying stream via CORS Proxy...');
+                try {
+                    await this.loadStream(streamUrl, true, customProxyUrl, proxyToken, options);
+                    return;
+                } catch (proxyErr) {
+                    throw new Error(`Connection failed (Direct & Proxy). ${proxyErr.message || 'Server unreachable or CORS blocked'}`);
+                }
+            }
+            throw primaryErr;
+        }
+    }
+
+    /**
+     * Inspects stream track health to determine if stream is playing audio-only, video-only, or full AV.
+     * @returns {{ isPlaying: boolean, hasVideo: boolean, isAudioOnly: boolean, isVideoOnly: boolean, isMuted: boolean, resolution: string, protocol: string }}
+     */
+    getTrackHealthStatus() {
+        const video = this.#videoElement;
+        if (!video || video.paused || video.currentTime < 0.3) {
+            return { isPlaying: false, hasVideo: false, isAudioOnly: false, isVideoOnly: false, isMuted: video ? video.muted : false, resolution: 'N/A', protocol: this.#stats.protocol || 'None' };
         }
 
-        // 5. Progressive HTML5 Engine (Direct MKV, WebM, MP4, Audio, Direct Streams)
-        return this.#playProgressiveHtml5(targetUrl, { isMkv, isWebm, isMp4, isAudio, cleanUrl });
+        const hasVideo = video.videoWidth > 0 && video.videoHeight > 0;
+        const isAudioOnly = !hasVideo;
+
+        let isVideoOnly = false;
+        if (hasVideo) {
+            if (video.mozHasAudio === false) {
+                isVideoOnly = true;
+            } else if (video.audioTracks && video.audioTracks.length === 0) {
+                isVideoOnly = true;
+            }
+        }
+
+        return {
+            isPlaying: true,
+            hasVideo,
+            isAudioOnly,
+            isVideoOnly,
+            isMuted: video.muted || video.volume === 0,
+            resolution: hasVideo ? `${video.videoWidth}x${video.videoHeight}` : 'Audio Only',
+            protocol: this.#stats.protocol || 'HTML5'
+        };
     }
 
     /**
@@ -649,38 +719,95 @@ export class StreamEngine {
      * @private
      */
     async #playProgressiveHtml5(targetUrl, formatInfo = {}) {
-        while (this.#videoElement.firstChild) {
-            this.#videoElement.removeChild(this.#videoElement.firstChild);
-        }
+        return new Promise((resolve, reject) => {
+            let isSettled = false;
+            let timeoutId = null;
 
-        this.#videoElement.removeAttribute('src');
+            const cleanup = () => {
+                if (timeoutId) clearTimeout(timeoutId);
+                if (this.#videoElement) {
+                    this.#videoElement.removeEventListener('playing', onSuccess);
+                    this.#videoElement.removeEventListener('loadeddata', onSuccess);
+                    this.#videoElement.removeEventListener('error', onError);
+                }
+            };
 
-        let typeHint = '';
-        if (formatInfo.isMkv) {
-            typeHint = 'video/x-matroska; codecs="avc1.42E01E, mp4a.40.2"';
-        } else if (formatInfo.isWebm) {
-            typeHint = 'video/webm; codecs="vp8, vp9, opus, vorbis"';
-        } else if (formatInfo.isMp4) {
-            typeHint = 'video/mp4; codecs="avc1.42E01E, mp4a.40.2"';
-        } else if (formatInfo.isAudio) {
-            if (formatInfo.cleanUrl.endsWith('.mp3')) typeHint = 'audio/mpeg';
-            else if (formatInfo.cleanUrl.endsWith('.aac')) typeHint = 'audio/aac';
-            else if (formatInfo.cleanUrl.endsWith('.flac')) typeHint = 'audio/flac';
-            else if (formatInfo.cleanUrl.endsWith('.ogg')) typeHint = 'audio/ogg';
-            else if (formatInfo.cleanUrl.endsWith('.wav')) typeHint = 'audio/wav';
-        }
+            const onSuccess = () => {
+                if (!isSettled) {
+                    isSettled = true;
+                    cleanup();
+                    resolve();
+                }
+            };
 
-        if (typeHint) {
-            const sourceEl = document.createElement('source');
-            sourceEl.src = targetUrl;
-            sourceEl.type = typeHint;
-            this.#videoElement.appendChild(sourceEl);
-        }
+            const onError = (e) => {
+                if (!isSettled) {
+                    isSettled = true;
+                    cleanup();
+                    const errCode = this.#videoElement?.error?.code;
+                    let errMsg = 'Progressive media load error';
+                    if (errCode === 2) errMsg = 'Network error fetching stream (CORS/Server issue)';
+                    else if (errCode === 3) errMsg = 'Media decode error (Unsupported codec)';
+                    else if (errCode === 4) errMsg = 'Format/codec not supported by browser (HEVC/MKV/CORS)';
+                    reject(new Error(errMsg));
+                }
+            };
 
-        this.#videoElement.src = targetUrl;
-        this.#stats.protocol = formatInfo.isAudio ? 'HTML5 Progressive Audio' : 'HTML5 Progressive Media';
+            while (this.#videoElement.firstChild) {
+                this.#videoElement.removeChild(this.#videoElement.firstChild);
+            }
 
-        await this.#safePlay();
+            this.#videoElement.removeAttribute('src');
+
+            if (this.#videoElement) {
+                this.#videoElement.addEventListener('playing', onSuccess, { once: true });
+                this.#videoElement.addEventListener('loadeddata', onSuccess, { once: true });
+                this.#videoElement.addEventListener('error', onError, { once: true });
+            }
+
+            timeoutId = setTimeout(() => {
+                if (!isSettled) {
+                    if (this.#videoElement && (this.#videoElement.readyState >= 2 || !this.#videoElement.paused)) {
+                        isSettled = true;
+                        cleanup();
+                        resolve();
+                    } else {
+                        isSettled = true;
+                        cleanup();
+                        reject(new Error('Progressive HTML5 media load timeout'));
+                    }
+                }
+            }, 8000);
+
+            let typeHint = '';
+            if (formatInfo.isMkv) {
+                typeHint = 'video/x-matroska; codecs="avc1.42E01E, mp4a.40.2"';
+            } else if (formatInfo.isWebm) {
+                typeHint = 'video/webm; codecs="vp8, vp9, opus, vorbis"';
+            } else if (formatInfo.isMp4) {
+                typeHint = 'video/mp4; codecs="avc1.42E01E, mp4a.40.2"';
+            } else if (formatInfo.isAudio) {
+                if (formatInfo.cleanUrl && formatInfo.cleanUrl.endsWith('.mp3')) typeHint = 'audio/mpeg';
+                else if (formatInfo.cleanUrl && formatInfo.cleanUrl.endsWith('.aac')) typeHint = 'audio/aac';
+                else if (formatInfo.cleanUrl && formatInfo.cleanUrl.endsWith('.flac')) typeHint = 'audio/flac';
+                else if (formatInfo.cleanUrl && formatInfo.cleanUrl.endsWith('.ogg')) typeHint = 'audio/ogg';
+                else if (formatInfo.cleanUrl && formatInfo.cleanUrl.endsWith('.wav')) typeHint = 'audio/wav';
+            }
+
+            if (typeHint) {
+                const sourceEl = document.createElement('source');
+                sourceEl.src = targetUrl;
+                sourceEl.type = typeHint;
+                this.#videoElement.appendChild(sourceEl);
+            }
+
+            this.#videoElement.src = targetUrl;
+            this.#stats.protocol = formatInfo.isAudio ? 'HTML5 Progressive Audio' : 'HTML5 Progressive Media';
+
+            this.#safePlay().catch((err) => {
+                console.warn('[StreamEngine] Progressive safePlay notice:', err);
+            });
+        });
     }
 
     /**

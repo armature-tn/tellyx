@@ -166,12 +166,6 @@ export function initTauriIntegration(uiController = null) {
     if (isEmbedded) {
         console.log('[TellyX Tauri Bridge] Embedded native Tauri runtime detected. Hiding CORS Proxy settings.');
 
-        // Disable default native webview contextual menu (right-click / long-press inspect) strictly in Tauri application
-        window.addEventListener('contextmenu', (e) => {
-            e.preventDefault();
-            return false;
-        }, { capture: true });
-
         if (corsSection) {
             corsSection.classList.add('hidden');
         }

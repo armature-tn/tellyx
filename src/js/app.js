@@ -497,11 +497,22 @@ class Application {
         }
 
         try {
+            this.hideStreamErrorOverlay();
+            this.showStreamLoadingOverlay(`Connecting: ${channel.name}`, `Loading media stream & buffering demuxer...`);
+
+            const audioOnlyBadge = document.getElementById('audioOnlyBadge');
+            const videoOnlyBadge = document.getElementById('videoOnlyBadge');
+            if (audioOnlyBadge) audioOnlyBadge.classList.add('hidden');
+            if (videoOnlyBadge) videoOnlyBadge.classList.add('hidden');
+
             await this.streamEngine.loadStream(channel.url, this.useCorsProxy, this.getEffectiveProxyUrl(), this.getEffectiveProxyToken(), {
                 type: channel.type,
                 name: channel.name,
                 isVod: channel.type === 'movie' || channel.type === 'series'
             });
+
+            this.hideStreamLoadingOverlay();
+
             this.streamEngine.updateMediaSession({
                 title: channel.name,
                 group: channel.group || channel.categoryName || 'Live IPTV',
@@ -515,7 +526,109 @@ class Application {
             this.uiController.showToast(`Playing: ${channel.name}`, 'success');
         } catch (err) {
             console.error('[App] Playback error:', err);
-            this.uiController.showToast(`Playback Notice: ${err.message || 'Stream Buffering'}`, 'warning');
+            this.hideStreamLoadingOverlay();
+            const errDetail = err?.message || 'Stream Buffering / Connection issue';
+            this.showStreamErrorOverlay('Stream Playback Issue', `Failed to load "${channel.name}". ${errDetail}. Try toggling CORS Proxy in Settings or opening in an external media player.`, channel);
+            this.uiController.showToast(`Playback Issue: ${errDetail}`, 'warning');
+        }
+    }
+
+    /**
+     * Shows connecting overlay on the video player when a stream starts loading.
+     * @param {string} title 
+     * @param {string} [subMessage='Connecting stream...'] 
+     */
+    showStreamLoadingOverlay(title, subMessage) {
+        const overlay = document.getElementById('streamLoadingOverlay');
+        const titleEl = document.getElementById('streamLoadingTitle');
+        const subEl = document.getElementById('streamLoadingSub');
+
+        if (titleEl) titleEl.textContent = title || 'Connecting Stream...';
+        if (subEl) subEl.textContent = subMessage || 'Establishing media buffer & demuxer...';
+        if (overlay) overlay.classList.remove('hidden');
+    }
+
+    /**
+     * Hides the connecting stream loading overlay on the player element.
+     */
+    hideStreamLoadingOverlay() {
+        const overlay = document.getElementById('streamLoadingOverlay');
+        if (overlay) overlay.classList.add('hidden');
+    }
+
+    /**
+     * Shows overlay on the video player when a stream fails to load or play.
+     * @param {string} title 
+     * @param {string} message 
+     * @param {Object} [channel] 
+     */
+    showStreamErrorOverlay(title, message, channel) {
+        this.hideStreamLoadingOverlay();
+        const overlay = document.getElementById('streamErrorOverlay');
+        const titleEl = document.getElementById('streamErrorTitle');
+        const descEl = document.getElementById('streamErrorDesc');
+
+        if (titleEl) titleEl.textContent = title || 'Stream Playback Issue';
+        if (descEl) descEl.textContent = message || 'The selected stream could not be loaded directly by your browser. Try toggling CORS Proxy in Settings or opening in an external player.';
+        if (overlay) overlay.classList.remove('hidden');
+    }
+
+    /**
+     * Hides the stream playback error overlay on the player element.
+     */
+    hideStreamErrorOverlay() {
+        const overlay = document.getElementById('streamErrorOverlay');
+        if (overlay) overlay.classList.add('hidden');
+    }
+
+    /**
+     * Checks if the active playing stream has audio-only (missing video / HEVC) or video-only (missing/unsupported audio AC3/DTS).
+     * Automatically displays badges, spectrum visualizer, and explicit user toast notices.
+     * @param {HTMLVideoElement} videoEl 
+     */
+    checkAudioOnlyStatus(videoEl) {
+        if (!videoEl || videoEl.paused || videoEl.currentTime < 0.3) return;
+
+        const audioOnlyBadge = document.getElementById('audioOnlyBadge');
+        const videoOnlyBadge = document.getElementById('videoOnlyBadge');
+        const badgeText = document.getElementById('audioOnlyBadgeText');
+
+        // 1. Audio Only (Video Width & Height = 0 while currentTime advancing)
+        if (videoEl.videoWidth === 0 && videoEl.videoHeight === 0) {
+            if (audioOnlyBadge) audioOnlyBadge.classList.remove('hidden');
+            if (badgeText) badgeText.textContent = 'AUDIO ONLY (VIDEO CODEC UNRENDERED - e.g. HEVC)';
+            if (videoOnlyBadge) videoOnlyBadge.classList.add('hidden');
+
+            // Auto-activate Web Audio API Spectrum Visualizer on canvas if hidden
+            const canvasEl = document.getElementById('audioCanvas');
+            if (canvasEl && canvasEl.classList.contains('hidden') && this.streamEngine) {
+                this.streamEngine.toggleAudioVisualizer();
+            }
+
+            if (!this._hasNotifiedAudioOnly) {
+                this._hasNotifiedAudioOnly = true;
+                this._hasNotifiedVideoOnly = false;
+                this.uiController.showToast('Audio playing. Video track is unrendered (e.g. HEVC/H.265 video codec). Open in External Player for full HEVC video.', 'info');
+            }
+            return;
+        }
+
+        // 2. Video Only (Video dimensions > 0, but no audio / unsupported AC3/DTS audio codec)
+        if (audioOnlyBadge) audioOnlyBadge.classList.add('hidden');
+        this._hasNotifiedAudioOnly = false;
+
+        const health = this.streamEngine ? this.streamEngine.getTrackHealthStatus() : null;
+        const isVideoOnly = health ? health.isVideoOnly : (videoEl.mozHasAudio === false);
+
+        if (isVideoOnly && !videoEl.muted && videoEl.volume > 0) {
+            if (videoOnlyBadge) videoOnlyBadge.classList.remove('hidden');
+            if (!this._hasNotifiedVideoOnly) {
+                this._hasNotifiedVideoOnly = true;
+                this.uiController.showToast('Video playing. Audio track is unrendered (unsupported AC3/DTS audio codec). Open in External Player for full AC3/DTS sound.', 'warning');
+            }
+        } else {
+            if (videoOnlyBadge) videoOnlyBadge.classList.add('hidden');
+            this._hasNotifiedVideoOnly = false;
         }
     }
 
@@ -2116,6 +2229,43 @@ class Application {
         const volumeSlider = document.getElementById('volumeSlider');
         const seekBar = document.getElementById('seekBar');
 
+        // Stream Error Overlay Action Handlers
+        document.getElementById('btnErrorRetry')?.addEventListener('click', () => {
+            this.hideStreamErrorOverlay();
+            if (this.activeChannel) {
+                this.playDirectStream(this.activeChannel);
+            } else {
+                this.uiController.showToast('Select a channel or stream to retry', 'info');
+            }
+        });
+
+        document.getElementById('btnErrorCorsToggle')?.addEventListener('click', () => {
+            this.useCorsProxy = !this.useCorsProxy;
+            localStorage.setItem('iptv_use_cors_proxy', this.useCorsProxy ? 'true' : 'false');
+            const proxyToggle = document.getElementById('toggleCorsProxy');
+            if (proxyToggle) proxyToggle.checked = this.useCorsProxy;
+            this.uiController.showToast(`CORS Proxy ${this.useCorsProxy ? 'Enabled' : 'Disabled'}. Retrying...`, 'info');
+            this.hideStreamErrorOverlay();
+            if (this.activeChannel) {
+                this.playDirectStream(this.activeChannel);
+            }
+        });
+
+        document.getElementById('btnErrorExternalPlayer')?.addEventListener('click', () => {
+            if (this.activeChannel && this.activeChannel.url) {
+                const url = this.activeChannel.url;
+                try {
+                    navigator.clipboard.writeText(url);
+                    this.uiController.showToast('Stream URL copied to clipboard! Paste into VLC or external media player.', 'success');
+                } catch (e) {
+                    console.warn('[App] Clipboard error:', e);
+                }
+                window.open(url, '_blank', 'noopener,noreferrer');
+            } else {
+                this.uiController.showToast('No active stream URL available', 'warning');
+            }
+        });
+
         // Unmute Banner Floating Button Click
         unmuteBanner?.addEventListener('click', () => {
             this.streamEngine.setMuted(false);
@@ -2128,6 +2278,25 @@ class Application {
 
         // Click on Video Screen to Unmute or Play/Pause & Double-Click for Fullscreen
         if (videoEl) {
+            videoEl.addEventListener('error', (e) => {
+                console.warn('[VideoElement Error Event]:', videoEl.error);
+                const errCode = videoEl.error?.code;
+                let title = 'Playback Error';
+                let msg = 'The browser encountered an error loading or decoding this stream.';
+                if (errCode === 2) {
+                    title = 'Stream Network Error';
+                    msg = 'Network connection failed while fetching stream. Try enabling CORS Proxy or check server connectivity.';
+                } else if (errCode === 3) {
+                    title = 'Stream Decode Error';
+                    msg = 'Codec mismatch or corrupted video data. Your browser cannot decode this video track.';
+                } else if (errCode === 4) {
+                    title = 'Format / Codec Not Supported';
+                    msg = 'The stream container/codec (e.g. HEVC/H.265, MKV) or CORS policy is restricted. Try toggling CORS Proxy or opening in VLC.';
+                }
+                this.showStreamErrorOverlay(title, msg, this.activeChannel);
+                this.uiController.showToast(`${title}: ${msg}`, 'warning');
+            });
+
             videoEl.addEventListener('click', () => {
                 if (videoEl.muted) {
                     this.streamEngine.setMuted(false);
@@ -2156,12 +2325,17 @@ class Application {
             videoEl.addEventListener('pause', () => this.updatePlayPauseIcons(true));
 
             videoEl.addEventListener('playing', () => {
+                this.hideStreamErrorOverlay();
                 if (videoEl.muted && unmuteBanner) {
                     unmuteBanner.classList.remove('hidden');
                 }
+                setTimeout(() => this.checkAudioOnlyStatus(videoEl), 1000);
             });
 
             videoEl.addEventListener('timeupdate', () => {
+                if (Math.floor(videoEl.currentTime) % 4 === 0) {
+                    this.checkAudioOnlyStatus(videoEl);
+                }
                 const currDisplay = document.getElementById('currentTimeDisplay');
                 const durDisplay = document.getElementById('durationDisplay');
                 const isVodItem = this.activeType === 'movie' || this.activeType === 'series' || this.activeChannel?.type === 'movie' || this.activeChannel?.type === 'series';
