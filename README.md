@@ -91,12 +91,100 @@
    ```bash
    cp .env.example .env
    ```
+   Fill in your API keys, Tauri signing keys, and Android keystore credentials (see [Environment Variables & CI/CD Secrets Setup](#-environment-variables--cicd-secrets-setup) below).
 
 4. **Start Development Server**:
    ```bash
    npm run dev
    ```
    Open `http://localhost:3000` in your browser.
+
+---
+
+## 🔐 Environment Variables & CI/CD Secrets Setup
+
+TellyX supports automated release signing and updater verification for both Desktop (Tauri v2 Minisign) and Mobile (Android Release Keystore).
+
+### 📋 Environment Variables Reference
+
+| Variable | Description | Where to Set |
+| :--- | :--- | :--- |
+| `GEMINI_API_KEY` | Google Gemini AI API Key for server-side recommendations | `.env` / Environment |
+| `APP_URL` | Application base host URL | `.env` / Environment |
+| `TAURI_SIGNING_PUBLIC_KEY` | Minisign Public Key string (injected into `src-tauri/tauri.conf.json` at build time) | `.env` / GitHub Secret |
+| `TAURI_SIGNING_PRIVATE_KEY` | Minisign Private Key string (used by Tauri build tools to sign binary packages) | `.env` / GitHub Secret |
+| `TAURI_SIGNING_PRIVATE_KEY_PASSWORD` | Password for Minisign private key (leave empty if unencrypted) | `.env` / GitHub Secret |
+| `ANDROID_KEYSTORE_BASE64` | Base64-encoded string of the `release.keystore` binary file | `.env` / GitHub Secret |
+| `ANDROID_KEYSTORE_PASSWORD` | Password for the Android release keystore | `.env` / GitHub Secret |
+| `ANDROID_KEY_ALIAS` | Key alias name inside the Android release keystore | `.env` / GitHub Secret |
+| `ANDROID_KEY_PASSWORD` | Password for the key alias inside the keystore | `.env` / GitHub Secret |
+
+---
+
+### 🔑 How to Generate Tauri Minisign Signing Keys
+
+Tauri v2 uses **Minisign** Ed25519 signatures to sign release binaries and verify auto-updates.
+
+1. **Generate Minisign Keypair**:
+   Run the Tauri CLI signer generator:
+   ```bash
+   npx @tauri-apps/cli signer generate -w ~/.tauri/tellyx.key
+   ```
+   *(Note: Use `npx @tauri-apps/cli signer generate` rather than `npx tauri signer generate` to avoid executable resolution issues).*
+
+2. **Key Output**:
+   * **Public Key**: Printed directly in the console (e.g., `dW50cnVzdGVkIGNvbW1lbnQ6IG1pbmlzaWduIHB1YmxpYy...`).
+     Copy this string to `TAURI_SIGNING_PUBLIC_KEY`.
+   * **Private Key File**: Created at `~/.tauri/tellyx.key`.
+     Copy the contents of this file (including comments) to `TAURI_SIGNING_PRIVATE_KEY`.
+   * **Password**: If you specified a password during prompt, set `TAURI_SIGNING_PRIVATE_KEY_PASSWORD`.
+
+3. **Automatic Build-Time Public Key Injection**:
+   When running `npm run tauri:build`, `npm run tauri:android`, or GitHub Actions CI, `scripts/setup-tauri-pubkey.js` automatically reads `TAURI_SIGNING_PUBLIC_KEY` from your environment or `.env` file and updates `plugins.updater.pubkey` inside `src-tauri/tauri.conf.json`.
+
+---
+
+### 🤖 How to Generate Android Release Keystore & Base64 String
+
+Android APK and AAB release builds require a Java Keystore (`.keystore`) signed with RSA 2048-bit encryption.
+
+1. **Generate Keystore file (`release.keystore`)**:
+   Run the `keytool` command in your terminal:
+   ```bash
+   keytool -genkey -v -keystore release.keystore -storepass tellyxkey -alias tellyxkey -keypass tellyxkey -keyalg RSA -keysize 2048 -validity 10000 -dname "CN=TellyX, OU=Media, O=Armature, L=Tunis, C=TN"
+   ```
+
+2. **Encode Keystore to Base64**:
+   Convert the binary `release.keystore` into a single line Base64 string:
+   * **Linux / macOS**:
+     ```bash
+     base64 -w 0 release.keystore
+     # or
+     openssl base64 -A -in release.keystore
+     ```
+   * **Windows (PowerShell)**:
+     ```powershell
+     [Convert]::ToBase64String([IO.File]::ReadAllBytes("release.keystore"))
+     ```
+
+3. **Set Environment Variables**:
+   Copy the Base64 output string into `ANDROID_KEYSTORE_BASE64` in `.env` or GitHub Secrets. Set `ANDROID_KEYSTORE_PASSWORD`, `ANDROID_KEY_ALIAS`, and `ANDROID_KEY_PASSWORD` accordingly.
+
+---
+
+### 🐙 Configuring GitHub Repository Secrets for Automated CI/CD
+
+To enable automated release signing in GitHub Actions:
+1. Navigate to your GitHub repository: **Settings -> Secrets and variables -> Actions**.
+2. Click **New repository secret** and add the following 7 secrets:
+   * `TAURI_SIGNING_PUBLIC_KEY`
+   * `TAURI_SIGNING_PRIVATE_KEY`
+   * `TAURI_SIGNING_PRIVATE_KEY_PASSWORD`
+   * `ANDROID_KEYSTORE_BASE64`
+   * `ANDROID_KEYSTORE_PASSWORD`
+   * `ANDROID_KEY_ALIAS`
+   * `ANDROID_KEY_PASSWORD`
+3. Whenever a release tag (e.g., `v0.1.0`) is pushed, CI will automatically build signed Windows, macOS, Linux, and Android binaries and attach signed update manifests to the GitHub release.
 
 ---
 
