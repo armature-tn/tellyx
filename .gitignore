@@ -66,6 +66,9 @@
 !/src-tauri/capabilities
 /src-tauri/capabilities/*
 !/src-tauri/capabilities/default.json
+!/src-tauri/scripts
+/src-tauri/scripts/*
+!/src-tauri/scripts/setup-tauri-pubkey.js
 !/src-tauri/src
 /src-tauri/src/*
 !/src-tauri/src/lib.rs

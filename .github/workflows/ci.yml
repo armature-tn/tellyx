@@ -118,7 +118,7 @@ jobs:
       - name: Setup Tauri Public Key Configuration
         env:
           TAURI_SIGNING_PUBLIC_KEY: ${{ secrets.TAURI_SIGNING_PUBLIC_KEY }}
-        run: node scripts/setup-tauri-pubkey.js
+        run: node src-tauri/scripts/setup-tauri-pubkey.js
 
       - name: Build Tauri Application
         uses: tauri-apps/tauri-action@v0

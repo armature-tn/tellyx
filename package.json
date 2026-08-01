@@ -17,12 +17,12 @@
     "preview": "vite preview",
     "clean": "rm -rf dist server.js",
     "generate:icons": "tauri icon public/icon.svg",
-    "setup:tauri-pubkey": "node scripts/setup-tauri-pubkey.js",
+    "setup:tauri-pubkey": "node src-tauri/scripts/setup-tauri-pubkey.js",
     "lint": "tsc --noEmit",
     "tauri": "tauri",
-    "tauri:dev": "node scripts/setup-tauri-pubkey.js && tauri dev",
-    "tauri:build": "node scripts/setup-tauri-pubkey.js && npm run generate:icons && tauri build",
-    "tauri:android": "node scripts/setup-tauri-pubkey.js && npm run generate:icons && tauri android build"
+    "tauri:dev": "node src-tauri/scripts/setup-tauri-pubkey.js && tauri dev",
+    "tauri:build": "node src-tauri/scripts/setup-tauri-pubkey.js && npm run generate:icons && tauri build",
+    "tauri:android": "node src-tauri/scripts/setup-tauri-pubkey.js && npm run generate:icons && tauri android build"
   },
   "dependencies": {
     "@google/genai": "^2.13.0",
