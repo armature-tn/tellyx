@@ -703,8 +703,11 @@ console.log('%c                                                                 
                     <label class="text-xs font-semibold text-slate-300">Import M3U / M3U8 Playlist URL</label>
                     <div class="flex space-x-2">
                         <input type="text" id="inputM3uUrl" placeholder="https://provider.com/playlist.m3u8" class="flex-1 bg-slate-950 border border-rose-950 rounded-xl px-3 py-2 text-xs text-white focus:outline-none focus:border-rose-500">
-                        <button type="submit" class="px-4 py-2 bg-rose-600 hover:bg-rose-500 text-white rounded-xl text-xs font-semibold transition-colors cursor-pointer">Load Playlist</button>
+                        <button type="submit" id="btnSubmitM3u" class="px-4 py-2 bg-rose-600 hover:bg-rose-500 text-white rounded-xl text-xs font-semibold transition-colors cursor-pointer flex items-center justify-center space-x-1.5 shrink-0">
+                            <span>Load Playlist</span>
+                        </button>
                     </div>
+                    <div id="statusConnectionM3u" class="text-[11px] text-rose-400 font-medium hidden"></div>
                 </form>
             </div>
 
@@ -725,7 +728,10 @@ console.log('%c                                                                 
                             <input type="password" id="xtreamPass" placeholder="••••••••" class="w-full bg-slate-950 border border-rose-950 rounded-xl px-3 py-2 text-white focus:outline-none focus:border-rose-500">
                         </div>
                     </div>
-                    <button type="submit" class="w-full py-2.5 bg-gradient-to-r from-rose-600 to-red-700 hover:from-rose-500 hover:to-red-600 text-white rounded-xl font-bold transition-all cursor-pointer shadow-lg shadow-rose-600/30">Connect Xtream Account</button>
+                    <button type="submit" id="btnSubmitXtream" class="w-full py-2.5 bg-gradient-to-r from-rose-600 to-red-700 hover:from-rose-500 hover:to-red-600 text-white rounded-xl font-bold transition-all cursor-pointer shadow-lg shadow-rose-600/30 flex items-center justify-center space-x-2">
+                        <span>Connect Xtream Account</span>
+                    </button>
+                    <div id="statusConnectionXtream" class="text-[11px] text-rose-400 font-medium hidden text-center"></div>
                 </form>
             </div>
 
@@ -1391,10 +1397,16 @@ console.log('%c                                                                 
                             </ul>
                         </div>
 
-                        <a id="btnDownloadNativeFromPwa" href="https://github.com/armature-tn/tellyx/releases/latest" target="_blank" rel="noopener noreferrer" class="w-full py-2.5 px-3 rounded-xl bg-rose-600 hover:bg-rose-500 text-white font-extrabold text-xs transition-all flex items-center justify-center space-x-2 shadow-lg shadow-rose-600/30 cursor-pointer active:scale-95">
-                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"></path></svg>
-                            <span id="btnNativeText">Download Native Windows App</span>
-                        </a>
+                        <div class="space-y-2">
+                            <a id="btnDownloadNativeFromPwa" href="https://github.com/armature-tn/tellyx/releases/download/v0.1.0/TellyX_0.1.0_x64-setup.exe" target="_blank" rel="noopener noreferrer" class="w-full py-2.5 px-3 rounded-xl bg-rose-600 hover:bg-rose-500 text-white font-extrabold text-xs transition-all flex items-center justify-center space-x-2 shadow-lg shadow-rose-600/30 cursor-pointer active:scale-95">
+                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"></path></svg>
+                                <span id="btnNativeText">Download Native Windows App (.exe)</span>
+                            </a>
+                            <a id="btnDownloadMsiFromPwa" href="https://github.com/armature-tn/tellyx/releases/download/v0.1.0/TellyX_0.1.0_x64_en-US.msi" target="_blank" rel="noopener noreferrer" class="hidden w-full py-2 px-3 rounded-xl bg-slate-900 hover:bg-slate-800 text-slate-200 font-semibold text-[11px] transition-all flex items-center justify-center space-x-2 border border-slate-700/80 cursor-pointer active:scale-95">
+                                <svg class="w-3.5 h-3.5 text-sky-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"></path></svg>
+                                <span>Download Windows MSI Package (.msi)</span>
+                            </a>
+                        </div>
                     </div>
 
                     <!-- OPTION 2: WEB PWA -->

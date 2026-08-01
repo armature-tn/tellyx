@@ -81,19 +81,66 @@ export class SecurityController {
 
     /**
      * Normalizes a server URL string ensuring it has an explicit scheme (http:// or https://)
-     * and removes trailing slashes.
+     * and strips endpoint paths (like get.php, player_api.php) and trailing slashes.
      * 
      * @param {string} url - Untrusted server URL input
-     * @returns {string} Clean normalized server URL (e.g., http://192.168.1.10:8080)
+     * @returns {string} Clean normalized server base URL (e.g., http://192.168.1.10:8080)
      */
     static normalizeServerUrl(url) {
         if (!url || typeof url !== 'string') return '';
         let trimmed = url.trim();
         if (!trimmed) return '';
+
         if (!/^[a-zA-Z][a-zA-Z0-9+.-]*:\/\//.test(trimmed)) {
             trimmed = 'http://' + trimmed;
         }
-        return trimmed.replace(/\/$/, '');
+
+        try {
+            const parsed = new URL(trimmed);
+            return `${parsed.protocol}//${parsed.host}`.replace(/\/$/, '');
+        } catch (e) {
+            // Fallback stripping if URL object constructor fails
+            return trimmed
+                .replace(/\/(get|player_api|xmltv)\.php.*$/i, '')
+                .replace(/\/$/, '');
+        }
+    }
+
+    /**
+     * Parses an Xtream server input string or full playlist link to extract base server URL,
+     * username, and password if provided in URL parameters.
+     * 
+     * @param {string} input - Server URL or full get.php link
+     * @returns {{ server: string, user: string, pass: string }}
+     */
+    static parseXtreamInput(input) {
+        if (!input || typeof input !== 'string') return { server: '', user: '', pass: '' };
+        let trimmed = input.trim();
+        if (!trimmed) return { server: '', user: '', pass: '' };
+
+        if (!/^[a-zA-Z][a-zA-Z0-9+.-]*:\/\//.test(trimmed)) {
+            trimmed = 'http://' + trimmed;
+        }
+
+        let user = '';
+        let pass = '';
+        let server = '';
+
+        try {
+            const parsed = new URL(trimmed);
+            server = `${parsed.protocol}//${parsed.host}`;
+            const params = parsed.searchParams;
+            user = params.get('username') || params.get('user') || '';
+            pass = params.get('password') || params.get('pass') || '';
+        } catch (e) {
+            server = trimmed;
+        }
+
+        return {
+            server: this.normalizeServerUrl(server),
+            user: user ? user.trim() : '',
+            pass: pass ? pass.trim() : ''
+        };
     }
 
     /**

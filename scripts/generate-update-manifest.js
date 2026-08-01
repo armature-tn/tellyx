@@ -20,19 +20,19 @@ const manifest = {
   platforms: {
     "darwin-aarch64": {
       "signature": "",
-      "url": `https://github.com/armature-tn/tellyx/releases/download/${versionTag}/TellyX_${cleanVersion}_aarch64.app.tar.gz`
+      "url": `https://github.com/armature-tn/tellyx/releases/download/${versionTag}/TellyX_${cleanVersion}_aarch64.dmg`
     },
     "darwin-x86_64": {
       "signature": "",
-      "url": `https://github.com/armature-tn/tellyx/releases/download/${versionTag}/TellyX_${cleanVersion}_x64.app.tar.gz`
+      "url": `https://github.com/armature-tn/tellyx/releases/download/${versionTag}/TellyX_${cleanVersion}_x64.dmg`
     },
     "linux-x86_64": {
       "signature": "",
-      "url": `https://github.com/armature-tn/tellyx/releases/download/${versionTag}/TellyX_${cleanVersion}_amd64.AppImage.tar.gz`
+      "url": `https://github.com/armature-tn/tellyx/releases/download/${versionTag}/TellyX_${cleanVersion}_amd64.AppImage`
     },
     "windows-x86_64": {
       "signature": "",
-      "url": `https://github.com/armature-tn/tellyx/releases/download/${versionTag}/TellyX_x64-setup.nsis.zip`
+      "url": `https://github.com/armature-tn/tellyx/releases/download/${versionTag}/TellyX_${cleanVersion}_x64-setup.exe`
     },
     "android": {
       "signature": "",

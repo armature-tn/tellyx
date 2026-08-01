@@ -1621,13 +1621,55 @@ class Application {
      * @param {string} pass - Xtream password
      * @returns {Promise<Array<Object>>} Combined list of channels with category & type metadata.
      */
-    async fetchXtreamChannels(serverUrl, user, pass) {
+    /**
+     * Fetches Live streams, VOD movies, and TV series from an Xtream Codes server.
+     * Falls back to M3U_Plus endpoint if the JSON API is unsupported or returns 0 items.
+     * 
+     * @param {string} serverUrl - Xtream server base URL
+     * @param {string} user - Xtream username
+     * @param {string} pass - Xtream password
+     * @param {Function} [onStatus] - Optional status feedback callback
+     * @returns {Promise<Array<Object>>} Combined list of channels with category & type metadata.
+     */
+    async fetchXtreamChannels(serverUrl, user, pass, onStatus = () => {}) {
         const cleanServer = SecurityController.normalizeServerUrl(serverUrl);
+        if (!cleanServer) {
+            throw new Error('Invalid or empty server URL');
+        }
+
+        onStatus('Authenticating with Xtream server...');
+
+        // Step 1: Verify auth with basic API call
+        try {
+            const authUrl = `${cleanServer}/player_api.php?username=${encodeURIComponent(user)}&password=${encodeURIComponent(pass)}`;
+            const resAuth = await SecurityController.fetchWithFallback(
+                authUrl,
+                this.useCorsProxy,
+                this.getEffectiveProxyUrl(),
+                this.getEffectiveProxyToken()
+            );
+            if (resAuth.ok) {
+                const authData = await resAuth.json().catch(() => null);
+                if (authData && authData.user_info) {
+                    if (authData.user_info.auth === 0 || authData.user_info.status === 'Disabled' || authData.user_info.status === 'Banned') {
+                        throw new Error(`Xtream Auth Failed: Account status is ${authData.user_info.status || 'Disabled'}`);
+                    }
+                }
+            }
+        } catch (authErr) {
+            console.warn('[Xtream] Auth pre-check notice:', authErr.message || authErr);
+            if (authErr.message && authErr.message.includes('Auth Failed')) {
+                throw authErr;
+            }
+        }
+
+        onStatus('Fetching Live TV, Movies & Series catalogs...');
+
         const safeFetchJson = async (action) => {
             try {
                 const targetUrl = `${cleanServer}/player_api.php?username=${encodeURIComponent(user)}&password=${encodeURIComponent(pass)}&action=${action}`;
                 const controller = new AbortController();
-                const timeoutId = setTimeout(() => controller.abort(), 15000);
+                const timeoutId = setTimeout(() => controller.abort(), 20000);
                 const res = await SecurityController.fetchWithFallback(
                     targetUrl,
                     this.useCorsProxy,
@@ -1645,7 +1687,7 @@ class Application {
             }
         };
 
-        // Parallel fetch of categories and stream collections
+        // Fetch categories and streams
         const [liveCats, vodCats, seriesCats, liveStreams, vodStreams, seriesStreams] = await Promise.all([
             safeFetchJson('get_live_categories'),
             safeFetchJson('get_vod_categories'),
@@ -1732,10 +1774,11 @@ class Application {
 
         // Fallback to M3U_Plus (get.php) if JSON API returned 0 items
         if (result.length === 0) {
+            onStatus('Downloading playlist via get.php fallback...');
             console.log('[Xtream] JSON API returned 0 items. Falling back to M3U_Plus (get.php)...');
             const m3uUrl = `${cleanServer}/get.php?username=${encodeURIComponent(user)}&password=${encodeURIComponent(pass)}&type=m3u_plus`;
             const res = await SecurityController.fetchWithFallback(m3uUrl, this.useCorsProxy, this.getEffectiveProxyUrl(), this.getEffectiveProxyToken());
-            if (!res.ok) throw new Error(`Xtream connection error (HTTP ${res.status})`);
+            if (!res.ok) throw new Error(`Xtream server response error (HTTP ${res.status})`);
             const text = await res.text();
             result = this.iptvCore.parseM3U(text);
         }
@@ -2074,7 +2117,8 @@ class Application {
             if (/Win/i.test(platform) || /Windows/i.test(ua)) {
                 return {
                     name: 'Windows 10 / 11 (64-bit)',
-                    downloadUrl: 'https://github.com/armature-tn/tellyx/releases/download/v0.1.0/TellyX_x64-setup.nsis.zip',
+                    downloadUrl: 'https://github.com/armature-tn/tellyx/releases/download/v0.1.0/TellyX_0.1.0_x64-setup.exe',
+                    msiUrl: 'https://github.com/armature-tn/tellyx/releases/download/v0.1.0/TellyX_0.1.0_x64_en-US.msi',
                     btnText: 'Download Native Windows App (.exe)',
                     iconSvg: `<svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24"><path d="M0 3.449L9.75 2.1v9.451H0m10.95-9.6L24 0v11.4H10.95M0 12.6h9.75v9.451L0 20.701M10.95 12.6H24V24l-13.05-1.801"/></svg>`
                 };
@@ -2089,8 +2133,8 @@ class Application {
                 }
                 return {
                     name: 'macOS Monterey / Sonoma / Sequoia',
-                    downloadUrl: 'https://github.com/armature-tn/tellyx/releases/download/v0.1.0/TellyX_0.1.0_aarch64.app.tar.gz',
-                    btnText: 'Download Native macOS App (.app)',
+                    downloadUrl: 'https://github.com/armature-tn/tellyx/releases/download/v0.1.0/TellyX_0.1.0_aarch64.dmg',
+                    btnText: 'Download Native macOS App (.dmg)',
                     iconSvg: `<svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24"><path d="M18.71 19.5c-.83 1.24-1.71 2.45-3.05 2.47-1.34.03-1.77-.79-3.29-.79-1.53 0-2 .77-3.27.82-1.31.05-2.3-1.32-3.14-2.53C4.25 17 2.94 12.45 4.7 9.39c.87-1.52 2.43-2.48 4.12-2.51 1.28-.02 2.5.87 3.29.87.78 0 2.26-1.07 3.81-.91.65.03 2.47.26 3.64 1.98-.09.06-2.17 1.28-2.15 3.81.03 3.02 2.65 4.03 2.68 4.04-.03.07-.42 1.44-1.38 2.83M15.97 6.32c.68-.82 1.13-1.98.99-3.12-1 .04-2.21.67-2.91 1.49-.62.72-1.16 1.89-.99 3.01 1.12.09 2.23-.56 2.91-1.38z"/></svg>`
                 };
             } else if (/Android/i.test(ua)) {
@@ -2103,7 +2147,7 @@ class Application {
             } else if (/Linux/i.test(platform) || /Linux/i.test(ua)) {
                 return {
                     name: 'Linux (Ubuntu, Debian, Fedora, Arch)',
-                    downloadUrl: 'https://github.com/armature-tn/tellyx/releases/download/v0.1.0/TellyX_0.1.0_amd64.AppImage.tar.gz',
+                    downloadUrl: 'https://github.com/armature-tn/tellyx/releases/download/v0.1.0/TellyX_0.1.0_amd64.AppImage',
                     btnText: 'Download Native Linux AppImage',
                     iconSvg: `<svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2a10 10 0 1 0 10 10A10 10 0 0 0 12 2zm1 14.5a1.5 1.5 0 1 1-1.5-1.5 1.5 1.5 0 0 1 1.5 1.5zm1.5-5.5a2.5 2.5 0 0 0-5 0v1a1 1 0 0 0 2 0v-1a.5.5 0 0 1 1 0 .5.5 0 0 1-.5.5 1 1 0 0 0-1 1v1a1 1 0 0 0 2 0v-.5a2.5 2.5 0 0 0 1.5-2z"/></svg>`
                 };
@@ -2123,11 +2167,21 @@ class Application {
             const pwaNativeIcon = document.getElementById('pwaNativeIcon');
             const btnNativeText = document.getElementById('btnNativeText');
             const btnDownloadNativeFromPwa = document.getElementById('btnDownloadNativeFromPwa');
+            const btnDownloadMsiFromPwa = document.getElementById('btnDownloadMsiFromPwa');
 
             if (pwaPlatformName) pwaPlatformName.textContent = `Detected OS: ${platformInfo.name}`;
             if (pwaNativeIcon) pwaNativeIcon.innerHTML = platformInfo.iconSvg;
             if (btnNativeText) btnNativeText.textContent = platformInfo.btnText;
             if (btnDownloadNativeFromPwa) btnDownloadNativeFromPwa.href = platformInfo.downloadUrl;
+
+            if (btnDownloadMsiFromPwa) {
+                if (platformInfo.msiUrl) {
+                    btnDownloadMsiFromPwa.href = platformInfo.msiUrl;
+                    btnDownloadMsiFromPwa.classList.remove('hidden');
+                } else {
+                    btnDownloadMsiFromPwa.classList.add('hidden');
+                }
+            }
 
             this.uiController.toggleModal('installModal');
         };
@@ -2988,26 +3042,95 @@ class Application {
             });
         }
 
-        // Load Xtream Codes API Form
-        document.getElementById('formXtream')?.addEventListener('submit', async (e) => {
+        // Auto-parse full Xtream URLs if pasted into Xtream Server input field
+        const xtreamServerInput = document.getElementById('xtreamServer');
+        if (xtreamServerInput) {
+            xtreamServerInput.addEventListener('input', () => {
+                const rawVal = xtreamServerInput.value;
+                if (rawVal.includes('username=') || rawVal.includes('user=')) {
+                    const parsed = SecurityController.parseXtreamInput(rawVal);
+                    if (parsed.server) xtreamServerInput.value = parsed.server;
+                    const userInput = document.getElementById('xtreamUser');
+                    const passInput = document.getElementById('xtreamPass');
+                    if (userInput && parsed.user && !userInput.value) userInput.value = parsed.user;
+                    if (passInput && parsed.pass && !passInput.value) passInput.value = parsed.pass;
+                    this.uiController.showToast('Parsed Xtream Server & Credentials from link!', 'info');
+                }
+            });
+        }
+
+        // Helper to manage submit button loading state
+        const setFormLoading = (btnId, statusId, isLoading, loadingText = 'Connecting...') => {
+            const btn = document.getElementById(btnId);
+            const statusEl = document.getElementById(statusId);
+            if (btn) {
+                if (isLoading) {
+                    btn.disabled = true;
+                    btn.dataset.originalHtml = btn.innerHTML;
+                    btn.innerHTML = `
+                        <svg class="animate-spin w-4 h-4 text-white shrink-0" fill="none" viewBox="0 0 24 24">
+                            <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                            <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                        </svg>
+                        <span>${loadingText}</span>
+                    `;
+                } else {
+                    btn.disabled = false;
+                    if (btn.dataset.originalHtml) btn.innerHTML = btn.dataset.originalHtml;
+                }
+            }
+            if (statusEl) {
+                if (isLoading) {
+                    statusEl.classList.remove('hidden', 'text-emerald-400');
+                    statusEl.classList.add('text-rose-400');
+                    statusEl.textContent = loadingText;
+                }
+            }
+        };
+
+        const updateStatusText = (statusId, text, isSuccess = false) => {
+            const statusEl = document.getElementById(statusId);
+            if (statusEl) {
+                statusEl.classList.remove('hidden');
+                statusEl.textContent = text;
+                if (isSuccess) {
+                    statusEl.classList.remove('text-rose-400');
+                    statusEl.classList.add('text-emerald-400');
+                } else {
+                    statusEl.classList.remove('text-emerald-400');
+                    statusEl.classList.add('text-rose-400');
+                }
+            }
+        };
+
+        const handleXtreamSubmit = async (e) => {
             if (e) {
                 e.preventDefault();
                 e.stopPropagation();
             }
-            const server = document.getElementById('xtreamServer')?.value.trim();
-            const user = document.getElementById('xtreamUser')?.value.trim();
-            const pass = document.getElementById('xtreamPass')?.value.trim();
+            const serverRaw = document.getElementById('xtreamServer')?.value.trim();
+            const userRaw = document.getElementById('xtreamUser')?.value.trim();
+            const passRaw = document.getElementById('xtreamPass')?.value.trim();
+
+            const parsed = SecurityController.parseXtreamInput(serverRaw);
+            const server = parsed.server || serverRaw;
+            const user = userRaw || parsed.user;
+            const pass = passRaw || parsed.pass;
 
             if (!server || !user || !pass) {
+                updateStatusText('statusConnectionXtream', 'Please enter complete Xtream credentials.');
                 this.uiController.showToast('Please enter complete Xtream credentials.', 'error');
                 return;
             }
 
+            setFormLoading('btnSubmitXtream', 'statusConnectionXtream', true, 'Connecting to Xtream Server...');
+
             try {
-                this.uiController.showToast('Connecting to Xtream Codes Server...', 'info');
                 const cleanServer = SecurityController.normalizeServerUrl(server);
                 const [xtreamChannels, userInfo] = await Promise.all([
-                    this.fetchXtreamChannels(cleanServer, user, pass),
+                    this.fetchXtreamChannels(cleanServer, user, pass, (msg) => {
+                        updateStatusText('statusConnectionXtream', msg);
+                    }),
                     this.fetchXtreamUserInfo(cleanServer, user, pass)
                 ]);
 
@@ -3032,21 +3155,37 @@ class Application {
                     const vodCount = xtreamChannels.filter(c => c.type === 'movie').length;
                     const seriesCount = xtreamChannels.filter(c => c.type === 'series').length;
 
+                    // Automatically switch active mode based on imported channels
+                    this.selectedCategory = 'All';
+                    if (liveCount > 0) {
+                        this.activeType = 'live';
+                    } else if (vodCount > 0) {
+                        this.activeType = 'movie';
+                    } else if (seriesCount > 0) {
+                        this.activeType = 'series';
+                    }
+
+                    updateStatusText('statusConnectionXtream', `Success! Loaded ${xtreamChannels.length} items.`, true);
                     this.uiController.showToast(`Imported ${xtreamChannels.length} items (${liveCount} Live, ${vodCount} Movies, ${seriesCount} Series) from Xtream!`, 'success');
-                    this.uiController.toggleModal('playlistModal');
-                    this.renderUI();
-                    this.refreshProvidersList();
-                    this.autoPlayLastOrFirstLiveChannel();
+                    
+                    setTimeout(() => {
+                        setFormLoading('btnSubmitXtream', 'statusConnectionXtream', false);
+                        this.uiController.toggleModal('playlistModal');
+                        this.renderUI();
+                        this.refreshProvidersList();
+                        this.autoPlayLastOrFirstLiveChannel();
+                    }, 400);
                 } else {
-                    throw new Error('No channels or streams returned from server.');
+                    throw new Error('No streams or channels returned from Xtream server.');
                 }
             } catch (err) {
+                setFormLoading('btnSubmitXtream', 'statusConnectionXtream', false);
+                updateStatusText('statusConnectionXtream', err.message || 'Connection Error');
                 this.uiController.showToast(`Xtream Import Notice: ${err.message || 'Connection Error'}`, 'error');
             }
-        });
+        };
 
-        // Load M3U URL Form
-        document.getElementById('formM3uUrl')?.addEventListener('submit', async (e) => {
+        const handleM3uSubmit = async (e) => {
             if (e) {
                 e.preventDefault();
                 e.stopPropagation();
@@ -3054,15 +3193,27 @@ class Application {
             const input = document.getElementById('inputM3uUrl');
             const url = input ? input.value.trim() : '';
 
-            if (!url) return;
+            if (!url) {
+                updateStatusText('statusConnectionM3u', 'Please enter a valid M3U playlist URL.');
+                return;
+            }
+
+            setFormLoading('btnSubmitM3u', 'statusConnectionM3u', true, 'Fetching M3U Playlist...');
 
             try {
-                this.uiController.showToast('Fetching M3U Playlist...', 'info');
-                const targetUrl = this.useCorsProxy ? SecurityController.buildProxyURL(url, this.getEffectiveProxyUrl(), this.getEffectiveProxyToken()) : url;
-                const res = await fetch(targetUrl);
+                const res = await SecurityController.fetchWithFallback(
+                    url,
+                    this.useCorsProxy,
+                    this.getEffectiveProxyUrl(),
+                    this.getEffectiveProxyToken()
+                );
                 if (!res.ok) throw new Error(`HTTP ${res.status}`);
                 const text = await res.text();
                 const channels = this.iptvCore.parseM3U(text);
+
+                if (!channels || channels.length === 0) {
+                    throw new Error('No valid channel stream entries found in M3U text.');
+                }
 
                 let host = 'Remote Playlist';
                 try { host = new URL(url).hostname; } catch (ex) {}
@@ -3077,15 +3228,40 @@ class Application {
                 this.iptvCore.addChannelsForProvider(provider, channels, true);
                 localStorage.setItem('iptv_m3u_url', url);
                 localStorage.setItem('tellyx_connection_active', 'true');
+
+                const liveCount = channels.filter(c => c.type === 'live' || !c.type).length;
+                const vodCount = channels.filter(c => c.type === 'movie').length;
+                const seriesCount = channels.filter(c => c.type === 'series').length;
+
+                this.selectedCategory = 'All';
+                if (liveCount > 0) this.activeType = 'live';
+                else if (vodCount > 0) this.activeType = 'movie';
+                else if (seriesCount > 0) this.activeType = 'series';
+
+                updateStatusText('statusConnectionM3u', `Success! Loaded ${channels.length} channels.`, true);
                 this.uiController.showToast(`Loaded ${channels.length} channels!`, 'success');
-                this.uiController.toggleModal('playlistModal');
-                this.renderUI();
-                this.refreshProvidersList();
-                this.autoPlayLastOrFirstLiveChannel();
+
+                setTimeout(() => {
+                    setFormLoading('btnSubmitM3u', 'statusConnectionM3u', false);
+                    this.uiController.toggleModal('playlistModal');
+                    this.renderUI();
+                    this.refreshProvidersList();
+                    this.autoPlayLastOrFirstLiveChannel();
+                }, 400);
             } catch (err) {
+                setFormLoading('btnSubmitM3u', 'statusConnectionM3u', false);
+                updateStatusText('statusConnectionM3u', err.message || 'Failed to load playlist');
                 this.uiController.showToast(`Failed to load playlist: ${err.message}`, 'error');
             }
-        });
+        };
+
+        // Load Xtream Codes API Form & Button Listeners
+        document.getElementById('formXtream')?.addEventListener('submit', handleXtreamSubmit);
+        document.getElementById('btnSubmitXtream')?.addEventListener('click', handleXtreamSubmit);
+
+        // Load M3U URL Form & Button Listeners
+        document.getElementById('formM3uUrl')?.addEventListener('submit', handleM3uSubmit);
+        document.getElementById('btnSubmitM3u')?.addEventListener('click', handleM3uSubmit);
 
         // File Drag & Drop / Upload
         const fileInput = document.getElementById('inputM3uFile');
@@ -3422,8 +3598,12 @@ class Application {
         } else if (provider.type === 'm3u_url') {
             try {
                 this.uiController.showToast(`Syncing ${provider.name}...`, 'info');
-                const targetUrl = this.useCorsProxy ? SecurityController.buildProxyURL(provider.url, this.getEffectiveProxyUrl(), this.getEffectiveProxyToken()) : provider.url;
-                const res = await fetch(targetUrl);
+                const res = await SecurityController.fetchWithFallback(
+                    provider.url,
+                    this.useCorsProxy,
+                    this.getEffectiveProxyUrl(),
+                    this.getEffectiveProxyToken()
+                );
                 if (!res.ok) throw new Error(`HTTP ${res.status}`);
                 const text = await res.text();
                 const channels = this.iptvCore.parseM3U(text);
