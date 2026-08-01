@@ -80,19 +80,31 @@ export async function setupTauriWindowListeners({ onMinimize, onRestore }) {
         const windowPkg = '@tauri-apps/api/window';
         const { getCurrentWindow } = await import(/* @vite-ignore */ windowPkg);
         const appWindow = getCurrentWindow();
-        if (appWindow && appWindow.onResized) {
-            appWindow.onResized(async () => {
-                try {
-                    const isMin = await appWindow.isMinimized();
-                    if (isMin) {
-                        if (onMinimize) onMinimize();
-                    } else {
-                        if (onRestore) onRestore();
-                    }
-                } catch (e) {
-                    // ignore
-                }
-            });
+        if (appWindow) {
+            if (appWindow.onResized) {
+                appWindow.onResized(async () => {
+                    try {
+                        const isMin = await appWindow.isMinimized();
+                        if (isMin) {
+                            if (onMinimize) onMinimize();
+                        } else {
+                            if (onRestore) onRestore();
+                        }
+                    } catch (e) {}
+                });
+            }
+            if (appWindow.onFocusChanged) {
+                appWindow.onFocusChanged(async ({ payload: focused }) => {
+                    try {
+                        const isMin = await appWindow.isMinimized();
+                        if (isMin) {
+                            if (onMinimize) onMinimize();
+                        } else if (focused) {
+                            if (onRestore) onRestore();
+                        }
+                    } catch (e) {}
+                });
+            }
         }
     } catch (err) {
         console.warn('[TellyX Tauri Bridge] Window minimize listener error:', err);
@@ -153,6 +165,13 @@ export function initTauriIntegration(uiController = null) {
 
     if (isEmbedded) {
         console.log('[TellyX Tauri Bridge] Embedded native Tauri runtime detected. Hiding CORS Proxy settings.');
+
+        // Disable default native webview contextual menu (right-click / long-press inspect) strictly in Tauri application
+        window.addEventListener('contextmenu', (e) => {
+            e.preventDefault();
+            return false;
+        }, { capture: true });
+
         if (corsSection) {
             corsSection.classList.add('hidden');
         }

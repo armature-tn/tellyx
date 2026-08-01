@@ -11,6 +11,8 @@
  */
 
 import Hls from 'hls.js';
+import mpegts from 'mpegts.js';
+import dashjs from 'dashjs';
 import { SecurityController } from './security.js';
 
 if (typeof window !== 'undefined' && typeof window.hasUserInteracted === 'undefined') {
@@ -24,7 +26,7 @@ if (typeof window !== 'undefined' && typeof window.hasUserInteracted === 'undefi
 /**
  * @class StreamEngine
  * @classdesc High-performance video player controller managing HTML5 Media Elements,
- * MSE SourceBuffers, Hls.js adaptive playback, Web Audio API frequency analysis, and playback telemetry.
+ * MSE SourceBuffers, Hls.js adaptive playback, mpegts.js demuxing, dash.js, Web Audio API frequency analysis, and playback telemetry.
  */
 export class StreamEngine {
     /**
@@ -38,6 +40,18 @@ export class StreamEngine {
      * @type {Hls|null}
      */
     #hlsInstance = null;
+
+    /**
+     * @private
+     * @type {any|null}
+     */
+    #mpegtsInstance = null;
+
+    /**
+     * @private
+     * @type {any|null}
+     */
+    #dashInstance = null;
 
     /**
      * @private
@@ -140,16 +154,14 @@ export class StreamEngine {
         if (this.#videoElement) {
             this.#videoElement.disablePictureInPicture = false;
             this.#videoElement.autoPictureInPicture = true;
+            this.#videoElement.setAttribute('autopictureinpicture', '');
+            this.#videoElement.setAttribute('playsinline', '');
+            this.#videoElement.setAttribute('webkit-playsinline', '');
         }
         this.#videoElement.addEventListener('progress', () => this.#updateBufferMetrics());
         this.#videoElement.addEventListener('timeupdate', () => this.#updateBufferMetrics());
         this.#videoElement.addEventListener('loadedmetadata', () => {
             this.#stats.resolution = `${this.#videoElement.videoWidth}x${this.#videoElement.videoHeight}`;
-        });
-        this.#videoElement.addEventListener('pause', () => {
-            if (document.visibilityState === 'visible') {
-                this.#isUserPaused = true;
-            }
         });
         this.#videoElement.addEventListener('play', () => {
             this.#isUserPaused = false;
@@ -246,6 +258,21 @@ export class StreamEngine {
      * @throws {Error} If media load fails.
      * @security Sanitizes the input stream URL before playing.
      */
+    /**
+     * Plays a media stream URL with automatic format detection, fallback, and MSE handling.
+     * Supports HLS (.m3u8), MPEG-TS (.ts, .m2ts), HTTP-FLV (.flv), MPEG-DASH (.mpd),
+     * Matroska (.mkv), WebM (.webm), MP4 (.mp4, .mov, .m4v), AVI (.avi), 3GP (.3gp),
+     * and Audio streams (.mp3, .aac, .flac, .ogg, .wav, .m4a).
+     * 
+     * @async
+     * @param {string} streamUrl - Target HTTP/HTTPS/HLS/MPEG-TS stream URL.
+     * @param {boolean} [useCorsProxy=false] - Whether to wrap the URL in a CORS proxy.
+     * @param {string} [customProxyUrl=''] - Optional self-hosted CORS proxy endpoint URL prefix.
+     * @param {string} [proxyToken=''] - Optional proxy security access token.
+     * @returns {Promise<void>}
+     * @throws {Error} If media load fails.
+     * @security Sanitizes the input stream URL before playing.
+     */
     async loadStream(streamUrl, useCorsProxy = false, customProxyUrl = '', proxyToken = '') {
         if (!streamUrl) throw new Error('[StreamEngine] Cannot load empty stream URL.');
 
@@ -263,85 +290,244 @@ export class StreamEngine {
         if (this.#videoElement) {
             this.#videoElement.disablePictureInPicture = false;
             this.#videoElement.autoPictureInPicture = true;
+            this.#videoElement.crossOrigin = 'anonymous';
         }
 
-        const isHls = targetUrl.toLowerCase().includes('.m3u8') || targetUrl.toLowerCase().includes('m3u8');
+        const urlLower = targetUrl.toLowerCase();
+        const cleanUrl = urlLower.split('?')[0];
 
-        // 1. Modern HLS.js MSE Player Engine
-        if (Hls.isSupported() && isHls) {
-            return new Promise((resolve) => {
-                const hls = new Hls({
-                    enableWorker: true,
-                    lowLatencyMode: false,
-                    backBufferLength: 600,
-                    maxBufferLength: 60,
-                    maxMaxBufferLength: 120,
-                    xhrSetup: (xhr, url) => {
-                        xhr.withCredentials = false;
-                        if (useCorsProxy && effectiveProxy) {
-                            if (url && !url.startsWith(effectiveProxy) && !url.startsWith('data:') && !url.startsWith('blob:')) {
-                                const proxied = SecurityController.buildProxyURL(url, effectiveProxy, effectiveToken);
-                                xhr.open('GET', proxied, true);
-                            }
-                        }
-                        if (effectiveToken) {
-                            try {
-                                xhr.setRequestHeader('X-Proxy-Token', effectiveToken);
-                            } catch (e) {}
-                        }
-                    }
-                });
+        // Format Detection
+        const isHls = cleanUrl.endsWith('.m3u8') || urlLower.includes('m3u8');
+        const isTs = cleanUrl.endsWith('.ts') || cleanUrl.endsWith('.m2ts') || urlLower.includes('.ts?') || urlLower.includes('/live/') || urlLower.includes('type=ts');
+        const isFlv = cleanUrl.endsWith('.flv') || urlLower.includes('flv');
+        const isDash = cleanUrl.endsWith('.mpd') || urlLower.includes('mpd');
+        const isMkv = cleanUrl.endsWith('.mkv');
+        const isWebm = cleanUrl.endsWith('.webm');
+        const isMp4 = cleanUrl.endsWith('.mp4') || cleanUrl.endsWith('.m4v') || cleanUrl.endsWith('.mov') || cleanUrl.endsWith('.3gp');
+        const isAudio = cleanUrl.endsWith('.mp3') || cleanUrl.endsWith('.aac') || cleanUrl.endsWith('.flac') || cleanUrl.endsWith('.ogg') || cleanUrl.endsWith('.wav') || cleanUrl.endsWith('.m4a');
 
-                this.#hlsInstance = hls;
-
-                hls.loadSource(targetUrl);
-                hls.attachMedia(this.#videoElement);
-
-                hls.on(Hls.Events.MANIFEST_PARSED, (event, data) => {
-                    this.#stats.protocol = 'HLS.js Adaptive Engine';
-                    this.#variantStreams = (data.levels || []).map(lvl => ({
-                        bandwidth: lvl.bitrate,
-                        resolution: `${lvl.width}x${lvl.height}`,
-                        url: targetUrl
-                    }));
-                    this.#safePlay();
-                    resolve();
-                });
-
-                hls.on(Hls.Events.ERROR, (event, data) => {
-                    if (data.fatal) {
-                        console.warn('[HLS.js Fatal Error]:', data.type, data.details);
-                        switch (data.type) {
-                            case Hls.ErrorTypes.NETWORK_ERROR:
-                                hls.startLoad();
-                                break;
-                            case Hls.ErrorTypes.MEDIA_ERROR:
-                                hls.recoverMediaError();
-                                break;
-                            default:
-                                hls.destroy();
-                                this.#hlsInstance = null;
-                                this.#videoElement.src = targetUrl;
-                                this.#safePlay();
-                                resolve();
-                                break;
-                        }
-                    }
-                });
-            });
+        // 1. HLS (.m3u8) - Hls.js MSE Engine
+        if (isHls && Hls.isSupported()) {
+            return this.#playHls(targetUrl, useCorsProxy, effectiveProxy, effectiveToken);
         }
 
-        // 2. Native HLS for Safari/iOS
-        if (this.#videoElement.canPlayType('application/vnd.apple.mpegurl') && isHls) {
+        // Native HLS for Safari/iOS
+        if (isHls && this.#videoElement.canPlayType('application/vnd.apple.mpegurl')) {
             this.#videoElement.src = targetUrl;
             this.#stats.protocol = 'Native HLS (Apple Engine)';
             await this.#safePlay();
             return;
         }
 
-        // 3. Progressive HTML5 Media Fallback (MP4, WEBM, Direct stream)
+        // 2. MPEG-TS & FLV Stream Engine via mpegts.js (MSE Demuxer)
+        if ((isTs || isFlv || isMkv) && mpegts && mpegts.isSupported()) {
+            try {
+                const streamType = isFlv ? 'flv' : 'mse';
+                const success = await this.#playMpegTs(targetUrl, streamType, effectiveToken);
+                if (success) return;
+            } catch (err) {
+                console.warn('[StreamEngine] mpegts.js playback notice, cascading to progressive HTML5:', err);
+                this.#cleanupPlayers();
+            }
+        }
+
+        // 3. MPEG-DASH Engine via dash.js (.mpd)
+        if (isDash && dashjs) {
+            try {
+                await this.#playDash(targetUrl, effectiveToken);
+                return;
+            } catch (err) {
+                console.warn('[StreamEngine] dashjs playback notice, cascading to progressive HTML5:', err);
+                this.#cleanupPlayers();
+            }
+        }
+
+        // 4. Progressive HTML5 Engine (MKV, WebM, MP4, Audio, Direct Streams)
+        return this.#playProgressiveHtml5(targetUrl, { isMkv, isWebm, isMp4, isAudio, cleanUrl });
+    }
+
+    /**
+     * Internal HLS.js adaptive stream initializer.
+     * @private
+     */
+    #playHls(targetUrl, useCorsProxy, effectiveProxy, effectiveToken) {
+        return new Promise((resolve) => {
+            const hls = new Hls({
+                enableWorker: true,
+                lowLatencyMode: false,
+                backBufferLength: 600,
+                maxBufferLength: 60,
+                maxMaxBufferLength: 120,
+                xhrSetup: (xhr, url) => {
+                    xhr.withCredentials = false;
+                    if (useCorsProxy && effectiveProxy) {
+                        if (url && !url.startsWith(effectiveProxy) && !url.startsWith('data:') && !url.startsWith('blob:')) {
+                            const proxied = SecurityController.buildProxyURL(url, effectiveProxy, effectiveToken);
+                            xhr.open('GET', proxied, true);
+                        }
+                    }
+                    if (effectiveToken) {
+                        try {
+                            xhr.setRequestHeader('X-Proxy-Token', effectiveToken);
+                        } catch (e) {}
+                    }
+                }
+            });
+
+            this.#hlsInstance = hls;
+
+            hls.loadSource(targetUrl);
+            hls.attachMedia(this.#videoElement);
+
+            hls.on(Hls.Events.MANIFEST_PARSED, (event, data) => {
+                this.#stats.protocol = 'HLS.js Adaptive Engine';
+                this.#variantStreams = (data.levels || []).map(lvl => ({
+                    bandwidth: lvl.bitrate,
+                    resolution: `${lvl.width}x${lvl.height}`,
+                    url: targetUrl
+                }));
+                this.#safePlay();
+                resolve();
+            });
+
+            hls.on(Hls.Events.ERROR, (event, data) => {
+                if (data.fatal) {
+                    console.warn('[HLS.js Fatal Error]:', data.type, data.details);
+                    switch (data.type) {
+                        case Hls.ErrorTypes.NETWORK_ERROR:
+                            hls.startLoad();
+                            break;
+                        case Hls.ErrorTypes.MEDIA_ERROR:
+                            hls.recoverMediaError();
+                            break;
+                        default:
+                            hls.destroy();
+                            this.#hlsInstance = null;
+                            this.#videoElement.src = targetUrl;
+                            this.#safePlay();
+                            resolve();
+                            break;
+                    }
+                }
+            });
+        });
+    }
+
+    /**
+     * Internal mpegts.js MPEG-TS and FLV demuxer stream initializer.
+     * @private
+     */
+    #playMpegTs(targetUrl, type = 'mse', effectiveToken = '') {
+        return new Promise((resolve, reject) => {
+            try {
+                const config = {
+                    enableWorker: true,
+                    lazyLoad: false,
+                    enableStashBuffer: false,
+                    stashInitialSize: 128,
+                    autoCleanupSourceBuffer: true,
+                    headers: effectiveToken ? { 'X-Proxy-Token': effectiveToken } : {}
+                };
+
+                const player = mpegts.createPlayer({
+                    type: type,
+                    isLive: true,
+                    url: targetUrl
+                }, config);
+
+                this.#mpegtsInstance = player;
+                player.attachMediaElement(this.#videoElement);
+                player.load();
+
+                player.on(mpegts.Events.ERROR, (errType, errDetail, errInfo) => {
+                    console.warn('[mpegts.js Error]:', errType, errDetail, errInfo);
+                    if (errType === mpegts.ErrorTypes.MEDIA_ERROR || errType === mpegts.ErrorTypes.NETWORK_ERROR) {
+                        reject(new Error(`mpegts.js error: ${errType}`));
+                    }
+                });
+
+                this.#stats.protocol = type === 'flv' ? 'HTTP-FLV MSE Engine (mpegts.js)' : 'MPEG-TS MSE Engine (mpegts.js)';
+
+                this.#safePlay().then(() => resolve(true)).catch(() => resolve(true));
+            } catch (e) {
+                reject(e);
+            }
+        });
+    }
+
+    /**
+     * Internal dash.js MPEG-DASH stream initializer.
+     * @private
+     */
+    #playDash(targetUrl, effectiveToken = '') {
+        return new Promise((resolve, reject) => {
+            try {
+                const player = dashjs.MediaPlayer().create();
+                this.#dashInstance = player;
+
+                if (effectiveToken) {
+                    player.extend('RequestModifier', () => ({
+                        modifyRequestHeader: (xhr) => {
+                            xhr.setRequestHeader('X-Proxy-Token', effectiveToken);
+                            return xhr;
+                        }
+                    }), true);
+                }
+
+                player.initialize(this.#videoElement, targetUrl, true);
+                this.#stats.protocol = 'DASH MSE Engine (dash.js)';
+
+                player.on(dashjs.MediaPlayer.events.STREAM_INITIALIZED, () => {
+                    this.#safePlay();
+                    resolve();
+                });
+
+                player.on(dashjs.MediaPlayer.events.ERROR, (e) => {
+                    console.warn('[Dash.js Error]:', e);
+                    reject(new Error(`Dash.js error: ${e.error}`));
+                });
+            } catch (e) {
+                reject(e);
+            }
+        });
+    }
+
+    /**
+     * Internal Progressive HTML5 stream initializer with format & MIME type hinting.
+     * @private
+     */
+    async #playProgressiveHtml5(targetUrl, formatInfo = {}) {
+        while (this.#videoElement.firstChild) {
+            this.#videoElement.removeChild(this.#videoElement.firstChild);
+        }
+
+        this.#videoElement.removeAttribute('src');
+
+        let typeHint = '';
+        if (formatInfo.isMkv) {
+            typeHint = 'video/x-matroska; codecs="avc1.42E01E, mp4a.40.2"';
+        } else if (formatInfo.isWebm) {
+            typeHint = 'video/webm; codecs="vp8, vp9, opus, vorbis"';
+        } else if (formatInfo.isMp4) {
+            typeHint = 'video/mp4; codecs="avc1.42E01E, mp4a.40.2"';
+        } else if (formatInfo.isAudio) {
+            if (formatInfo.cleanUrl.endsWith('.mp3')) typeHint = 'audio/mpeg';
+            else if (formatInfo.cleanUrl.endsWith('.aac')) typeHint = 'audio/aac';
+            else if (formatInfo.cleanUrl.endsWith('.flac')) typeHint = 'audio/flac';
+            else if (formatInfo.cleanUrl.endsWith('.ogg')) typeHint = 'audio/ogg';
+            else if (formatInfo.cleanUrl.endsWith('.wav')) typeHint = 'audio/wav';
+        }
+
+        if (typeHint) {
+            const sourceEl = document.createElement('source');
+            sourceEl.src = targetUrl;
+            sourceEl.type = typeHint;
+            this.#videoElement.appendChild(sourceEl);
+        }
+
         this.#videoElement.src = targetUrl;
-        this.#stats.protocol = 'Standard HTML5 Progressive Media';
+        this.#stats.protocol = formatInfo.isAudio ? 'HTML5 Progressive Audio' : 'HTML5 Progressive Media';
+
         await this.#safePlay();
     }
 
@@ -589,6 +775,31 @@ export class StreamEngine {
     }
 
     /**
+     * Checks if the user explicitly paused the video stream.
+     * @returns {boolean}
+     */
+    isUserPaused() {
+        return this.#isUserPaused;
+    }
+
+    /**
+     * Checks if the player currently has active stream media loaded.
+     * @returns {boolean}
+     */
+    hasActiveMedia() {
+        if (!this.#videoElement) return false;
+        return Boolean(
+            this.#videoElement.src ||
+            this.#videoElement.srcObject ||
+            this.#hlsInstance !== null ||
+            this.#mpegtsInstance !== null ||
+            this.#dashInstance !== null ||
+            this.#videoElement.readyState >= 1 ||
+            this.#videoElement.currentTime > 0
+        );
+    }
+
+    /**
      * Checks if Picture-in-Picture is supported by the current browser environment.
      * Always returns true because the application seamlessly falls back to In-App Floating Mini-Player
      * when native browser Picture-in-Picture is restricted (e.g., in Android WebViews).
@@ -700,9 +911,29 @@ export class StreamEngine {
             targetVideo.disablePictureInPicture = false;
             targetVideo.autoPictureInPicture = true;
             targetVideo.setAttribute('autopictureinpicture', '');
+            targetVideo.setAttribute('playsinline', '');
+            targetVideo.setAttribute('webkit-playsinline', '');
 
-            const hasMedia = targetVideo.readyState >= 1 || targetVideo.videoWidth > 0 || (targetVideo.currentTime > 0 && !targetVideo.ended) || targetVideo.src || targetVideo.srcObject || Boolean(this.#hlsInstance);
-            if (!hasMedia && !this.isPlaying()) {
+            // Exit document fullscreen if active so OS Picture-in-Picture window can detach cleanly
+            const fsEl = typeof document !== 'undefined' ? (document.fullscreenElement || document.webkitFullscreenElement || document.mozFullScreenElement || document.msFullscreenElement) : null;
+            if (fsEl) {
+                try {
+                    if (document.exitFullscreen) {
+                        await document.exitFullscreen();
+                    } else if (document.webkitExitFullscreen) {
+                        await document.webkitExitFullscreen();
+                    } else if (document.mozCancelFullScreen) {
+                        await document.mozCancelFullScreen();
+                    } else if (document.msExitFullscreen) {
+                        await document.msExitFullscreen();
+                    }
+                } catch (fsErr) {
+                    console.info('[StreamEngine] Fullscreen exit notice before PiP:', fsErr);
+                }
+            }
+
+            const hasMedia = targetVideo.readyState >= 1 || targetVideo.videoWidth > 0 || (targetVideo.currentTime > 0 && !targetVideo.ended) || targetVideo.src || targetVideo.srcObject || Boolean(this.#hlsInstance) || Boolean(this.#mpegtsInstance) || Boolean(this.#dashInstance);
+            if (!hasMedia && !this.isPlaying() && !this.hasActiveMedia()) {
                 return { success: false, isNativeOsPip: false, isFloatingInApp: false, message: 'Select a channel to play before enabling Picture-in-Picture' };
             }
 
@@ -1215,6 +1446,32 @@ export class StreamEngine {
     }
 
     /**
+     * Cleans up active player instances (HLS.js, mpegts.js, dash.js).
+     * @private
+     */
+    #cleanupPlayers() {
+        if (this.#hlsInstance) {
+            try { this.#hlsInstance.destroy(); } catch (e) {}
+            this.#hlsInstance = null;
+        }
+        if (this.#mpegtsInstance) {
+            try {
+                this.#mpegtsInstance.pause();
+                this.#mpegtsInstance.unload();
+                this.#mpegtsInstance.detachMediaElement();
+                this.#mpegtsInstance.destroy();
+            } catch (e) {}
+            this.#mpegtsInstance = null;
+        }
+        if (this.#dashInstance) {
+            try {
+                this.#dashInstance.reset();
+            } catch (e) {}
+            this.#dashInstance = null;
+        }
+    }
+
+    /**
      * Stops media element and resets source buffers.
      */
     stop() {
@@ -1222,12 +1479,14 @@ export class StreamEngine {
         if (this.isPictureInPictureActive()) {
             this.exitPictureInPicture().catch(() => {});
         }
-        if (this.#hlsInstance) {
-            this.#hlsInstance.destroy();
-            this.#hlsInstance = null;
+        this.#cleanupPlayers();
+        if (this.#videoElement) {
+            this.#videoElement.pause();
+            this.#videoElement.removeAttribute('src');
+            while (this.#videoElement.firstChild) {
+                this.#videoElement.removeChild(this.#videoElement.firstChild);
+            }
+            this.#videoElement.load();
         }
-        this.#videoElement.pause();
-        this.#videoElement.removeAttribute('src');
-        this.#videoElement.load();
     }
 }

@@ -2009,25 +2009,24 @@ class Application {
         }, 100);
 
         const handleAppMinimize = async () => {
-            // Check if player is NOT in full screen and stream is currently active
-            const isFullscreen = Boolean(
-                document.fullscreenElement ||
-                document.webkitFullscreenElement ||
-                document.mozFullScreenElement ||
-                document.msFullscreenElement
-            );
+            if (!this.streamEngine) return;
 
-            if (!isFullscreen && this.streamEngine && this.streamEngine.isPlaying()) {
+            // Trigger PiP whenever stream is actively playing or channel is loaded and not explicitly user-paused.
+            // Works whether the player is currently in Fullscreen mode or standard layout.
+            const isStreamActive = this.streamEngine.isPlaying() || (!this.streamEngine.isUserPaused() && this.streamEngine.hasActiveMedia());
+
+            if (isStreamActive) {
                 if (!this.streamEngine.isPictureInPictureActive()) {
                     const v = document.getElementById('videoPlayer');
                     if (v) {
                         v.disablePictureInPicture = false;
                         v.autoPictureInPicture = true;
                         v.setAttribute('autopictureinpicture', '');
+                        v.setAttribute('playsinline', '');
+                        v.setAttribute('webkit-playsinline', '');
                     }
 
                     // Strictly request OS Native Picture-in-Picture on minimize (allowInAppFallback: false).
-                    // Avoids shrinking the player inside the DOM when the app is minimized.
                     const res = await this.streamEngine.enterPictureInPicture({ allowInAppFallback: false });
                     if (res && res.success && res.isNativeOsPip) {
                         this._autoPipActive = true;
@@ -2047,12 +2046,18 @@ class Application {
             }
         };
 
-        // Trigger auto OS Picture-in-Picture when application/tab is actually hidden/minimized
+        // Trigger auto OS Picture-in-Picture when application/tab is hidden or minimized
         document.addEventListener('visibilitychange', () => {
             if (document.visibilityState === 'hidden' || document.hidden) {
                 handleAppMinimize();
             } else if (document.visibilityState === 'visible') {
                 handleAppRestore();
+            }
+        });
+
+        window.addEventListener('blur', () => {
+            if (document.visibilityState === 'hidden' || document.hidden) {
+                handleAppMinimize();
             }
         });
 
