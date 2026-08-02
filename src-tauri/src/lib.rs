@@ -12,6 +12,8 @@ pub fn run() {
     #[cfg(desktop)]
     let builder = builder.plugin(tauri_plugin_updater::Builder::new().build());
 
+    let builder = builder.plugin(tauri_plugin_http::init());
+
     builder
         .setup(|_app| {
             println!("[TellyX Tauri Native] Starting embedded TellyX engine...");

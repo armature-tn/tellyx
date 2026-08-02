@@ -3103,11 +3103,16 @@ class Application {
             }
         };
 
+        let isXtreamSubmitting = false;
+        let isM3uSubmitting = false;
+
         const handleXtreamSubmit = async (e) => {
             if (e) {
                 e.preventDefault();
                 e.stopPropagation();
             }
+            if (isXtreamSubmitting) return;
+
             const serverRaw = document.getElementById('xtreamServer')?.value.trim();
             const userRaw = document.getElementById('xtreamUser')?.value.trim();
             const passRaw = document.getElementById('xtreamPass')?.value.trim();
@@ -3123,6 +3128,7 @@ class Application {
                 return;
             }
 
+            isXtreamSubmitting = true;
             setFormLoading('btnSubmitXtream', 'statusConnectionXtream', true, 'Connecting to Xtream Server...');
 
             try {
@@ -3182,6 +3188,8 @@ class Application {
                 setFormLoading('btnSubmitXtream', 'statusConnectionXtream', false);
                 updateStatusText('statusConnectionXtream', err.message || 'Connection Error');
                 this.uiController.showToast(`Xtream Import Notice: ${err.message || 'Connection Error'}`, 'error');
+            } finally {
+                isXtreamSubmitting = false;
             }
         };
 
@@ -3190,6 +3198,8 @@ class Application {
                 e.preventDefault();
                 e.stopPropagation();
             }
+            if (isM3uSubmitting) return;
+
             const input = document.getElementById('inputM3uUrl');
             const url = input ? input.value.trim() : '';
 
@@ -3198,6 +3208,7 @@ class Application {
                 return;
             }
 
+            isM3uSubmitting = true;
             setFormLoading('btnSubmitM3u', 'statusConnectionM3u', true, 'Fetching M3U Playlist...');
 
             try {
@@ -3252,16 +3263,38 @@ class Application {
                 setFormLoading('btnSubmitM3u', 'statusConnectionM3u', false);
                 updateStatusText('statusConnectionM3u', err.message || 'Failed to load playlist');
                 this.uiController.showToast(`Failed to load playlist: ${err.message}`, 'error');
+            } finally {
+                isM3uSubmitting = false;
             }
         };
 
         // Load Xtream Codes API Form & Button Listeners
-        document.getElementById('formXtream')?.addEventListener('submit', handleXtreamSubmit);
-        document.getElementById('btnSubmitXtream')?.addEventListener('click', handleXtreamSubmit);
+        const formXtream = document.getElementById('formXtream');
+        if (formXtream) {
+            formXtream.addEventListener('submit', handleXtreamSubmit);
+        }
+        document.getElementById('btnSubmitXtream')?.addEventListener('click', (e) => {
+            if (formXtream) {
+                e.preventDefault();
+                formXtream.requestSubmit();
+            } else {
+                handleXtreamSubmit(e);
+            }
+        });
 
         // Load M3U URL Form & Button Listeners
-        document.getElementById('formM3uUrl')?.addEventListener('submit', handleM3uSubmit);
-        document.getElementById('btnSubmitM3u')?.addEventListener('click', handleM3uSubmit);
+        const formM3uUrl = document.getElementById('formM3uUrl');
+        if (formM3uUrl) {
+            formM3uUrl.addEventListener('submit', handleM3uSubmit);
+        }
+        document.getElementById('btnSubmitM3u')?.addEventListener('click', (e) => {
+            if (formM3uUrl) {
+                e.preventDefault();
+                formM3uUrl.requestSubmit();
+            } else {
+                handleM3uSubmit(e);
+            }
+        });
 
         // File Drag & Drop / Upload
         const fileInput = document.getElementById('inputM3uFile');

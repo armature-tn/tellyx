@@ -10,6 +10,8 @@
  * @license Dual License: GNU AGPL-3.0 or Commercial License (SPDX: AGPL-3.0-or-later OR Commercial)
  */
 
+import { isTauriEnvironment } from './tauri-bridge.js';
+
 /**
  * @class SecurityController
  * @classdesc Central security utility class enforcing strict input validation,
@@ -347,6 +349,26 @@ export class SecurityController {
     static async fetchWithFallback(targetUrl, useProxy = false, customProxyUrl = '', proxyToken = '', fetchOptions = {}) {
         const cleanUrl = this.validateURL(targetUrl);
         if (!cleanUrl) throw new Error('[Security] Invalid URL for fetch');
+
+        // High-performance Tauri Native fetch (bypasses browser CORS & mixed-content restrictions)
+        if (isTauriEnvironment()) {
+            try {
+                const httpPkg = '@tauri-apps/plugin-http';
+                const mod = await import(/* @vite-ignore */ httpPkg);
+                if (mod && typeof mod.fetch === 'function') {
+                    const res = await mod.fetch(cleanUrl, fetchOptions);
+                    if (res) return res;
+                }
+            } catch (tauriErr) {
+                console.warn('[Security] Tauri plugin-http native fetch notice:', tauriErr.message || tauriErr);
+            }
+            try {
+                if (window.__TAURI__?.http?.fetch) {
+                    const res = await window.__TAURI__.http.fetch(cleanUrl, fetchOptions);
+                    if (res) return res;
+                }
+            } catch (e) {}
+        }
 
         const effectiveProxy = customProxyUrl.trim() || this.DEFAULT_CORS_PROXY;
         const primaryUrl = useProxy ? this.buildProxyURL(cleanUrl, effectiveProxy, proxyToken) : cleanUrl;
